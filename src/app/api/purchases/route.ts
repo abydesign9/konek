@@ -1,12 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionUserId } from "@/lib/auth/session";
 import { IncorrectPinError, PinNotSetError, verifyPin } from "@/lib/auth/pin";
+import { query } from "@/lib/db";
+import { usdMinorToNgnMinor } from "@/lib/fx";
+import { LimitExceededError } from "@/lib/limits/checkLimits";
 import { InsufficientBalanceError, purchaseVtu } from "@/lib/purchases/purchaseVtuService";
 import { NoHealthyVendorError } from "@/vendors/registry";
 import { VendorServiceType } from "@/vendors/types";
 
-const SUPPORTED_TYPES: VendorServiceType[] = ["airtime", "data"];
-const NETWORKS = ["mtn", "glo", "airtel", "9mobile"];
+const CATALOG_SERVICE_TYPES: VendorServiceType[] = ["data", "cable", "exam_pin", "esim"];
+const NGN_AMOUNT_SERVICE_TYPES: VendorServiceType[] = ["airtime", "electricity"];
+const INTL_TOPUP_PRESETS_USD_MINOR = [500, 1000, 2000, 5000]; // $5 / $10 / $20 / $50
+const SUPPORTED_TYPES = [...CATALOG_SERVICE_TYPES, ...NGN_AMOUNT_SERVICE_TYPES, "intl_topup" as const];
 
 export async function POST(req: NextRequest) {
   const userId = await getSessionUserId();
@@ -18,20 +23,58 @@ export async function POST(req: NextRequest) {
   if (!SUPPORTED_TYPES.includes(serviceType)) {
     return NextResponse.json({ error: `serviceType must be one of ${SUPPORTED_TYPES.join(", ")}` }, { status: 400 });
   }
-  if (!NETWORKS.includes(network)) {
-    return NextResponse.json({ error: `network must be one of ${NETWORKS.join(", ")}` }, { status: 400 });
+  if (typeof network !== "string" || !network) {
+    return NextResponse.json({ error: "network is required" }, { status: 400 });
   }
-  if (typeof phone !== "string" || phone.length < 10) {
-    return NextResponse.json({ error: "valid phone is required" }, { status: 400 });
-  }
-  if (!Number.isInteger(amountMinor) || amountMinor <= 0) {
-    return NextResponse.json({ error: "amountMinor must be a positive integer" }, { status: 400 });
+  const requiresSubscriberId = serviceType !== "exam_pin" && serviceType !== "esim";
+  if (typeof phone !== "string" || (requiresSubscriberId && phone.length < 6)) {
+    return NextResponse.json({ error: "a valid phone/meter/smartcard number is required" }, { status: 400 });
   }
   if (typeof idempotencyKey !== "string" || idempotencyKey.length < 8) {
     return NextResponse.json({ error: "idempotencyKey is required" }, { status: 400 });
   }
   if (typeof pin !== "string") {
     return NextResponse.json({ error: "pin is required" }, { status: 400 });
+  }
+
+  // The actual amount charged is always resolved server-side — never taken
+  // verbatim from the client — so a tampered request can't buy an
+  // expensive plan for less, or misreport a USD->NGN conversion.
+  let chargeAmountMinor: number;
+  let recipientExtra: Record<string, unknown> | undefined;
+
+  if (CATALOG_SERVICE_TYPES.includes(serviceType)) {
+    if (typeof planExternalId !== "string") {
+      return NextResponse.json({ error: "planExternalId is required for this service" }, { status: 400 });
+    }
+    const { rows } = await query<{ price_minor: string; currency: string }>(
+      `SELECT price_minor, currency FROM catalog_items WHERE service_type = $1 AND external_id = $2 AND active = true`,
+      [serviceType, planExternalId]
+    );
+    if (!rows[0]) {
+      return NextResponse.json({ error: "unknown or inactive plan" }, { status: 400 });
+    }
+    const priceMinor = Number(rows[0].price_minor);
+    if (rows[0].currency === "USD") {
+      chargeAmountMinor = usdMinorToNgnMinor(priceMinor);
+      recipientExtra = { displayCurrency: "USD", displayAmountMinor: priceMinor };
+    } else {
+      chargeAmountMinor = priceMinor;
+    }
+  } else if (serviceType === "intl_topup") {
+    if (!INTL_TOPUP_PRESETS_USD_MINOR.includes(amountMinor)) {
+      return NextResponse.json(
+        { error: `amountMinor (USD cents) must be one of ${INTL_TOPUP_PRESETS_USD_MINOR.join(", ")}` },
+        { status: 400 }
+      );
+    }
+    chargeAmountMinor = usdMinorToNgnMinor(amountMinor);
+    recipientExtra = { displayCurrency: "USD", displayAmountMinor: amountMinor };
+  } else {
+    if (!Number.isInteger(amountMinor) || amountMinor <= 0) {
+      return NextResponse.json({ error: "amountMinor must be a positive integer" }, { status: 400 });
+    }
+    chargeAmountMinor = amountMinor;
   }
 
   try {
@@ -53,8 +96,9 @@ export async function POST(req: NextRequest) {
       serviceType,
       network,
       phone,
-      amountMinor,
+      amountMinor: chargeAmountMinor,
       planExternalId,
+      recipientExtra,
     });
     return NextResponse.json(result);
   } catch (err) {
@@ -63,6 +107,9 @@ export async function POST(req: NextRequest) {
     }
     if (err instanceof NoHealthyVendorError) {
       return NextResponse.json({ error: err.message }, { status: 503 });
+    }
+    if (err instanceof LimitExceededError) {
+      return NextResponse.json({ error: err.message }, { status: 429 });
     }
     throw err;
   }

@@ -1,12 +1,21 @@
-export type VendorServiceType = "airtime" | "data" | "cable" | "electricity" | "exam_pin" | "betting";
+export type VendorServiceType =
+  | "airtime"
+  | "data"
+  | "cable"
+  | "electricity"
+  | "exam_pin"
+  | "betting"
+  | "intl_topup"
+  | "esim";
 
 export interface PurchaseParams {
   reference: string; // our transaction id — vendor should treat this as idempotency key too
   serviceType: VendorServiceType;
-  network?: string; // mtn|glo|airtel|9mobile
-  phone?: string;
+  network?: string; // mtn|glo|airtel|9mobile for VTU; disco/provider/country id for others
+  phone?: string; // subscriber phone, or meter/smartcard number depending on service type
   planExternalId?: string; // for data bundles / catalog-based purchases
-  amountMinor: number;
+  amountMinor: number; // always the currency actually charged (see currency)
+  currency?: string; // defaults to NGN
 }
 
 export type VendorTxnStatus = "delivered" | "failed" | "pending";

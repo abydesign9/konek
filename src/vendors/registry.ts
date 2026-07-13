@@ -1,12 +1,13 @@
 import { query } from "@/lib/db";
 import { VendorAdapter, VendorServiceType } from "./types";
-import { mockVtuAdapter } from "./mockVtu";
+import { mockVtuAdapter, mockVtuAdapter2 } from "./mockVtu";
 
 // Add real aggregators here as they're wired up (e.g. reloadly, vtu_ng).
 // Which one actually gets used for a given purchase is decided by
 // selectVendor() below, never by an inline choice at the call site.
 const ADAPTERS: Record<string, VendorAdapter> = {
   [mockVtuAdapter.id]: mockVtuAdapter,
+  [mockVtuAdapter2.id]: mockVtuAdapter2,
 };
 
 const SERVICE_TYPE_TO_VENDOR_KIND: Record<VendorServiceType, string> = {
@@ -16,6 +17,8 @@ const SERVICE_TYPE_TO_VENDOR_KIND: Record<VendorServiceType, string> = {
   electricity: "vtu",
   exam_pin: "vtu",
   betting: "vtu",
+  intl_topup: "vtu",
+  esim: "vtu",
 };
 
 export class NoHealthyVendorError extends Error {
@@ -26,8 +29,9 @@ export class NoHealthyVendorError extends Error {
 }
 
 // Picks the highest-priority healthy vendor row for this service type, and
-// falls through to the next one if its adapter isn't registered — this is
-// the failover path Week 6 exercises with a second real aggregator.
+// falls through to the next one if its adapter isn't registered. Health and
+// priority live in the `vendors` table, so an ops toggle (or a failed
+// health check) immediately reroutes future purchases — no deploy needed.
 export async function selectVendor(serviceType: VendorServiceType): Promise<VendorAdapter> {
   const kind = SERVICE_TYPE_TO_VENDOR_KIND[serviceType];
 

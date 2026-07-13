@@ -3,9 +3,13 @@ import { query } from "@/lib/db";
 import { mockVtuAdapter } from "@/vendors/mockVtu";
 import { VendorAdapter, VendorServiceType } from "@/vendors/types";
 
-// One vendor for now (mock_vtu) — extend this list as real aggregators land.
+// Catalog is synced from the primary (priority 1) vendor only — the plan
+// list is presented to users independent of which vendor ultimately
+// fulfils it, since selectVendor() decides that at purchase time, not
+// catalog browse time. Syncing from every vendor would just duplicate
+// identical-looking plans.
 const ADAPTERS: VendorAdapter[] = [mockVtuAdapter];
-const SYNCED_SERVICE_TYPES: VendorServiceType[] = ["data"];
+const SYNCED_SERVICE_TYPES: VendorServiceType[] = ["data", "cable", "exam_pin", "esim"];
 
 // Triggered by a cron job in production (Vercel Cron / worker) or manually
 // in dev. Guarded by CRON_SECRET so it isn't a public write endpoint.

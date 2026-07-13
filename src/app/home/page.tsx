@@ -19,18 +19,23 @@ import {
 const SERVICES = [
   { label: "Airtime", Icon: IconAirtime, href: "/buy/airtime" },
   { label: "Data", Icon: IconData, href: "/buy/data" },
-  { label: "Cable", Icon: IconCable, href: null },
-  { label: "Electricity", Icon: IconElectricity, href: null },
-  { label: "Exam Pin", Icon: IconExam, href: null },
+  { label: "Cable", Icon: IconCable, href: "/buy/cable" },
+  { label: "Electricity", Icon: IconElectricity, href: "/buy/electricity" },
+  { label: "Exam Pin", Icon: IconExam, href: "/buy/exam-pin" },
   { label: "Betting", Icon: IconBetting, href: null },
-  { label: "Intl Top-up", Icon: IconGlobe, href: null },
-  { label: "eSIM", Icon: IconEsim, href: null },
+  { label: "Intl Top-up", Icon: IconGlobe, href: "/buy/intl-topup" },
+  { label: "eSIM", Icon: IconEsim, href: "/buy/esim" },
 ];
 
 interface RecentPurchase {
-  type: "airtime" | "data";
+  type: "airtime" | "data" | "cable" | "electricity" | "exam_pin" | "intl_topup";
   amount_minor: string;
-  recipient: { phone: string; network: string; planExternalId?: string };
+  recipient: {
+    phone: string;
+    network: string;
+    planExternalId?: string;
+    displayAmountMinor?: number;
+  };
 }
 
 export default async function HomeDashboard() {
@@ -46,23 +51,33 @@ export default async function HomeDashboard() {
   const { rows: recent } = await query<RecentPurchase>(
     `SELECT DISTINCT ON (recipient->>'phone', type) type, amount_minor, recipient
      FROM transactions
-     WHERE user_id = $1 AND type IN ('airtime', 'data') AND status = 'delivered'
+     WHERE user_id = $1
+       AND type IN ('airtime', 'data', 'cable', 'electricity', 'exam_pin', 'intl_topup')
+       AND status = 'delivered'
      ORDER BY recipient->>'phone', type, created_at DESC
      LIMIT 4`,
     [userId]
   );
 
+  const BUY_PATH: Record<RecentPurchase["type"], string> = {
+    airtime: "/buy/airtime",
+    data: "/buy/data",
+    cable: "/buy/cable",
+    electricity: "/buy/electricity",
+    exam_pin: "/buy/exam-pin",
+    intl_topup: "/buy/intl-topup",
+  };
+
   function repeatHref(txn: RecentPurchase) {
-    const p = new URLSearchParams({
-      network: txn.recipient.network,
-      phone: txn.recipient.phone,
-    });
-    if (txn.type === "airtime") {
+    const p = new URLSearchParams({ network: txn.recipient.network, phone: txn.recipient.phone });
+    if (txn.type === "airtime" || txn.type === "electricity") {
       p.set("amountMinor", txn.amount_minor);
-      return `/buy/airtime?${p.toString()}`;
+    } else if (txn.type === "intl_topup" && txn.recipient.displayAmountMinor) {
+      p.set("amountMinor", String(txn.recipient.displayAmountMinor));
+    } else if (txn.recipient.planExternalId) {
+      p.set("planExternalId", txn.recipient.planExternalId);
     }
-    if (txn.recipient.planExternalId) p.set("planExternalId", txn.recipient.planExternalId);
-    return `/buy/data?${p.toString()}`;
+    return `${BUY_PATH[txn.type]}?${p.toString()}`;
   }
 
   return (
@@ -101,7 +116,7 @@ export default async function HomeDashboard() {
                 className="whitespace-nowrap rounded-xl border border-indigo/20 bg-white px-4 py-3 hover:bg-indigo/5"
               >
                 <p className="text-sm font-semibold text-indigo capitalize">
-                  {txn.type} · {txn.recipient.network}
+                  {txn.type.replace("_", " ")} · {txn.recipient.network}
                 </p>
                 <p className="text-xs text-indigo/60">
                   {txn.recipient.phone} · ₦{(Number(txn.amount_minor) / 100).toLocaleString()}

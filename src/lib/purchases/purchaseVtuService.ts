@@ -3,6 +3,7 @@ import { withIdempotency } from "@/lib/idempotency";
 import { postJournal } from "@/lib/ledger/postJournal";
 import { getOrCreateAccount, getUserWalletAccount } from "@/lib/ledger/accounts";
 import { getBalance } from "@/lib/ledger/balance";
+import { checkVelocityLimits } from "@/lib/limits/checkLimits";
 import { selectVendor } from "@/vendors/registry";
 import { VendorServiceType } from "@/vendors/types";
 
@@ -14,8 +15,9 @@ export interface PurchaseInput {
   serviceType: VendorServiceType;
   network: string;
   phone: string;
-  amountMinor: number;
+  amountMinor: number; // always NGN — the currency actually settled
   planExternalId?: string;
+  recipientExtra?: Record<string, unknown>; // e.g. { displayCurrency: 'USD', displayAmountMinor, meterNo, smartcardNo }
 }
 
 export class InsufficientBalanceError extends Error {
@@ -30,6 +32,8 @@ export async function purchaseVtu(input: PurchaseInput) {
     `purchase:${input.userId}:${input.idempotencyKey}`,
     { ...input },
     async () => {
+      await checkVelocityLimits(input.userId, input.amountMinor, CURRENCY);
+
       const walletAccountId = await getUserWalletAccount(input.userId, CURRENCY);
       const balance = await getBalance(walletAccountId);
       if (balance < input.amountMinor) {
@@ -46,7 +50,12 @@ export async function purchaseVtu(input: PurchaseInput) {
           input.serviceType,
           CURRENCY,
           input.amountMinor,
-          JSON.stringify({ phone: input.phone, network: input.network, planExternalId: input.planExternalId }),
+          JSON.stringify({
+            phone: input.phone,
+            network: input.network,
+            planExternalId: input.planExternalId,
+            ...input.recipientExtra,
+          }),
         ]
       );
       const txnId = txnResult.rows[0].id;
@@ -104,7 +113,7 @@ export async function purchaseVtu(input: PurchaseInput) {
         [txnId, JSON.stringify({ vendorRef: result.vendorRef, journalId })]
       );
 
-      return { txnId, status: "delivered" as const };
+      return { txnId, status: "delivered" as const, token: result.token };
     }
   );
 }
