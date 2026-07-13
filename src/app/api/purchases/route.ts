@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionUserId } from "@/lib/auth/session";
+import { IncorrectPinError, PinNotSetError, verifyPin } from "@/lib/auth/pin";
 import { InsufficientBalanceError, purchaseVtu } from "@/lib/purchases/purchaseVtuService";
 import { NoHealthyVendorError } from "@/vendors/registry";
 import { VendorServiceType } from "@/vendors/types";
@@ -12,7 +13,7 @@ export async function POST(req: NextRequest) {
   if (!userId) return NextResponse.json({ error: "unauthenticated" }, { status: 401 });
 
   const body = await req.json().catch(() => null);
-  const { serviceType, network, phone, amountMinor, planExternalId, idempotencyKey } = body ?? {};
+  const { serviceType, network, phone, amountMinor, planExternalId, idempotencyKey, pin } = body ?? {};
 
   if (!SUPPORTED_TYPES.includes(serviceType)) {
     return NextResponse.json({ error: `serviceType must be one of ${SUPPORTED_TYPES.join(", ")}` }, { status: 400 });
@@ -28,6 +29,21 @@ export async function POST(req: NextRequest) {
   }
   if (typeof idempotencyKey !== "string" || idempotencyKey.length < 8) {
     return NextResponse.json({ error: "idempotencyKey is required" }, { status: 400 });
+  }
+  if (typeof pin !== "string") {
+    return NextResponse.json({ error: "pin is required" }, { status: 400 });
+  }
+
+  try {
+    await verifyPin(userId, pin);
+  } catch (err) {
+    if (err instanceof PinNotSetError) {
+      return NextResponse.json({ error: err.message, code: "pin_not_set" }, { status: 428 });
+    }
+    if (err instanceof IncorrectPinError) {
+      return NextResponse.json({ error: err.message }, { status: 401 });
+    }
+    throw err;
   }
 
   try {

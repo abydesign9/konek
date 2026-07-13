@@ -27,6 +27,12 @@ const SERVICES = [
   { label: "eSIM", Icon: IconEsim, href: null },
 ];
 
+interface RecentPurchase {
+  type: "airtime" | "data";
+  amount_minor: string;
+  recipient: { phone: string; network: string; planExternalId?: string };
+}
+
 export default async function HomeDashboard() {
   const userId = await getSessionUserId();
   if (!userId) redirect("/login");
@@ -36,6 +42,28 @@ export default async function HomeDashboard() {
 
   const walletAccountId = await getUserWalletAccount(userId, "NGN");
   const balanceMinor = await getBalance(walletAccountId);
+
+  const { rows: recent } = await query<RecentPurchase>(
+    `SELECT DISTINCT ON (recipient->>'phone', type) type, amount_minor, recipient
+     FROM transactions
+     WHERE user_id = $1 AND type IN ('airtime', 'data') AND status = 'delivered'
+     ORDER BY recipient->>'phone', type, created_at DESC
+     LIMIT 4`,
+    [userId]
+  );
+
+  function repeatHref(txn: RecentPurchase) {
+    const p = new URLSearchParams({
+      network: txn.recipient.network,
+      phone: txn.recipient.phone,
+    });
+    if (txn.type === "airtime") {
+      p.set("amountMinor", txn.amount_minor);
+      return `/buy/airtime?${p.toString()}`;
+    }
+    if (txn.recipient.planExternalId) p.set("planExternalId", txn.recipient.planExternalId);
+    return `/buy/data?${p.toString()}`;
+  }
 
   return (
     <main className="min-h-screen bg-background px-6 py-8">
@@ -61,6 +89,28 @@ export default async function HomeDashboard() {
         </div>
         <p className="text-xs text-white/70 mt-3">Tap to fund wallet →</p>
       </Link>
+
+      {recent.length > 0 && (
+        <section className="mb-8">
+          <p className="text-sm text-indigo/60 mb-3">Buy again</p>
+          <div className="flex gap-3 overflow-x-auto pb-1">
+            {recent.map((txn, i) => (
+              <Link
+                key={i}
+                href={repeatHref(txn)}
+                className="whitespace-nowrap rounded-xl border border-indigo/20 bg-white px-4 py-3 hover:bg-indigo/5"
+              >
+                <p className="text-sm font-semibold text-indigo capitalize">
+                  {txn.type} · {txn.recipient.network}
+                </p>
+                <p className="text-xs text-indigo/60">
+                  {txn.recipient.phone} · ₦{(Number(txn.amount_minor) / 100).toLocaleString()}
+                </p>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       <section className="grid grid-cols-4 gap-4">
         {SERVICES.map(({ label, Icon, href }) => {
