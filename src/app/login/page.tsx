@@ -46,7 +46,7 @@ export default function LoginPage() {
       setError(data.error ?? "Something went wrong");
       return;
     }
-    router.push("/");
+    router.push("/home");
     router.refresh();
   }
 
