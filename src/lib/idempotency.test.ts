@@ -29,6 +29,11 @@ vi.mock("@/lib/db", () => ({
       }
       return { rows: [] };
     }
+    if (text.startsWith("DELETE FROM idempotency_keys")) {
+      const [key] = params as [string];
+      store.delete(key);
+      return { rows: [] };
+    }
     throw new Error(`unexpected query: ${text}`);
   }),
 }));
@@ -75,5 +80,20 @@ describe("withIdempotency", () => {
     await expect(
       withIdempotency("key-2", { amount: 1 }, vi.fn(async () => ({})))
     ).rejects.toThrow(IdempotencyInProgressError);
+  });
+
+  it("releases the claim on failure so the same key can be retried", async () => {
+    const failing = vi.fn(async () => {
+      throw new Error("insufficient balance");
+    });
+    await expect(withIdempotency("key-3", { amount: 1 }, failing)).rejects.toThrow(
+      "insufficient balance"
+    );
+    expect(store.has("key-3")).toBe(false);
+
+    const succeeding = vi.fn(async () => ({ ok: true }));
+    const result = await withIdempotency("key-3", { amount: 1 }, succeeding);
+    expect(result).toEqual({ ok: true });
+    expect(succeeding).toHaveBeenCalledTimes(1);
   });
 });

@@ -17,14 +17,14 @@ import {
 } from "@/components/icons";
 
 const SERVICES = [
-  { label: "Airtime", Icon: IconAirtime },
-  { label: "Data", Icon: IconData },
-  { label: "Cable", Icon: IconCable },
-  { label: "Electricity", Icon: IconElectricity },
-  { label: "Exam Pin", Icon: IconExam },
-  { label: "Betting", Icon: IconBetting },
-  { label: "Intl Top-up", Icon: IconGlobe },
-  { label: "eSIM", Icon: IconEsim },
+  { label: "Airtime", Icon: IconAirtime, href: "/buy/airtime" },
+  { label: "Data", Icon: IconData, href: "/buy/data" },
+  { label: "Cable", Icon: IconCable, href: null },
+  { label: "Electricity", Icon: IconElectricity, href: null },
+  { label: "Exam Pin", Icon: IconExam, href: null },
+  { label: "Betting", Icon: IconBetting, href: null },
+  { label: "Intl Top-up", Icon: IconGlobe, href: null },
+  { label: "eSIM", Icon: IconEsim, href: null },
 ];
 
 export default async function HomeDashboard() {
@@ -63,14 +63,25 @@ export default async function HomeDashboard() {
       </Link>
 
       <section className="grid grid-cols-4 gap-4">
-        {SERVICES.map(({ label, Icon }) => (
-          <div key={label} className="flex flex-col items-center gap-2">
-            <div className="w-14 h-14 rounded-2xl bg-indigo/10 flex items-center justify-center">
-              <Icon className="w-6 h-6 text-indigo" />
+        {SERVICES.map(({ label, Icon, href }) => {
+          const content = (
+            <>
+              <div className="w-14 h-14 rounded-2xl bg-indigo/10 flex items-center justify-center">
+                <Icon className="w-6 h-6 text-indigo" />
+              </div>
+              <span className="text-xs text-center text-indigo font-medium">{label}</span>
+            </>
+          );
+          return href ? (
+            <Link key={label} href={href} className="flex flex-col items-center gap-2">
+              {content}
+            </Link>
+          ) : (
+            <div key={label} className="flex flex-col items-center gap-2 opacity-40">
+              {content}
             </div>
-            <span className="text-xs text-center text-indigo font-medium">{label}</span>
-          </div>
-        ))}
+          );
+        })}
       </section>
 
       <form action="/api/auth/logout" method="post" className="mt-12">

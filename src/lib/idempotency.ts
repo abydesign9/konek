@@ -53,12 +53,19 @@ export async function withIdempotency<T>(
     return existing.response as T;
   }
 
-  const result = await fn();
+  try {
+    const result = await fn();
 
-  await query(
-    `UPDATE idempotency_keys SET response = $2, status = 1 WHERE key = $1`,
-    [key, JSON.stringify(result)]
-  );
+    await query(
+      `UPDATE idempotency_keys SET response = $2, status = 1 WHERE key = $1`,
+      [key, JSON.stringify(result)]
+    );
 
-  return result;
+    return result;
+  } catch (err) {
+    // Release the claim so a client can retry with the same key after
+    // fixing the underlying problem (e.g. top up, then retry the purchase).
+    await query(`DELETE FROM idempotency_keys WHERE key = $1`, [key]);
+    throw err;
+  }
 }
