@@ -4,6 +4,7 @@ import { getPlatformAccount, getUserWalletAccount } from "@/lib/ledger/accounts"
 import { withIdempotency } from "@/lib/idempotency";
 import { paymentGateway } from "@/lib/payments";
 import { logAudit } from "@/lib/audit";
+import { sendNotification } from "@/lib/notifications/send";
 
 interface Transaction {
   id: string;
@@ -65,6 +66,13 @@ export async function creditFromPayment(reference: string): Promise<void> {
       currency: verified.currency,
       journalId,
     });
+    await sendNotification(
+      txn.user_id,
+      "push",
+      "txn_receipt",
+      "Wallet funded",
+      `₦${(verified.amountMinor / 100).toLocaleString()} was added to your wallet.`
+    );
 
     return { journalId };
   });

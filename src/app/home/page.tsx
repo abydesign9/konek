@@ -87,12 +87,20 @@ export default async function HomeDashboard() {
           <p className="text-sm text-indigo/60">Welcome back</p>
           <h1 className="font-heading text-xl font-bold text-indigo">{phone}</h1>
         </div>
-        <Link
-          href="/rewards"
-          className="rounded-full bg-gold/15 text-indigo text-xs font-semibold px-3 py-2"
-        >
-          Rewards
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/notifications"
+            className="rounded-full bg-indigo/10 text-indigo text-xs font-semibold px-3 py-2"
+          >
+            Alerts
+          </Link>
+          <Link
+            href="/rewards"
+            className="rounded-full bg-gold/15 text-indigo text-xs font-semibold px-3 py-2"
+          >
+            Rewards
+          </Link>
+        </div>
       </header>
 
       <Link

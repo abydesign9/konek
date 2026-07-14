@@ -6,6 +6,8 @@ import { getBalance } from "@/lib/ledger/balance";
 import { checkVelocityLimits } from "@/lib/limits/checkLimits";
 import { awardPurchaseCoins, awardReferralBonusIfEligible } from "@/lib/rewards/awardCoins";
 import { logAudit } from "@/lib/audit";
+import { sendNotification } from "@/lib/notifications/send";
+import { recordCommissionIfAgent } from "@/lib/agents/agentService";
 import { selectVendor } from "@/vendors/registry";
 import { VendorServiceType } from "@/vendors/types";
 
@@ -127,6 +129,14 @@ export async function purchaseVtu(input: PurchaseInput) {
 
       await awardPurchaseCoins(input.userId, txnId, input.amountMinor);
       await awardReferralBonusIfEligible(input.userId);
+      await recordCommissionIfAgent(input.userId, txnId, input.amountMinor, CURRENCY);
+      await sendNotification(
+        input.userId,
+        "push",
+        "txn_receipt",
+        "Purchase successful",
+        `${input.serviceType.replace("_", " ")} for ₦${(input.amountMinor / 100).toLocaleString()} was delivered.`
+      );
 
       return { txnId, status: "delivered" as const, token: result.token };
     }
