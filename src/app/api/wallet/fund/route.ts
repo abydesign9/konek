@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSessionUserId } from "@/lib/auth/session";
 import { query } from "@/lib/db";
 import { withIdempotency } from "@/lib/idempotency";
+import { assertKycTier, KYC_TIER, KycGateError } from "@/lib/kyc/tiers";
 import { paymentGateway } from "@/lib/payments";
 
 const CURRENCY = "NGN";
@@ -20,6 +21,21 @@ export async function POST(req: NextRequest) {
   }
   if (typeof idempotencyKey !== "string" || idempotencyKey.length < 8) {
     return NextResponse.json({ error: "idempotencyKey is required" }, { status: 400 });
+  }
+
+  // Tier 1 (BVN/NIN) is the gate for any money movement — you cannot fund a
+  // wallet while only browse-tier. Everything downstream (VTU, eSIM) needs a
+  // funded wallet, so this is the single choke point for the transact tier.
+  try {
+    await assertKycTier(userId, KYC_TIER.TRANSACT);
+  } catch (err) {
+    if (err instanceof KycGateError) {
+      return NextResponse.json(
+        { error: err.message, code: err.code, requiredTier: err.requiredTier },
+        { status: 403 }
+      );
+    }
+    throw err;
   }
 
   const { rows: userRows } = await query<{ phone: string; email: string | null }>(

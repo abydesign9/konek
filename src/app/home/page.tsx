@@ -42,8 +42,12 @@ export default async function HomeDashboard() {
   const userId = await getSessionUserId();
   if (!userId) redirect("/login");
 
-  const { rows } = await query<{ phone: string }>(`SELECT phone FROM users WHERE id = $1`, [userId]);
+  const { rows } = await query<{ phone: string; kyc_tier: number }>(
+    `SELECT phone, kyc_tier FROM users WHERE id = $1`,
+    [userId]
+  );
   const phone = rows[0]?.phone;
+  const kycTier = rows[0]?.kyc_tier ?? 0;
 
   const walletAccountId = await getUserWalletAccount(userId, "NGN");
   const balanceMinor = await getBalance(walletAccountId);
@@ -103,8 +107,20 @@ export default async function HomeDashboard() {
         </div>
       </header>
 
+      {kycTier < 1 && (
+        <Link
+          href="/kyc"
+          className="block rounded-2xl bg-gold/15 border border-gold/40 px-5 py-4 mb-6"
+        >
+          <p className="font-heading font-semibold text-indigo mb-0.5">Verify your account to get started</p>
+          <p className="text-sm text-indigo/70">
+            Confirm your BVN or NIN to fund your wallet and start buying. Takes under a minute →
+          </p>
+        </Link>
+      )}
+
       <Link
-        href="/wallet/fund"
+        href={kycTier < 1 ? "/kyc" : "/wallet/fund"}
         className="block rounded-2xl bg-indigo px-5 py-4 mb-8 text-white"
       >
         <div className="flex items-center justify-between">
@@ -118,7 +134,9 @@ export default async function HomeDashboard() {
             <IconWallet className="w-5 h-5 text-konek-green" />
           </div>
         </div>
-        <p className="text-xs text-white/70 mt-3">Tap to fund wallet →</p>
+        <p className="text-xs text-white/70 mt-3">
+          {kycTier < 1 ? "Verify your account to fund →" : "Tap to fund wallet →"}
+        </p>
       </Link>
 
       {recent.length > 0 && (

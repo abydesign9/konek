@@ -3,6 +3,7 @@ import { getSessionUserId } from "@/lib/auth/session";
 import { IncorrectPinError, PinNotSetError, verifyPin } from "@/lib/auth/pin";
 import { query } from "@/lib/db";
 import { usdMinorToNgnMinor } from "@/lib/fx";
+import { assertKycTier, KYC_TIER, KycGateError } from "@/lib/kyc/tiers";
 import { LimitExceededError } from "@/lib/limits/checkLimits";
 import { InsufficientBalanceError, purchaseVtu } from "@/lib/purchases/purchaseVtuService";
 import { checkRateLimit, RateLimitExceededError } from "@/lib/rateLimit";
@@ -23,6 +24,19 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     if (err instanceof RateLimitExceededError) {
       return NextResponse.json({ error: "Too many purchase attempts — slow down" }, { status: 429 });
+    }
+    throw err;
+  }
+
+  // Local VTU, intl top-up and eSIM all require the transact tier (BVN/NIN).
+  try {
+    await assertKycTier(userId, KYC_TIER.TRANSACT);
+  } catch (err) {
+    if (err instanceof KycGateError) {
+      return NextResponse.json(
+        { error: err.message, code: err.code, requiredTier: err.requiredTier },
+        { status: 403 }
+      );
     }
     throw err;
   }
