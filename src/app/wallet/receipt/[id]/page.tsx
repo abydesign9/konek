@@ -2,6 +2,8 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getSessionUserId } from "@/lib/auth/session";
 import { query } from "@/lib/db";
+import { ShareReceiptButton } from "@/components/ShareReceiptButton";
+import { findCountry } from "@/lib/intl/carriers";
 import {
   formatDateTime,
   formatMoney,
@@ -96,12 +98,23 @@ export default async function ReceiptPage({ params }: { params: { id: string } }
     [txn.id]
   );
 
+  // For intl top-up the network is stored as "<countryCode>:<carrierId>";
+  // render it as a friendly "🇺🇸 AT&T" rather than the raw pair.
+  function formatValue(key: string, value: unknown): string {
+    if (key === "network" && txn.type === "intl_topup" && typeof value === "string" && value.includes(":")) {
+      const [cc, carrierId] = value.split(":");
+      const country = findCountry(cc);
+      const carrier = country?.carriers.find((c) => c.id === carrierId)?.name ?? carrierId;
+      return country ? `${country.flag} ${carrier}` : carrier;
+    }
+    return String(value);
+  }
+
   const credit = isCredit(txn.type);
   const recipientEntries: [string, string][] = txn.recipient
     ? Object.entries(txn.recipient)
-        .map(([k, v]): [string | null, unknown] => [recipientLabel(k, txn.type), v])
-        .filter((e): e is [string, string] => e[0] != null && e[1] != null && String(e[1]).length > 0)
-        .map(([label, v]) => [label, String(v)])
+        .map(([k, v]): [string | null, string] => [recipientLabel(k, txn.type), formatValue(k, v)])
+        .filter((e): e is [string, string] => e[0] != null && e[1].length > 0)
     : [];
 
   return (
@@ -112,7 +125,12 @@ export default async function ReceiptPage({ params }: { params: { id: string } }
             ← Transactions
           </Link>
           <span className="font-heading font-bold text-indigo">Receipt</span>
-          <span className="w-16" />
+          <ShareReceiptButton
+            title="Konek receipt"
+            text={`${txnTypeLabel(txn.type)} · ${credit ? "+" : "−"}${formatMoney(txn.amount_minor, txn.currency)} · ${
+              TXN_STATUS_LABEL[txn.status] ?? txn.status
+            } · Konek`}
+          />
         </div>
       </nav>
 

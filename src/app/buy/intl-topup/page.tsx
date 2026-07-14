@@ -1,38 +1,84 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ChipPicker } from "@/components/ChipPicker";
 import { PinPad } from "@/components/PinPad";
+import { COUNTRIES, detectCountry, findCountry, type Country } from "@/lib/intl/carriers";
 
-const COUNTRIES = [
-  { id: "us-att", label: "USA — AT&T" },
-  { id: "uk-ee", label: "UK — EE" },
-  { id: "ca-rogers", label: "Canada — Rogers" },
-  { id: "gh-mtn", label: "Ghana — MTN" },
-];
 const PRESETS_USD_MINOR = [500, 1000, 2000, 5000]; // $5 / $10 / $20 / $50
 
 function formatUsd(minor: number) {
   return `$${(minor / 100).toLocaleString()}`;
 }
 
+interface Beneficiary {
+  id: string;
+  label: string;
+  details: { phone: string; network: string; countryCode?: string };
+}
+
+// recipient.network is stored as "<countryCode>:<carrierId>" so a saved
+// beneficiary re-hydrates both the country and the carrier.
+function encodeNetwork(countryCode: string, carrierId: string) {
+  return `${countryCode}:${carrierId}`;
+}
+
 function BuyIntlTopup() {
   const router = useRouter();
   const params = useSearchParams();
 
-  const [carrier, setCarrier] = useState<string | null>(params.get("network"));
   const [phone, setPhone] = useState(params.get("phone") ?? "");
+  const [countryCode, setCountryCode] = useState<string>(() => {
+    const net = params.get("network");
+    if (net?.includes(":")) return net.split(":")[0];
+    return detectCountry(params.get("phone") ?? "")?.code ?? "NG";
+  });
+  const [carrier, setCarrier] = useState<string | null>(() => {
+    const net = params.get("network");
+    return net?.includes(":") ? net.split(":")[1] : null;
+  });
+  const [manualCountry, setManualCountry] = useState(false);
   const [amountMinor, setAmountMinor] = useState<number | null>(null);
+  const [beneficiaries, setBeneficiaries] = useState<Beneficiary[]>([]);
   const [showPin, setShowPin] = useState(false);
   const [pin, setPin] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
+  const detected = useMemo(() => detectCountry(phone), [phone]);
+  const country: Country = findCountry(countryCode) ?? COUNTRIES[0];
+
+  useEffect(() => {
+    fetch("/api/beneficiaries?serviceType=intl_topup")
+      .then((res) => res.json())
+      .then((data) => setBeneficiaries(data.beneficiaries ?? []));
+  }, []);
+
+  // Auto-follow the detected country as the user types, until they pick one
+  // manually (then we respect their choice).
+  useEffect(() => {
+    if (!manualCountry && detected && detected.code !== countryCode) {
+      setCountryCode(detected.code);
+      setCarrier(null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [detected]);
+
+  function pickBeneficiary(b: Beneficiary) {
+    setPhone(b.details.phone);
+    setManualCountry(true);
+    if (b.details.network?.includes(":")) {
+      const [cc, car] = b.details.network.split(":");
+      setCountryCode(cc);
+      setCarrier(car);
+    }
+  }
+
   function proceedToPin() {
     if (!carrier || phone.length < 6 || !amountMinor) {
-      setError("Choose a network, enter a phone number, and pick an amount");
+      setError("Enter a phone number, choose a carrier, and pick an amount");
       return;
     }
     setError(null);
@@ -48,7 +94,7 @@ function BuyIntlTopup() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         serviceType: "intl_topup",
-        network: carrier,
+        network: encodeNetwork(country.code, carrier!),
         phone,
         amountMinor,
         pin: finalPin,
@@ -76,13 +122,14 @@ function BuyIntlTopup() {
       return;
     }
 
+    const carrierName = country.carriers.find((c) => c.id === carrier)?.name ?? carrier;
     await fetch("/api/beneficiaries", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        label: `${carrier} •••• ${phone.slice(-4)}`,
+        label: `${country.flag} ${carrierName} •••• ${phone.slice(-4)}`,
         serviceType: "intl_topup",
-        details: { phone, network: carrier },
+        details: { phone, network: encodeNetwork(country.code, carrier!), countryCode: country.code },
       }),
     });
 
@@ -122,15 +169,61 @@ function BuyIntlTopup() {
         Priced in USD, charged from your NGN wallet at today&apos;s rate.
       </p>
 
-      <ChipPicker options={COUNTRIES} value={carrier} onChange={setCarrier} columns={2} />
+      {beneficiaries.length > 0 && (
+        <div className="mb-6">
+          <p className="text-sm text-indigo/60 mb-2">Family &amp; saved</p>
+          <div className="flex gap-2 overflow-x-auto pb-1">
+            {beneficiaries.map((b) => (
+              <button
+                key={b.id}
+                type="button"
+                onClick={() => pickBeneficiary(b)}
+                className="whitespace-nowrap rounded-full border border-indigo/20 px-4 py-2 text-sm font-medium text-indigo hover:bg-indigo/5"
+              >
+                {b.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
-      <label className="block text-sm text-indigo/60 mb-2">Phone number</label>
+      <label className="block text-sm text-indigo/60 mb-2">Recipient phone number</label>
       <input
         type="tel"
         value={phone}
         onChange={(e) => setPhone(e.target.value)}
-        placeholder="+1..."
-        className="w-full rounded-xl border border-indigo/20 px-4 py-3 text-base mb-6 focus:outline-none focus:ring-2 focus:ring-konek-green"
+        placeholder="+1 555 123 4567"
+        className="w-full rounded-xl border border-indigo/20 px-4 py-3 text-base mb-2 focus:outline-none focus:ring-2 focus:ring-konek-green"
+      />
+      {detected && !manualCountry && (
+        <p className="text-xs text-konek-green font-medium mb-4">
+          Detected {detected.flag} {detected.name}
+        </p>
+      )}
+
+      <label className="block text-sm text-indigo/60 mb-2">Country</label>
+      <select
+        value={countryCode}
+        onChange={(e) => {
+          setManualCountry(true);
+          setCountryCode(e.target.value);
+          setCarrier(null);
+        }}
+        className="w-full rounded-xl border border-indigo/20 bg-white px-4 py-3 text-base mb-6 focus:outline-none focus:ring-2 focus:ring-konek-green"
+      >
+        {COUNTRIES.map((c) => (
+          <option key={c.code} value={c.code}>
+            {c.flag} {c.name} ({c.dialCode})
+          </option>
+        ))}
+      </select>
+
+      <label className="block text-sm text-indigo/60 mb-2">Carrier</label>
+      <ChipPicker
+        options={country.carriers.map((c) => ({ id: c.id, label: c.name }))}
+        value={carrier}
+        onChange={setCarrier}
+        columns={2}
       />
 
       <label className="block text-sm text-indigo/60 mb-2">Amount</label>
