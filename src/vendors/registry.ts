@@ -17,6 +17,7 @@ const SERVICE_TYPE_TO_VENDOR_KIND: Record<VendorServiceType, string> = {
   electricity: "vtu",
   exam_pin: "vtu",
   betting: "vtu",
+  gift_card: "vtu",
   intl_topup: "vtu",
   esim: "vtu",
 };

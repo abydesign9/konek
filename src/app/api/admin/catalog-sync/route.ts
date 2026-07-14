@@ -9,7 +9,7 @@ import { VendorAdapter, VendorServiceType } from "@/vendors/types";
 // catalog browse time. Syncing from every vendor would just duplicate
 // identical-looking plans.
 const ADAPTERS: VendorAdapter[] = [mockVtuAdapter];
-const SYNCED_SERVICE_TYPES: VendorServiceType[] = ["data", "cable", "exam_pin", "esim"];
+const SYNCED_SERVICE_TYPES: VendorServiceType[] = ["data", "cable", "exam_pin", "gift_card", "esim"];
 
 // Triggered by a cron job in production (Vercel Cron / worker) or manually
 // in dev. Guarded by CRON_SECRET so it isn't a public write endpoint.

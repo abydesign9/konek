@@ -27,6 +27,28 @@ const EXAM_PLANS: VendorPlan[] = [
   { externalId: "jamb-pin", name: "JAMB ePIN", network: "jamb", costMinor: 480000, priceMinor: 500000, currency: "NGN" },
 ];
 
+// Gift cards are foreign-brand digital codes priced in USD (charged in NGN via
+// FX at purchase time, same as eSIM/intl top-up). You BUY a code — Konek never
+// buys cards back for cash (that would be the airtime-to-cash model it avoids).
+const GIFTCARD_BRANDS = [
+  { network: "amazon", name: "Amazon" },
+  { network: "steam", name: "Steam" },
+  { network: "googleplay", name: "Google Play" },
+  { network: "itunes", name: "iTunes" },
+  { network: "netflix", name: "Netflix" },
+];
+const GIFTCARD_DENOMS_USD = [10, 25, 50, 100];
+const GIFTCARD_PLANS: VendorPlan[] = GIFTCARD_BRANDS.flatMap((b) =>
+  GIFTCARD_DENOMS_USD.map((usd) => ({
+    externalId: `${b.network}-${usd}`,
+    name: `${b.name} $${usd}`,
+    network: b.network,
+    costMinor: usd * 100 - 40, // small wholesale margin
+    priceMinor: usd * 100,
+    currency: "USD",
+  }))
+);
+
 const ESIM_PLANS: VendorPlan[] = [
   { externalId: "us-3gb-7d", name: "USA — 3GB / 7 days", network: "us", costMinor: 900, priceMinor: 1000, currency: "USD" },
   { externalId: "uk-5gb-15d", name: "UK — 5GB / 15 days", network: "uk", costMinor: 1400, priceMinor: 1500, currency: "USD" },
@@ -58,6 +80,7 @@ function buildMockAdapter(id: string): VendorAdapter {
       if (params.serviceType === "electricity") token = randomToken("", 20);
       if (params.serviceType === "exam_pin") token = randomToken("PIN-", 12);
       if (params.serviceType === "esim") token = randomToken("ICCID-", 18);
+      if (params.serviceType === "gift_card") token = randomToken("GC-", 16);
 
       return {
         vendorRef,
@@ -92,6 +115,8 @@ function buildMockAdapter(id: string): VendorAdapter {
           return CABLE_PLANS;
         case "exam_pin":
           return EXAM_PLANS;
+        case "gift_card":
+          return GIFTCARD_PLANS;
         case "esim":
           return ESIM_PLANS;
         default:

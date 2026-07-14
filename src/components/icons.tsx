@@ -102,6 +102,21 @@ export function IconShield(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
+export function IconGift(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" {...props}>
+      <rect x="3.5" y="8" width="17" height="5" rx="1" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M5 13v7a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-7M12 8v13" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      <path
+        d="M12 8S10.5 3.5 8 4.2C6.2 4.7 6.6 7.5 8.5 8M12 8s1.5-4.5 4-3.8c1.8.5 1.4 3.3-.5 3.8"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 export function IconBolt(props: React.SVGProps<SVGSVGElement>) {
   return <IconElectricity {...props} />;
 }

@@ -22,6 +22,7 @@ export const TXN_TYPE_LABEL: Record<string, string> = {
   electricity: "Electricity",
   exam_pin: "Exam pin",
   betting: "Betting",
+  gift_card: "Gift card",
   intl_topup: "International top-up",
   esim: "eSIM",
   fx_convert: "Currency conversion",

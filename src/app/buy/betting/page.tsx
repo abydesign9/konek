@@ -2,14 +2,14 @@
 
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ChipPicker } from "@/components/ChipPicker";
+import { ChipPicker, MonogramBadge } from "@/components/ChipPicker";
 import { PinPad } from "@/components/PinPad";
 
 const BOOKMAKERS = [
-  { id: "sportybet", label: "SportyBet" },
-  { id: "bet9ja", label: "Bet9ja" },
-  { id: "betking", label: "BetKing" },
-  { id: "1xbet", label: "1xBet" },
+  { id: "sportybet", label: "SportyBet", icon: <MonogramBadge text="SB" className="bg-red-500" /> },
+  { id: "bet9ja", label: "Bet9ja", icon: <MonogramBadge text="B9" className="bg-konek-green" /> },
+  { id: "betking", label: "BetKing", icon: <MonogramBadge text="BK" className="bg-indigo" /> },
+  { id: "1xbet", label: "1xBet", icon: <MonogramBadge text="1x" className="bg-blue-600" /> },
 ];
 const PRESETS_MINOR = [100000, 200000, 500000, 1000000]; // ₦1,000 / ₦2,000 / ₦5,000 / ₦10,000
 

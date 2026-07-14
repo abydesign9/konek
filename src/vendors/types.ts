@@ -5,6 +5,7 @@ export type VendorServiceType =
   | "electricity"
   | "exam_pin"
   | "betting"
+  | "gift_card"
   | "intl_topup"
   | "esim";
 

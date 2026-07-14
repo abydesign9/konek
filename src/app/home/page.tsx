@@ -11,6 +11,7 @@ import {
   IconElectricity,
   IconExam,
   IconBetting,
+  IconGift,
   IconGlobe,
   IconEsim,
   IconWallet,
@@ -23,6 +24,7 @@ const SERVICES = [
   { label: "Electricity", Icon: IconElectricity, href: "/buy/electricity" },
   { label: "Exam Pin", Icon: IconExam, href: "/buy/exam-pin" },
   { label: "Betting", Icon: IconBetting, href: "/buy/betting" },
+  { label: "Gift Card", Icon: IconGift, href: "/buy/gift-card" },
   { label: "Intl Top-up", Icon: IconGlobe, href: "/buy/intl-topup" },
   { label: "eSIM", Icon: IconEsim, href: "/buy/esim" },
 ];

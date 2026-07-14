@@ -44,6 +44,7 @@ const PROVIDER_LABEL: Record<string, string> = {
   electricity: "Disco",
   cable: "Provider",
   betting: "Bookmaker",
+  gift_card: "Brand",
   intl_topup: "Carrier",
 };
 
@@ -99,7 +100,7 @@ export default async function ReceiptPage({ params }: { params: { id: string } }
   const recipientEntries: [string, string][] = txn.recipient
     ? Object.entries(txn.recipient)
         .map(([k, v]): [string | null, unknown] => [recipientLabel(k, txn.type), v])
-        .filter((e): e is [string, string] => e[0] != null && e[1] != null)
+        .filter((e): e is [string, string] => e[0] != null && e[1] != null && String(e[1]).length > 0)
         .map(([label, v]) => [label, String(v)])
     : [];
 
