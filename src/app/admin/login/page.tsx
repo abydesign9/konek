@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 
 export default function AdminLoginPage() {
   const router = useRouter();
+  const [email, setEmail] = useState("");
   const [secret, setSecret] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -16,11 +17,12 @@ export default function AdminLoginPage() {
     const res = await fetch("/api/admin/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ secret }),
+      body: JSON.stringify({ email, secret }),
     });
     setLoading(false);
     if (!res.ok) {
-      setError("Invalid admin secret");
+      const data = await res.json().catch(() => ({}));
+      setError(data.error ?? "Invalid email or secret");
       return;
     }
     router.push("/admin");
@@ -29,8 +31,16 @@ export default function AdminLoginPage() {
   return (
     <main className="min-h-screen flex flex-col items-center justify-center px-6 bg-background">
       <h1 className="font-heading text-xl font-bold text-indigo mb-1">Konek Admin</h1>
-      <p className="text-sm text-indigo/60 mb-8">Founder console — internal use only</p>
+      <p className="text-sm text-indigo/60 mb-8">Internal use only — first login from an allowlisted email becomes super admin</p>
       <form onSubmit={submit} className="w-full max-w-xs flex flex-col gap-3">
+        <input
+          type="email"
+          placeholder="you@konek.app"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          className="w-full rounded-xl border border-indigo/20 px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-konek-green"
+        />
         <input
           type="password"
           placeholder="Admin secret"

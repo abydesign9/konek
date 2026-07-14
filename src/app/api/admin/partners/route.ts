@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isAdminSession } from "@/lib/admin/session";
+import { getAdminSession } from "@/lib/admin/session";
 import { query } from "@/lib/db";
 import { createPartnerAccount } from "@/lib/partners/partnerService";
 
 export async function GET() {
-  if (!isAdminSession()) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  if (!getAdminSession()) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
   const { rows } = await query(
     `SELECT pa.id, pa.partner_name, pa.revenue_share_pct, pa.allowed_services, pa.status, ba.legal_name
@@ -15,7 +15,8 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  if (!isAdminSession()) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  const admin = getAdminSession();
+  if (!admin) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
   const body = await req.json().catch(() => null);
   const { businessAccountId, partnerName, revenueSharePct, allowedServices } = body ?? {};
@@ -26,6 +27,6 @@ export async function POST(req: NextRequest) {
   const pct = typeof revenueSharePct === "number" ? revenueSharePct : 0.2;
   const services = Array.isArray(allowedServices) && allowedServices.length > 0 ? allowedServices : ["airtime", "data"];
 
-  const result = await createPartnerAccount(businessAccountId, partnerName, pct, services, "admin");
+  const result = await createPartnerAccount(businessAccountId, partnerName, pct, services, admin.email);
   return NextResponse.json(result);
 }

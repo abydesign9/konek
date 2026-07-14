@@ -50,6 +50,40 @@ interface Partner {
   status: string;
 }
 
+interface FraudItem {
+  id: string;
+  priority: string;
+  status: string;
+  flag: string;
+  detail: { metric?: string; attemptedMinor?: number; maxMinor?: number };
+  phone: string;
+  assigned_admin_id: string | null;
+}
+
+interface ReconRun {
+  vendor: string;
+  period_start: string;
+  ledger_total_minor: string;
+  vendor_total_minor: string;
+  drift_minor: string;
+  status: string;
+  run_at: string;
+}
+
+interface AdminUserRow {
+  id: string;
+  email: string;
+  role: string;
+  active: boolean;
+}
+
+const PRIORITY_COLOR: Record<string, string> = {
+  critical: "bg-red-100 text-red-700",
+  high: "bg-orange-100 text-orange-700",
+  medium: "bg-gold/20 text-gold",
+  low: "bg-indigo/10 text-indigo",
+};
+
 const STATUS_COLOR: Record<string, string> = {
   delivered: "text-konek-green",
   failed: "text-red-600",
@@ -68,6 +102,10 @@ export function AdminConsole() {
   const [newPartnerBiz, setNewPartnerBiz] = useState("");
   const [newPartnerName, setNewPartnerName] = useState("");
   const [issuedKey, setIssuedKey] = useState<string | null>(null);
+  const [fraudQueue, setFraudQueue] = useState<FraudItem[]>([]);
+  const [reconRuns, setReconRuns] = useState<ReconRun[]>([]);
+  const [adminUsers, setAdminUsers] = useState<AdminUserRow[]>([]);
+  const [newAdminEmail, setNewAdminEmail] = useState("");
   const [refunding, setRefunding] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
 
@@ -101,13 +139,64 @@ export function AdminConsole() {
     setPartners(data.partners ?? []);
   }
 
+  async function loadFraudQueue() {
+    const res = await fetch("/api/admin/fraud-queue");
+    const data = await res.json();
+    setFraudQueue(data.items ?? []);
+  }
+
+  async function loadReconRuns() {
+    const res = await fetch("/api/admin/reconciliation-runs");
+    const data = await res.json();
+    setReconRuns(data.runs ?? []);
+  }
+
+  async function loadAdminUsers() {
+    const res = await fetch("/api/admin/admin-users");
+    const data = await res.json();
+    setAdminUsers(data.admins ?? []);
+  }
+
   useEffect(() => {
     loadTxns("");
     loadVendors();
     loadAgents();
     loadBusinesses();
     loadPartners();
+    loadFraudQueue();
+    loadReconRuns();
+    loadAdminUsers();
   }, []);
+
+  async function assignToMe(id: string) {
+    await fetch(`/api/admin/fraud-queue/${id}/assign`, { method: "POST" });
+    loadFraudQueue();
+  }
+
+  async function resolveFraudItem(id: string, status: "resolved" | "escalated") {
+    await fetch(`/api/admin/fraud-queue/${id}/resolve`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status }),
+    });
+    loadFraudQueue();
+  }
+
+  async function inviteAdmin() {
+    if (!newAdminEmail.trim()) return;
+    await fetch("/api/admin/admin-users", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: newAdminEmail }),
+    });
+    setNewAdminEmail("");
+    loadAdminUsers();
+  }
+
+  async function deactivateAdmin(id: string) {
+    await fetch(`/api/admin/admin-users/${id}/deactivate`, { method: "POST" });
+    loadAdminUsers();
+  }
 
   async function createPartner() {
     if (!newPartnerBiz.trim() || !newPartnerName.trim()) return;
@@ -166,6 +255,48 @@ export function AdminConsole() {
   return (
     <main className="min-h-screen bg-background px-6 py-8">
       <h1 className="font-heading text-xl font-bold text-indigo mb-6">Admin console</h1>
+
+      <section className="mb-8">
+        <p className="text-sm font-semibold text-indigo mb-3">Fraud queue</p>
+        <div className="flex flex-col gap-2">
+          {fraudQueue.map((item) => (
+            <div key={item.id} className="rounded-xl border border-indigo/10 bg-white px-4 py-3">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-sm font-medium text-indigo">{item.phone}</span>
+                <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${PRIORITY_COLOR[item.priority] ?? ""}`}>
+                  {item.priority}
+                </span>
+              </div>
+              <p className="text-xs text-indigo/60 mb-2">
+                {item.flag} · {item.detail.metric} · attempted ₦{((item.detail.attemptedMinor ?? 0) / 100).toLocaleString()} vs
+                cap ₦{((item.detail.maxMinor ?? 0) / 100).toLocaleString()} · {item.status}
+              </p>
+              {item.status === "open" && (
+                <button onClick={() => assignToMe(item.id)} className="text-xs font-semibold text-indigo underline mr-3">
+                  Assign to me
+                </button>
+              )}
+              {item.status === "in_review" && (
+                <>
+                  <button
+                    onClick={() => resolveFraudItem(item.id, "resolved")}
+                    className="text-xs font-semibold text-konek-green underline mr-3"
+                  >
+                    Resolve
+                  </button>
+                  <button
+                    onClick={() => resolveFraudItem(item.id, "escalated")}
+                    className="text-xs font-semibold text-red-600 underline"
+                  >
+                    Escalate
+                  </button>
+                </>
+              )}
+            </div>
+          ))}
+          {fraudQueue.length === 0 && <p className="text-sm text-indigo/50">Queue is clear.</p>}
+        </div>
+      </section>
 
       <section className="mb-8">
         <p className="text-sm font-semibold text-indigo mb-3">Vendor health</p>
@@ -338,6 +469,56 @@ export function AdminConsole() {
             </div>
           ))}
           {txns.length === 0 && <p className="text-sm text-indigo/50">No transactions found.</p>}
+        </div>
+      </section>
+
+      <section className="mt-8 mb-8">
+        <p className="text-sm font-semibold text-indigo mb-3">Reconciliation history</p>
+        <div className="flex flex-col gap-2">
+          {reconRuns.map((r, i) => (
+            <div key={i} className="rounded-xl border border-indigo/10 bg-white px-4 py-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-indigo">{r.vendor}</span>
+                <span className={`text-xs font-semibold ${Number(r.drift_minor) === 0 ? "text-konek-green" : "text-red-600"}`}>
+                  {Number(r.drift_minor) === 0 ? "zero drift" : `drift ${r.drift_minor}`}
+                </span>
+              </div>
+              <p className="text-xs text-indigo/50">
+                {r.period_start} · ledger {r.ledger_total_minor} vs cache {r.vendor_total_minor}
+              </p>
+            </div>
+          ))}
+          {reconRuns.length === 0 && <p className="text-sm text-indigo/50">No reconciliation runs yet — run `npm run reconcile`.</p>}
+        </div>
+      </section>
+
+      <section className="mb-8">
+        <p className="text-sm font-semibold text-indigo mb-3">Admin users</p>
+        <div className="flex flex-col gap-2 mb-4">
+          {adminUsers.map((a) => (
+            <div key={a.id} className="flex items-center justify-between rounded-xl border border-indigo/10 bg-white px-4 py-3">
+              <div>
+                <p className="text-sm text-indigo">{a.email}</p>
+                <p className="text-xs text-indigo/50">{a.role} · {a.active ? "active" : "deactivated"}</p>
+              </div>
+              {a.active && (
+                <button onClick={() => deactivateAdmin(a.id)} className="text-xs font-semibold text-red-600 underline">
+                  Deactivate
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+        <div className="flex gap-2">
+          <input
+            value={newAdminEmail}
+            onChange={(e) => setNewAdminEmail(e.target.value)}
+            placeholder="new-admin@konek.app"
+            className="flex-1 rounded-lg border border-indigo/20 px-3 py-2 text-sm"
+          />
+          <button onClick={inviteAdmin} className="rounded-lg bg-indigo text-white text-sm font-semibold px-4 py-2">
+            Invite
+          </button>
         </div>
       </section>
     </main>

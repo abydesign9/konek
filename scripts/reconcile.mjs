@@ -58,6 +58,35 @@ if (unbalanced.length > 0) {
   console.log("  PASS — every journal balances\n");
 }
 
+// 3. Persist a run per currency to reconciliation_runs (M12) so the admin
+// console has history, not just this run's console output. "vendor" is
+// 'internal_ledger_cache' — this compares our own cache against our own
+// ledger, not an external vendor statement (no real vendor statements
+// exist yet in sandbox); a true vendor-statement reconciliation is future
+// work once a real aggregator is live.
+const byCurrency = new Map();
+for (const acc of accounts) {
+  const cur = byCurrency.get(acc.currency) ?? { cached: 0, recomputed: 0 };
+  cur.cached += Number(acc.cached_minor);
+  cur.recomputed += Number(acc.recomputed_minor);
+  byCurrency.set(acc.currency, cur);
+}
+const today = new Date().toISOString().slice(0, 10);
+for (const [currency, totals] of byCurrency) {
+  await pool.query(
+    `INSERT INTO reconciliation_runs (vendor, period_start, period_end, ledger_total_minor, vendor_total_minor, drift_minor, status)
+     VALUES ($1, $2, $2, $3, $4, $5, $6)`,
+    [
+      `internal_ledger_cache:${currency}`,
+      today,
+      totals.recomputed,
+      totals.cached,
+      totals.cached - totals.recomputed,
+      failed ? "drift_detected" : "completed",
+    ]
+  );
+}
+
 console.log(failed ? "=== RECONCILIATION FAILED ===" : "=== RECONCILIATION PASSED — zero drift ===");
 await pool.end();
 process.exit(failed ? 1 : 0);

@@ -9,6 +9,7 @@ let user: MockUser;
 let limits: { metric: string; max_minor: string }[];
 let spentToday: number;
 let riskFlags: unknown[];
+let fraudQueue: unknown[];
 
 vi.mock("@/lib/db", () => ({
   query: vi.fn(async (text: string, params: unknown[]) => {
@@ -23,6 +24,10 @@ vi.mock("@/lib/db", () => ({
     }
     if (text.startsWith("INSERT INTO risk_flags")) {
       riskFlags.push(params);
+      return { rows: [{ id: `flag-${riskFlags.length}` }] };
+    }
+    if (text.startsWith("INSERT INTO fraud_queue")) {
+      fraudQueue.push(params);
       return { rows: [] };
     }
     throw new Error(`unexpected query: ${text}`);
@@ -40,6 +45,7 @@ describe("checkVelocityLimits", () => {
     ];
     spentToday = 0;
     riskFlags = [];
+    fraudQueue = [];
   });
 
   it("passes when well under both limits", async () => {
@@ -47,9 +53,10 @@ describe("checkVelocityLimits", () => {
     expect(riskFlags).toHaveLength(0);
   });
 
-  it("rejects a single transaction over the per-txn cap", async () => {
+  it("rejects a single transaction over the per-txn cap and queues it for review", async () => {
     await expect(checkVelocityLimits("user-1", 3000000, "NGN")).rejects.toThrow(LimitExceededError);
     expect(riskFlags).toHaveLength(1);
+    expect(fraudQueue).toHaveLength(1);
   });
 
   it("rejects when today's spend would exceed the daily cap", async () => {

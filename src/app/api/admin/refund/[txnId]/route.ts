@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
-import { isAdminSession } from "@/lib/admin/session";
+import { getAdminSession } from "@/lib/admin/session";
 import { refundTransaction, TransactionNotRefundableError } from "@/lib/ledger/refund";
 
 export async function POST(_req: Request, { params }: { params: { txnId: string } }) {
-  if (!isAdminSession()) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  const admin = getAdminSession();
+  if (!admin) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
   try {
-    const result = await refundTransaction(params.txnId, "admin");
+    const result = await refundTransaction(params.txnId, admin.email);
     return NextResponse.json(result);
   } catch (err) {
     if (err instanceof TransactionNotRefundableError) {

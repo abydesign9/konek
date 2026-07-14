@@ -64,8 +64,17 @@ export async function checkVelocityLimits(
 }
 
 async function flagVelocity(userId: string, metric: string, attemptedMinor: number, maxMinor: number) {
-  await query(
-    `INSERT INTO risk_flags (user_id, flag, detail) VALUES ($1, 'velocity', $2)`,
+  const { rows } = await query<{ id: string }>(
+    `INSERT INTO risk_flags (user_id, flag, detail) VALUES ($1, 'velocity', $2) RETURNING id`,
     [userId, JSON.stringify({ metric, attemptedMinor, maxMinor })]
+  );
+
+  // Every risk flag becomes a working item for an operator — priority
+  // scales with how far over the limit the attempt was.
+  const overBy = attemptedMinor / maxMinor;
+  const priority = overBy > 3 ? "critical" : overBy > 1.5 ? "high" : "medium";
+  await query(
+    `INSERT INTO fraud_queue (risk_flag_id, priority) VALUES ($1, $2)`,
+    [rows[0].id, priority]
   );
 }
