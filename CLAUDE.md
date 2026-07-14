@@ -19,6 +19,14 @@ A Nigerian diaspora + local fintech PWA: local VTU (airtime/data/cable/electrici
 7. Velocity limits + new-account caps enforced in middleware (limits table), not hardcoded.
 8. Log every state change to audit_log. No deletes on financial tables — reversal entries only.
 
+## Phase scope — important
+This repo's `db/schema.sql` is Phase 1 (MVP) ONLY: wallet, local VTU, intl top-up, eSIM, basic
+rewards, basic admin. `db/schema_phase2.sql` and `docs/PHASE2_ROADMAP.md` exist and are validated,
+but describe FUTURE modules (dollar accounts, cards, voice, agents/B2B, full gamification,
+notifications, admin console upgrades). **Do not apply schema_phase2.sql or write code against its
+tables unless the task explicitly says "Phase 2: <module>."** If a request seems to need a Phase 2
+table, say so and point to docs/PHASE2_ROADMAP.md instead of building it ahead of schedule.
+
 ## Style
 - Mobile-first, icon-grid home (see docs/) — big tap targets, one-word labels, amount presets.
 - Colors: indigo #1F3864, green #00C48C, gold #F5A623, bg #F7F8FA. Fonts: Sora (headings), Inter (body).

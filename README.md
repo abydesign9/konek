@@ -3,8 +3,10 @@ Diaspora + local VTU/eSIM fintech PWA. This kit = validated ledger schema + Clau
 
 ## What's here
 - `CLAUDE.md` — project rules Claude Code loads automatically. The engineering constitution.
-- `db/schema.sql` — Postgres schema, **tested**: balanced-journal trigger proven to reject money-from-nothing.
-- `docs/BUILD_PLAN.md` — week-by-week code + vendor-paperwork tracks.
+- `db/schema.sql` — Phase 1 (MVP) Postgres schema, **tested**: balanced-journal trigger proven to reject money-from-nothing.
+- `db/schema_phase2.sql` — every module NOT in Phase 1 (dollar accounts, cards, voice, agents/B2B/white-label, full gamification, notifications, admin console). **Validated, but do not apply until its module's gate is met** — see `docs/PHASE2_ROADMAP.md`.
+- `docs/BUILD_PLAN.md` — Phase 1 week-by-week code + vendor-paperwork tracks.
+- `docs/PHASE2_ROADMAP.md` — maps every deferred module to its schema tables, vendor, and build gate, plus a suggested build order once Phase 1 is stable.
 - `.env.example` — every key you'll need; fill as vendor approvals land.
 
 ## Start (Week 1, Session 1)
