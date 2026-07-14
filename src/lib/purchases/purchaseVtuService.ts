@@ -12,6 +12,7 @@ import { updateStreak } from "@/lib/gamification/streaks";
 import { computeAndUpdateLevel } from "@/lib/gamification/levels";
 import { checkMissions } from "@/lib/gamification/missions";
 import { updateSquadGoalProgress } from "@/lib/gamification/squads";
+import { grantMinutesBundle } from "@/lib/voice/voiceService";
 import { selectVendor } from "@/vendors/registry";
 import { VendorServiceType } from "@/vendors/types";
 
@@ -138,6 +139,9 @@ export async function purchaseVtu(input: PurchaseInput) {
       await computeAndUpdateLevel(input.userId);
       await checkMissions(input.userId, input.serviceType);
       await updateSquadGoalProgress(input.userId);
+      if (CURRENCY === "NGN" && input.amountMinor >= 200000) {
+        await grantMinutesBundle(input.userId, 5, "topup_reward");
+      }
       await sendNotification(
         input.userId,
         "push",
