@@ -31,15 +31,42 @@ interface Event {
   created_at: string;
 }
 
-const RECIPIENT_LABELS: Record<string, string> = {
-  phone: "Phone",
-  network: "Network",
-  meterNo: "Meter number",
-  smartcardNo: "Smartcard",
-  country: "Country",
-  carrier: "Carrier",
-  displayCurrency: "Charged in",
+// The `phone` and `network` fields carry different things per service type
+// (a meter number, a smartcard, a bookmaker), so label them by transaction
+// type rather than assuming "Phone"/"Network".
+const SUBSCRIBER_LABEL: Record<string, string> = {
+  electricity: "Meter number",
+  cable: "Smartcard number",
+  betting: "Account ID",
+  intl_topup: "Recipient phone",
 };
+const PROVIDER_LABEL: Record<string, string> = {
+  electricity: "Disco",
+  cable: "Provider",
+  betting: "Bookmaker",
+  intl_topup: "Carrier",
+};
+
+function recipientLabel(key: string, type: string): string | null {
+  switch (key) {
+    case "phone":
+      return SUBSCRIBER_LABEL[type] ?? "Phone";
+    case "network":
+      return PROVIDER_LABEL[type] ?? "Network";
+    case "meterNo":
+      return "Meter number";
+    case "smartcardNo":
+      return "Smartcard";
+    case "country":
+      return "Country";
+    case "carrier":
+      return "Carrier";
+    case "displayCurrency":
+      return "Charged in";
+    default:
+      return null;
+  }
+}
 
 function DetailRow({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
   return (
@@ -69,10 +96,11 @@ export default async function ReceiptPage({ params }: { params: { id: string } }
   );
 
   const credit = isCredit(txn.type);
-  const recipientEntries = txn.recipient
-    ? Object.entries(txn.recipient).filter(
-        ([k, v]) => RECIPIENT_LABELS[k] && v != null && k !== "displayAmountMinor"
-      )
+  const recipientEntries: [string, string][] = txn.recipient
+    ? Object.entries(txn.recipient)
+        .map(([k, v]): [string | null, unknown] => [recipientLabel(k, txn.type), v])
+        .filter((e): e is [string, string] => e[0] != null && e[1] != null)
+        .map(([label, v]) => [label, String(v)])
     : [];
 
   return (
@@ -117,8 +145,8 @@ export default async function ReceiptPage({ params }: { params: { id: string } }
 
         {/* Details */}
         <div className="rounded-2xl bg-white border border-indigo/10 px-5 py-2 mb-5">
-          {recipientEntries.map(([k, v]) => (
-            <DetailRow key={k} label={RECIPIENT_LABELS[k]} value={String(v)} />
+          {recipientEntries.map(([label, value]) => (
+            <DetailRow key={label} label={label} value={value} />
           ))}
           {Number(txn.fee_minor) > 0 && (
             <DetailRow label="Fee" value={formatMoney(txn.fee_minor, txn.currency)} />

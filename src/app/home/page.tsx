@@ -22,13 +22,13 @@ const SERVICES = [
   { label: "Cable", Icon: IconCable, href: "/buy/cable" },
   { label: "Electricity", Icon: IconElectricity, href: "/buy/electricity" },
   { label: "Exam Pin", Icon: IconExam, href: "/buy/exam-pin" },
-  { label: "Betting", Icon: IconBetting, href: null },
+  { label: "Betting", Icon: IconBetting, href: "/buy/betting" },
   { label: "Intl Top-up", Icon: IconGlobe, href: "/buy/intl-topup" },
   { label: "eSIM", Icon: IconEsim, href: "/buy/esim" },
 ];
 
 interface RecentPurchase {
-  type: "airtime" | "data" | "cable" | "electricity" | "exam_pin" | "intl_topup";
+  type: "airtime" | "data" | "cable" | "electricity" | "exam_pin" | "betting" | "intl_topup";
   amount_minor: string;
   recipient: {
     phone: string;
@@ -56,7 +56,7 @@ export default async function HomeDashboard() {
     `SELECT DISTINCT ON (recipient->>'phone', type) type, amount_minor, recipient
      FROM transactions
      WHERE user_id = $1
-       AND type IN ('airtime', 'data', 'cable', 'electricity', 'exam_pin', 'intl_topup')
+       AND type IN ('airtime', 'data', 'cable', 'electricity', 'exam_pin', 'betting', 'intl_topup')
        AND status = 'delivered'
      ORDER BY recipient->>'phone', type, created_at DESC
      LIMIT 4`,
@@ -69,12 +69,13 @@ export default async function HomeDashboard() {
     cable: "/buy/cable",
     electricity: "/buy/electricity",
     exam_pin: "/buy/exam-pin",
+    betting: "/buy/betting",
     intl_topup: "/buy/intl-topup",
   };
 
   function repeatHref(txn: RecentPurchase) {
     const p = new URLSearchParams({ network: txn.recipient.network, phone: txn.recipient.phone });
-    if (txn.type === "airtime" || txn.type === "electricity") {
+    if (txn.type === "airtime" || txn.type === "electricity" || txn.type === "betting") {
       p.set("amountMinor", txn.amount_minor);
     } else if (txn.type === "intl_topup" && txn.recipient.displayAmountMinor) {
       p.set("amountMinor", String(txn.recipient.displayAmountMinor));

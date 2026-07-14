@@ -11,7 +11,7 @@ import { NoHealthyVendorError } from "@/vendors/registry";
 import { VendorServiceType } from "@/vendors/types";
 
 const CATALOG_SERVICE_TYPES: VendorServiceType[] = ["data", "cable", "exam_pin", "esim"];
-const NGN_AMOUNT_SERVICE_TYPES: VendorServiceType[] = ["airtime", "electricity"];
+const NGN_AMOUNT_SERVICE_TYPES: VendorServiceType[] = ["airtime", "electricity", "betting"];
 const INTL_TOPUP_PRESETS_USD_MINOR = [500, 1000, 2000, 5000]; // $5 / $10 / $20 / $50
 const SUPPORTED_TYPES = [...CATALOG_SERVICE_TYPES, ...NGN_AMOUNT_SERVICE_TYPES, "intl_topup" as const];
 
