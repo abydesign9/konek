@@ -8,6 +8,10 @@ import { awardPurchaseCoins, awardReferralBonusIfEligible } from "@/lib/rewards/
 import { logAudit } from "@/lib/audit";
 import { sendNotification } from "@/lib/notifications/send";
 import { recordCommissionIfAgent } from "@/lib/agents/agentService";
+import { updateStreak } from "@/lib/gamification/streaks";
+import { computeAndUpdateLevel } from "@/lib/gamification/levels";
+import { checkMissions } from "@/lib/gamification/missions";
+import { updateSquadGoalProgress } from "@/lib/gamification/squads";
 import { selectVendor } from "@/vendors/registry";
 import { VendorServiceType } from "@/vendors/types";
 
@@ -130,6 +134,10 @@ export async function purchaseVtu(input: PurchaseInput) {
       await awardPurchaseCoins(input.userId, txnId, input.amountMinor);
       await awardReferralBonusIfEligible(input.userId);
       await recordCommissionIfAgent(input.userId, txnId, input.amountMinor, CURRENCY);
+      await updateStreak(input.userId);
+      await computeAndUpdateLevel(input.userId);
+      await checkMissions(input.userId, input.serviceType);
+      await updateSquadGoalProgress(input.userId);
       await sendNotification(
         input.userId,
         "push",

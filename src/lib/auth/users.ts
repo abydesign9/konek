@@ -25,5 +25,16 @@ export async function findOrCreateUserByPhone(
     `INSERT INTO users (id, phone, referral_code, referred_by) VALUES ($1, $2, $3, $4) RETURNING id`,
     [id, phone, newReferralCode, referredBy]
   );
+
+  // Phase 2 gamification tracks referrals in their own tables, mirroring
+  // the Phase 1 users.referral_code/referred_by fields above.
+  await query(`INSERT INTO referral_codes (code, user_id) VALUES ($1, $2)`, [newReferralCode, id]);
+  if (referredBy) {
+    await query(
+      `INSERT INTO referral_conversions (referral_code, referred_user_id) VALUES ($1, $2)`,
+      [referralCode!.toUpperCase(), id]
+    );
+  }
+
   return created.rows[0].id;
 }
