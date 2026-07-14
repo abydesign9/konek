@@ -201,7 +201,19 @@ function Login() {
 
           {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
 
-          <p className="text-xs text-indigo/40 mt-10 text-center">
+          {step === "phone" && (
+            <p className="text-sm text-indigo/60 mt-8 text-center">
+              New to Konek?{" "}
+              <Link
+                href={referralCode ? `/signup?ref=${referralCode}` : "/signup"}
+                className="text-indigo font-semibold underline"
+              >
+                Create an account
+              </Link>
+            </p>
+          )}
+
+          <p className="text-xs text-indigo/40 mt-8 text-center">
             No money transfer. No hidden fees. Just the services you actually use.
           </p>
         </div>

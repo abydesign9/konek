@@ -150,12 +150,20 @@ export default function LandingPage() {
               </a>
             ))}
           </div>
-          <a
-            href="#download"
-            className="rounded-xl bg-indigo text-white text-sm font-semibold px-5 py-2.5 hover:bg-indigo/90 transition-colors"
-          >
-            Get the app
-          </a>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/login"
+              className="hidden sm:inline text-sm font-medium text-indigo/70 hover:text-indigo transition-colors"
+            >
+              Log in
+            </Link>
+            <Link
+              href="/signup"
+              className="rounded-xl bg-indigo text-white text-sm font-semibold px-5 py-2.5 hover:bg-indigo/90 transition-colors"
+            >
+              Get started
+            </Link>
+          </div>
         </div>
       </nav>
 
@@ -179,12 +187,12 @@ export default function LandingPage() {
               of a money transfer app.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 mb-5">
-              <a
-                href="#download"
+              <Link
+                href="/signup"
                 className="rounded-xl bg-indigo text-white text-center font-semibold px-7 py-3.5 hover:bg-indigo/90 transition-colors"
               >
-                Get the app
-              </a>
+                Get started free
+              </Link>
               <a
                 href="#how-it-works"
                 className="rounded-xl border border-indigo/20 bg-white/60 text-indigo text-center font-semibold px-7 py-3.5 hover:bg-white transition-colors"
@@ -351,10 +359,10 @@ export default function LandingPage() {
               or eSIM. Invite a friend and you both get credit when they make their first purchase.
             </p>
             <Link
-              href="/login"
+              href="/signup"
               className="inline-block rounded-xl bg-gold text-white font-semibold px-7 py-3.5 hover:bg-gold/90 transition-colors"
             >
-              Learn about rewards
+              Start earning coins
             </Link>
           </div>
           <Image
@@ -406,29 +414,39 @@ export default function LandingPage() {
             Konek is home, wherever you are
           </h2>
           <p className="relative text-white/70 mb-8">
-            Download the app and get started in minutes.
+            No download needed — create your account and start in minutes, right in your browser.
           </p>
-          <div className="relative flex items-center justify-center gap-4 mb-4">
-            <a href="#" aria-label="Download on the App Store">
-              <Image
-                src="/brand/badge_appstore.png"
-                alt="Download on the App Store"
-                width={168}
-                height={56}
-                className="h-12 w-auto rounded-lg"
-              />
-            </a>
-            <a href="#" aria-label="Get it on Google Play">
-              <Image
-                src="/brand/badge_googleplay.png"
-                alt="Get it on Google Play"
-                width={168}
-                height={56}
-                className="h-12 w-auto rounded-lg"
-              />
-            </a>
+          <div className="relative flex flex-col sm:flex-row items-center justify-center gap-3 mb-8">
+            <Link
+              href="/signup"
+              className="rounded-xl bg-white text-indigo text-center font-semibold px-8 py-3.5 hover:bg-white/90 transition-colors"
+            >
+              Create your account
+            </Link>
+            <Link
+              href="/login"
+              className="rounded-xl border border-white/25 text-white text-center font-semibold px-8 py-3.5 hover:bg-white/10 transition-colors"
+            >
+              Log in
+            </Link>
           </div>
-          <p className="relative text-xs text-white/50">Scan the QR code to download</p>
+          <div className="relative flex items-center justify-center gap-4 opacity-60">
+            <Image
+              src="/brand/badge_appstore.png"
+              alt="App Store — coming soon"
+              width={168}
+              height={56}
+              className="h-11 w-auto rounded-lg grayscale"
+            />
+            <Image
+              src="/brand/badge_googleplay.png"
+              alt="Google Play — coming soon"
+              width={168}
+              height={56}
+              className="h-11 w-auto rounded-lg grayscale"
+            />
+          </div>
+          <p className="relative text-xs text-white/50 mt-3">Native apps coming soon</p>
         </div>
       </section>
 
@@ -466,8 +484,8 @@ export default function LandingPage() {
                 Legal
               </p>
               <ul className="flex flex-col gap-2.5 text-sm text-white/70">
-                <li><a href="#" className="hover:text-white">Terms of use</a></li>
-                <li><a href="#" className="hover:text-white">Privacy policy</a></li>
+                <li><Link href="/terms" className="hover:text-white">Terms of use</Link></li>
+                <li><Link href="/privacy" className="hover:text-white">Privacy policy</Link></li>
               </ul>
             </div>
           </div>
