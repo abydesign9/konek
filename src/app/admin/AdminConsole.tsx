@@ -41,6 +41,15 @@ interface Business {
   phone: string;
 }
 
+interface Partner {
+  id: string;
+  partner_name: string;
+  legal_name: string;
+  revenue_share_pct: string;
+  allowed_services: string[];
+  status: string;
+}
+
 const STATUS_COLOR: Record<string, string> = {
   delivered: "text-konek-green",
   failed: "text-red-600",
@@ -55,6 +64,10 @@ export function AdminConsole() {
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [agents, setAgents] = useState<Agent[]>([]);
   const [businesses, setBusinesses] = useState<Business[]>([]);
+  const [partners, setPartners] = useState<Partner[]>([]);
+  const [newPartnerBiz, setNewPartnerBiz] = useState("");
+  const [newPartnerName, setNewPartnerName] = useState("");
+  const [issuedKey, setIssuedKey] = useState<string | null>(null);
   const [refunding, setRefunding] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
 
@@ -82,12 +95,33 @@ export function AdminConsole() {
     setBusinesses(data.businesses ?? []);
   }
 
+  async function loadPartners() {
+    const res = await fetch("/api/admin/partners");
+    const data = await res.json();
+    setPartners(data.partners ?? []);
+  }
+
   useEffect(() => {
     loadTxns("");
     loadVendors();
     loadAgents();
     loadBusinesses();
+    loadPartners();
   }, []);
+
+  async function createPartner() {
+    if (!newPartnerBiz.trim() || !newPartnerName.trim()) return;
+    const res = await fetch("/api/admin/partners", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ businessAccountId: newPartnerBiz, partnerName: newPartnerName }),
+    });
+    const data = await res.json();
+    if (data.apiKey) setIssuedKey(data.apiKey);
+    setNewPartnerBiz("");
+    setNewPartnerName("");
+    loadPartners();
+  }
 
   async function approveAgent(id: string) {
     await fetch(`/api/admin/agents/${id}/approve`, { method: "POST" });
@@ -219,6 +253,49 @@ export function AdminConsole() {
             </div>
           ))}
           {businesses.length === 0 && <p className="text-sm text-indigo/50">No business applications.</p>}
+        </div>
+      </section>
+
+      <section className="mb-8">
+        <p className="text-sm font-semibold text-indigo mb-3">White-label partners</p>
+        <div className="flex flex-col gap-2 mb-4">
+          {partners.map((p) => (
+            <div key={p.id} className="rounded-xl border border-indigo/10 bg-white px-4 py-3">
+              <p className="text-sm font-medium text-indigo">{p.partner_name}</p>
+              <p className="text-xs text-indigo/50">
+                {p.legal_name} · {(Number(p.revenue_share_pct) * 100).toFixed(0)}% share · {p.allowed_services.join(", ")} · {p.status}
+              </p>
+            </div>
+          ))}
+          {partners.length === 0 && <p className="text-sm text-indigo/50">No partners yet.</p>}
+        </div>
+        <div className="rounded-xl border border-indigo/10 bg-white p-4">
+          <p className="text-xs text-indigo/60 mb-2">Issue a new partner API key (verified business account ID)</p>
+          <div className="flex gap-2 mb-2">
+            <input
+              value={newPartnerBiz}
+              onChange={(e) => setNewPartnerBiz(e.target.value)}
+              placeholder="business_account id"
+              className="flex-1 rounded-lg border border-indigo/20 px-3 py-2 text-xs"
+            />
+            <input
+              value={newPartnerName}
+              onChange={(e) => setNewPartnerName(e.target.value)}
+              placeholder="partner name"
+              className="flex-1 rounded-lg border border-indigo/20 px-3 py-2 text-xs"
+            />
+            <button
+              onClick={createPartner}
+              className="rounded-lg bg-indigo text-white text-xs font-semibold px-3 py-2 whitespace-nowrap"
+            >
+              Issue key
+            </button>
+          </div>
+          {issuedKey && (
+            <p className="text-xs font-mono text-konek-green break-all">
+              {issuedKey} — copy now, shown once
+            </p>
+          )}
         </div>
       </section>
 
