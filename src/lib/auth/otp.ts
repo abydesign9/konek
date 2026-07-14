@@ -17,7 +17,10 @@ export function isValidPhone(phone: string) {
   return /^\+\d{7,15}$/.test(phone);
 }
 
-export async function requestOtp(phone: string, purpose: "login" | "signup" = "login") {
+export async function requestOtp(
+  phone: string,
+  purpose: "login" | "signup" = "login"
+): Promise<{ code: string }> {
   const code = generateCode();
   const codeHash = hashCode(code);
   const expiresAt = new Date(Date.now() + OTP_TTL_MINUTES * 60 * 1000);
@@ -29,6 +32,20 @@ export async function requestOtp(phone: string, purpose: "login" | "signup" = "l
      VALUES ($1, $2, $3, $4, $5)`,
     [phone, codeHash, purpose, vendorRef, expiresAt]
   );
+
+  return { code };
+}
+
+// Demo shortcut: while real SMS isn't wired up, allow specific phone numbers
+// (DEMO_OTP_PHONES, comma-separated E.164) to receive their login code in the
+// API response so they can self-verify. Everyone else is unaffected — their
+// code is never exposed.
+export function isDemoOtpPhone(phone: string): boolean {
+  return (process.env.DEMO_OTP_PHONES ?? "")
+    .split(",")
+    .map((p) => p.trim())
+    .filter(Boolean)
+    .includes(phone);
 }
 
 export async function verifyOtp(phone: string, code: string): Promise<boolean> {

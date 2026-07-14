@@ -15,6 +15,7 @@ function Login() {
   const [step, setStep] = useState<Step>("phone");
   const [phone, setPhone] = useState("");
   const [code, setCode] = useState("");
+  const [demoOtp, setDemoOtp] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -33,6 +34,8 @@ function Login() {
       setError(data.error ?? "Something went wrong");
       return;
     }
+    const data = await res.json().catch(() => ({}));
+    setDemoOtp(typeof data.demoOtp === "string" ? data.demoOtp : null);
     setStep("code");
   }
 
@@ -160,6 +163,11 @@ function Login() {
             </form>
           ) : (
             <form onSubmit={verifyOtp} className="flex flex-col gap-3">
+              {demoOtp && (
+                <p className="rounded-xl bg-gold/10 border border-gold/30 text-indigo text-sm px-4 py-3">
+                  Demo code: <span className="font-mono font-bold tracking-widest">{demoOtp}</span>
+                </p>
+              )}
               <label className="text-sm font-medium text-indigo/70" htmlFor="code">
                 6-digit code
               </label>
