@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isValidPhone, requestOtp } from "@/lib/auth/otp";
+import { checkRateLimit, clientIp, RateLimitExceededError } from "@/lib/rateLimit";
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
@@ -10,6 +11,16 @@ export async function POST(req: NextRequest) {
       { error: "phone must be in E.164 format, e.g. +2348012345678" },
       { status: 400 }
     );
+  }
+
+  try {
+    checkRateLimit(`otp_request:phone:${phone}`, 5, 10 * 60 * 1000); // 5 per 10 min per number
+    checkRateLimit(`otp_request:ip:${clientIp(req)}`, 20, 10 * 60 * 1000); // 20 per 10 min per IP
+  } catch (err) {
+    if (err instanceof RateLimitExceededError) {
+      return NextResponse.json({ error: "Too many requests — try again shortly" }, { status: 429 });
+    }
+    throw err;
   }
 
   await requestOtp(phone);

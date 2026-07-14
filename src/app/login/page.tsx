@@ -1,12 +1,15 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 type Step = "phone" | "code";
 
-export default function LoginPage() {
+function Login() {
   const router = useRouter();
+  const params = useSearchParams();
+  const referralCode = params.get("ref");
+
   const [step, setStep] = useState<Step>("phone");
   const [phone, setPhone] = useState("");
   const [code, setCode] = useState("");
@@ -38,7 +41,7 @@ export default function LoginPage() {
     const res = await fetch("/api/auth/otp/verify", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ phone, code }),
+      body: JSON.stringify({ phone, code, referralCode }),
     });
     setLoading(false);
     if (!res.ok) {
@@ -56,6 +59,11 @@ export default function LoginPage() {
       <p className="text-sm text-indigo/70 mb-8">
         {step === "phone" ? "Enter your phone number" : "Enter the code we sent you"}
       </p>
+      {referralCode && (
+        <p className="text-xs text-konek-green font-semibold mb-4">
+          Invited with code {referralCode}
+        </p>
+      )}
 
       {step === "phone" ? (
         <form onSubmit={requestOtp} className="w-full max-w-xs flex flex-col gap-3">
@@ -107,5 +115,13 @@ export default function LoginPage() {
 
       {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
     </main>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <Login />
+    </Suspense>
   );
 }

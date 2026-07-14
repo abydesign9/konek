@@ -4,6 +4,8 @@ import { postJournal } from "@/lib/ledger/postJournal";
 import { getOrCreateAccount, getUserWalletAccount } from "@/lib/ledger/accounts";
 import { getBalance } from "@/lib/ledger/balance";
 import { checkVelocityLimits } from "@/lib/limits/checkLimits";
+import { awardPurchaseCoins, awardReferralBonusIfEligible } from "@/lib/rewards/awardCoins";
+import { logAudit } from "@/lib/audit";
 import { selectVendor } from "@/vendors/registry";
 import { VendorServiceType } from "@/vendors/types";
 
@@ -89,6 +91,10 @@ export async function purchaseVtu(input: PurchaseInput) {
           `INSERT INTO transaction_events (txn_id, from_status, to_status, detail) VALUES ($1, 'pending_vendor', 'failed', $2)`,
           [txnId, JSON.stringify({ vendorRef: result.vendorRef })]
         );
+        await logAudit(input.userId, "purchase_failed", "transaction", txnId, {
+          serviceType: input.serviceType,
+          vendor: adapter.id,
+        });
         return { txnId, status: "failed" as const };
       }
 
@@ -112,6 +118,15 @@ export async function purchaseVtu(input: PurchaseInput) {
         `INSERT INTO transaction_events (txn_id, from_status, to_status, detail) VALUES ($1, 'pending_vendor', 'delivered', $2)`,
         [txnId, JSON.stringify({ vendorRef: result.vendorRef, journalId })]
       );
+      await logAudit(input.userId, "purchase_delivered", "transaction", txnId, {
+        serviceType: input.serviceType,
+        vendor: adapter.id,
+        amountMinor: input.amountMinor,
+        journalId,
+      });
+
+      await awardPurchaseCoins(input.userId, txnId, input.amountMinor);
+      await awardReferralBonusIfEligible(input.userId);
 
       return { txnId, status: "delivered" as const, token: result.token };
     }

@@ -5,6 +5,7 @@ import { query } from "@/lib/db";
 import { usdMinorToNgnMinor } from "@/lib/fx";
 import { LimitExceededError } from "@/lib/limits/checkLimits";
 import { InsufficientBalanceError, purchaseVtu } from "@/lib/purchases/purchaseVtuService";
+import { checkRateLimit, RateLimitExceededError } from "@/lib/rateLimit";
 import { NoHealthyVendorError } from "@/vendors/registry";
 import { VendorServiceType } from "@/vendors/types";
 
@@ -16,6 +17,15 @@ const SUPPORTED_TYPES = [...CATALOG_SERVICE_TYPES, ...NGN_AMOUNT_SERVICE_TYPES, 
 export async function POST(req: NextRequest) {
   const userId = await getSessionUserId();
   if (!userId) return NextResponse.json({ error: "unauthenticated" }, { status: 401 });
+
+  try {
+    checkRateLimit(`purchase:${userId}`, 10, 60 * 1000); // 10 purchase attempts per minute per user
+  } catch (err) {
+    if (err instanceof RateLimitExceededError) {
+      return NextResponse.json({ error: "Too many purchase attempts — slow down" }, { status: 429 });
+    }
+    throw err;
+  }
 
   const body = await req.json().catch(() => null);
   const { serviceType, network, phone, amountMinor, planExternalId, idempotencyKey, pin } = body ?? {};

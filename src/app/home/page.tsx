@@ -82,9 +82,17 @@ export default async function HomeDashboard() {
 
   return (
     <main className="min-h-screen bg-background px-6 py-8">
-      <header className="mb-6">
-        <p className="text-sm text-indigo/60">Welcome back</p>
-        <h1 className="font-heading text-xl font-bold text-indigo">{phone}</h1>
+      <header className="mb-6 flex items-center justify-between">
+        <div>
+          <p className="text-sm text-indigo/60">Welcome back</p>
+          <h1 className="font-heading text-xl font-bold text-indigo">{phone}</h1>
+        </div>
+        <Link
+          href="/rewards"
+          className="rounded-full bg-gold/15 text-indigo text-xs font-semibold px-3 py-2"
+        >
+          Rewards
+        </Link>
       </header>
 
       <Link

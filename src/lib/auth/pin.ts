@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import { query } from "@/lib/db";
+import { logAudit } from "@/lib/audit";
 
 const PIN_PATTERN = /^\d{4,6}$/;
 
@@ -42,6 +43,7 @@ export async function setPin(userId: string, pin: string): Promise<void> {
 
   const hash = await bcrypt.hash(pin, 10);
   await query(`UPDATE users SET pin_hash = $2, updated_at = now() WHERE id = $1`, [userId, hash]);
+  await logAudit(userId, "pin_set", "user", userId);
 }
 
 export async function hasPinSet(userId: string): Promise<boolean> {

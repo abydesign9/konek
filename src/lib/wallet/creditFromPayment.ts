@@ -3,6 +3,7 @@ import { postJournal } from "@/lib/ledger/postJournal";
 import { getPlatformAccount, getUserWalletAccount } from "@/lib/ledger/accounts";
 import { withIdempotency } from "@/lib/idempotency";
 import { paymentGateway } from "@/lib/payments";
+import { logAudit } from "@/lib/audit";
 
 interface Transaction {
   id: string;
@@ -59,6 +60,11 @@ export async function creditFromPayment(reference: string): Promise<void> {
       `INSERT INTO transaction_events (txn_id, from_status, to_status, detail) VALUES ($1, $2, 'delivered', $3)`,
       [txn.id, txn.status, JSON.stringify({ reference, journalId })]
     );
+    await logAudit(txn.user_id, "wallet_funded", "transaction", txn.id, {
+      amountMinor: verified.amountMinor,
+      currency: verified.currency,
+      journalId,
+    });
 
     return { journalId };
   });
