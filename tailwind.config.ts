@@ -11,9 +11,9 @@ const config: Config = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
-        indigo: "#1F3864",
-        "konek-green": "#00C48C",
-        gold: "#F5A623",
+        indigo: "#22315C",
+        "konek-green": "#2E9E6B",
+        gold: "#E2932F",
       },
       fontFamily: {
         heading: ["var(--font-sora)", "sans-serif"],
