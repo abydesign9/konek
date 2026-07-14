@@ -93,6 +93,12 @@ export default async function HomeDashboard() {
         </div>
         <div className="flex items-center gap-2">
           <Link
+            href="/wallet/history"
+            className="rounded-full bg-indigo/10 text-indigo text-xs font-semibold px-3 py-2"
+          >
+            History
+          </Link>
+          <Link
             href="/notifications"
             className="rounded-full bg-indigo/10 text-indigo text-xs font-semibold px-3 py-2"
           >

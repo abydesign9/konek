@@ -37,9 +37,19 @@ export default async function FundSuccessPage({
           ₦{(Number(txn.amount_minor) / 100).toLocaleString()} {txn.currency}
         </p>
       )}
-      <Link href="/home" className="rounded-xl bg-indigo text-white font-semibold px-6 py-3">
-        Back to home
-      </Link>
+      <div className="flex flex-col sm:flex-row gap-3">
+        <Link href="/home" className="rounded-xl bg-indigo text-white font-semibold px-6 py-3">
+          Back to home
+        </Link>
+        {reference && txn && (
+          <Link
+            href={`/wallet/receipt/${reference}`}
+            className="rounded-xl border border-indigo/20 bg-white text-indigo font-semibold px-6 py-3"
+          >
+            View receipt
+          </Link>
+        )}
+      </div>
     </main>
   );
 }
