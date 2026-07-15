@@ -18,6 +18,20 @@ interface Batch {
   status: string;
 }
 
+interface TeamMember {
+  id: string;
+  phone: string;
+  full_name: string | null;
+  role: string;
+}
+
+interface Reports {
+  monthMinor: number;
+  allTimeMinor: number;
+  batchCount: number;
+  byService: { service_type: string; delivered: string; failed: string; amount_minor: string }[];
+}
+
 const BUSINESS_TYPES = [
   { id: "sme", label: "SME" },
   { id: "hr_bulk", label: "HR / bulk staff" },
@@ -26,9 +40,20 @@ const BUSINESS_TYPES = [
   { id: "white_label", label: "White label" },
 ];
 
+const TEAM_ROLES = ["admin", "finance", "hr", "marketing", "viewer"];
+
+function naira(minor: number | string) {
+  return `₦${(Number(minor) / 100).toLocaleString()}`;
+}
+
 export default function BusinessPage() {
   const [business, setBusiness] = useState<Business | null | undefined>(undefined);
+  const [role, setRole] = useState<string | null>(null);
+  const [mayDistribute, setMayDistribute] = useState(false);
   const [batches, setBatches] = useState<Batch[]>([]);
+  const [team, setTeam] = useState<TeamMember[]>([]);
+  const [reports, setReports] = useState<Reports | null>(null);
+
   const [legalName, setLegalName] = useState("");
   const [businessType, setBusinessType] = useState("sme");
   const [applying, setApplying] = useState(false);
@@ -39,13 +64,27 @@ export default function BusinessPage() {
   const [uploading, setUploading] = useState(false);
   const [uploadResult, setUploadResult] = useState<string | null>(null);
 
+  const [invitePhone, setInvitePhone] = useState("");
+  const [inviteRole, setInviteRole] = useState("viewer");
+  const [teamMsg, setTeamMsg] = useState<string | null>(null);
+
   function load() {
     fetch("/api/business/me")
       .then((res) => res.json())
-      .then((data) => setBusiness(data.business));
+      .then((data) => {
+        setBusiness(data.business);
+        setRole(data.role);
+        setMayDistribute(Boolean(data.canDistribute));
+      });
     fetch("/api/business/bulk-batches")
       .then((res) => res.json())
       .then((data) => setBatches(data.batches ?? []));
+    fetch("/api/business/team")
+      .then((res) => res.json())
+      .then((data) => setTeam(data.team ?? []));
+    fetch("/api/business/reports")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => data && setReports(data));
   }
 
   useEffect(load, []);
@@ -79,8 +118,13 @@ export default function BusinessPage() {
       .map((line) => line.trim())
       .filter(Boolean)
       .map((line) => {
-        const [network, phone, amountNaira] = line.split(",").map((s) => s.trim());
-        return { serviceType: "airtime", network, phone, amountMinor: Math.round(Number(amountNaira) * 100) };
+        // "network,phone,amount₦" (airtime) or "data,network,phone,amount₦"
+        const parts = line.split(",").map((s) => s.trim());
+        const hasService = parts[0] === "airtime" || parts[0] === "data";
+        const [serviceType, network, phone, amountNaira] = hasService
+          ? parts
+          : ["airtime", ...parts];
+        return { serviceType, network, phone, amountMinor: Math.round(Number(amountNaira) * 100) };
       });
 
     const res = await fetch("/api/business/bulk-batches", {
@@ -98,16 +142,38 @@ export default function BusinessPage() {
     load();
   }
 
+  async function invite() {
+    setTeamMsg(null);
+    const res = await fetch("/api/business/team", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone: invitePhone, role: inviteRole }),
+    });
+    const data = await res.json().catch(() => ({}));
+    setTeamMsg(res.ok ? "Member added" : data.error ?? "Failed");
+    if (res.ok) {
+      setInvitePhone("");
+      load();
+    }
+  }
+
+  async function remove(memberId: string) {
+    await fetch(`/api/business/team/${memberId}`, { method: "DELETE" });
+    load();
+  }
+
+  const canManageTeam = role === "owner" || role === "admin";
+
   if (business === undefined) return <main className="min-h-screen bg-background px-6 py-8" />;
 
   return (
-    <main className="min-h-screen bg-background px-6 py-8">
+    <main className="min-h-screen bg-background px-6 py-8 max-w-lg mx-auto">
       <h1 className="font-heading text-xl font-bold text-indigo mb-6">Business account</h1>
 
       {!business && (
         <div className="rounded-2xl border border-indigo/10 bg-white p-5">
           <p className="text-sm text-indigo/70 mb-4">
-            Apply for a business (KYB) account to run bulk VTU purchases for staff, rewards, or
+            Apply for a business (KYB) account to run bulk distributions for staff, rewards, or
             corporate travel.
           </p>
           <label className="block text-sm text-indigo/60 mb-2">Legal name</label>
@@ -144,36 +210,128 @@ export default function BusinessPage() {
           <div className="rounded-2xl bg-indigo px-5 py-4 text-white mb-6">
             <p className="text-xs text-white/60 mb-1">{business.business_type}</p>
             <p className="font-heading text-lg font-bold">{business.legal_name}</p>
-            <p className="text-xs text-white/70 mt-2 capitalize">KYB: {business.kyb_status}</p>
+            <p className="text-xs text-white/70 mt-2 capitalize">
+              KYB: {business.kyb_status} · Your role: {role}
+            </p>
           </div>
 
-          {business.kyb_status === "verified" ? (
-            <div className="rounded-2xl border border-indigo/10 bg-white p-5 mb-8">
-              <p className="text-sm font-semibold text-indigo mb-3">Upload bulk batch</p>
-              <label className="block text-sm text-indigo/60 mb-2">Purpose</label>
-              <input
-                value={purpose}
-                onChange={(e) => setPurpose(e.target.value)}
-                className="w-full rounded-xl border border-indigo/20 px-4 py-2.5 text-sm mb-4"
-              />
-              <label className="block text-sm text-indigo/60 mb-2">
-                Items (network,phone,amount₦ — one per line)
-              </label>
-              <textarea
-                value={csv}
-                onChange={(e) => setCsv(e.target.value)}
-                rows={5}
-                className="w-full rounded-xl border border-indigo/20 px-4 py-2.5 text-sm font-mono mb-4"
-              />
-              <button
-                onClick={uploadBatch}
-                disabled={uploading}
-                className="rounded-xl bg-indigo text-white font-semibold px-6 py-3 disabled:opacity-50"
-              >
-                {uploading ? "Processing…" : "Upload & process"}
-              </button>
-              {uploadResult && <p className="text-sm text-indigo/70 mt-3">{uploadResult}</p>}
+          {/* Reports */}
+          {reports && (
+            <div className="rounded-2xl border border-indigo/10 bg-white p-5 mb-6">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-sm font-semibold text-indigo">Spending reports</p>
+                <a href="/api/business/reports/export" className="text-xs font-semibold text-konek-green hover:underline">
+                  Export CSV
+                </a>
+              </div>
+              <div className="grid grid-cols-2 gap-3 mb-3">
+                <div className="rounded-xl bg-indigo/5 px-3 py-2.5">
+                  <p className="text-xs text-indigo/50">This month</p>
+                  <p className="font-heading font-bold text-indigo">{naira(reports.monthMinor)}</p>
+                </div>
+                <div className="rounded-xl bg-indigo/5 px-3 py-2.5">
+                  <p className="text-xs text-indigo/50">All time · {reports.batchCount} batches</p>
+                  <p className="font-heading font-bold text-indigo">{naira(reports.allTimeMinor)}</p>
+                </div>
+              </div>
+              {reports.byService.length > 0 && (
+                <div className="flex flex-col gap-1.5">
+                  {reports.byService.map((s) => (
+                    <p key={s.service_type} className="text-xs text-indigo/60 flex justify-between">
+                      <span className="capitalize">{s.service_type}</span>
+                      <span>
+                        {s.delivered} delivered{Number(s.failed) > 0 ? ` · ${s.failed} failed` : ""} ·{" "}
+                        {naira(s.amount_minor)}
+                      </span>
+                    </p>
+                  ))}
+                </div>
+              )}
             </div>
+          )}
+
+          {/* Team */}
+          <div className="rounded-2xl border border-indigo/10 bg-white p-5 mb-6">
+            <p className="text-sm font-semibold text-indigo mb-3">Team</p>
+            <div className="flex flex-col gap-2 mb-4">
+              {team.length === 0 && <p className="text-sm text-indigo/50">Just you so far.</p>}
+              {team.map((m) => (
+                <div key={m.id} className="flex items-center justify-between rounded-xl border border-indigo/10 px-3 py-2.5">
+                  <div>
+                    <p className="text-sm font-medium text-indigo">{m.full_name ?? m.phone}</p>
+                    <p className="text-xs text-indigo/50">
+                      {m.phone} · {m.role}
+                    </p>
+                  </div>
+                  {canManageTeam && (
+                    <button onClick={() => remove(m.id)} className="text-xs text-red-600 underline">
+                      Remove
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+            {canManageTeam && (
+              <div className="flex gap-2">
+                <input
+                  value={invitePhone}
+                  onChange={(e) => setInvitePhone(e.target.value)}
+                  placeholder="+2348012345678"
+                  className="flex-1 rounded-xl border border-indigo/20 px-3 py-2.5 text-sm"
+                />
+                <select
+                  value={inviteRole}
+                  onChange={(e) => setInviteRole(e.target.value)}
+                  className="rounded-xl border border-indigo/20 px-2 py-2.5 text-sm"
+                >
+                  {TEAM_ROLES.map((r) => (
+                    <option key={r} value={r}>
+                      {r}
+                    </option>
+                  ))}
+                </select>
+                <button onClick={invite} className="rounded-xl bg-indigo text-white text-sm font-semibold px-4">
+                  Add
+                </button>
+              </div>
+            )}
+            {teamMsg && <p className="text-sm text-indigo/70 mt-2">{teamMsg}</p>}
+          </div>
+
+          {/* Distribution */}
+          {business.kyb_status === "verified" ? (
+            mayDistribute ? (
+              <div className="rounded-2xl border border-indigo/10 bg-white p-5 mb-8">
+                <p className="text-sm font-semibold text-indigo mb-3">Bulk distribution</p>
+                <label className="block text-sm text-indigo/60 mb-2">Purpose</label>
+                <input
+                  value={purpose}
+                  onChange={(e) => setPurpose(e.target.value)}
+                  className="w-full rounded-xl border border-indigo/20 px-4 py-2.5 text-sm mb-4"
+                />
+                <label className="block text-sm text-indigo/60 mb-2">
+                  Items — one per line: network,phone,amount₦ (or data,network,phone,amount₦)
+                </label>
+                <textarea
+                  value={csv}
+                  onChange={(e) => setCsv(e.target.value)}
+                  rows={5}
+                  className="w-full rounded-xl border border-indigo/20 px-4 py-2.5 text-sm font-mono mb-4"
+                />
+                <button
+                  onClick={uploadBatch}
+                  disabled={uploading}
+                  className="rounded-xl bg-indigo text-white font-semibold px-6 py-3 disabled:opacity-50"
+                >
+                  {uploading ? "Processing…" : "Upload & process"}
+                </button>
+                {uploadResult && <p className="text-sm text-indigo/70 mt-3">{uploadResult}</p>}
+              </div>
+            ) : (
+              <p className="text-sm text-indigo/60 mb-8">
+                Your role ({role}) can view reports but not run distributions.
+              </p>
+            )
           ) : (
             <p className="text-sm text-indigo/60 mb-8">
               Bulk uploads unlock once an admin verifies your KYB status.
@@ -186,7 +344,7 @@ export default function BusinessPage() {
               <div key={b.id} className="rounded-xl border border-indigo/10 bg-white px-4 py-3">
                 <p className="text-sm font-medium text-indigo">{b.purpose}</p>
                 <p className="text-xs text-indigo/60">
-                  {b.total_items} items · ₦{(Number(b.total_amount_minor) / 100).toLocaleString()} · {b.status}
+                  {b.total_items} items · {naira(b.total_amount_minor)} · {b.status}
                 </p>
               </div>
             ))}

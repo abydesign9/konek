@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSessionUserId } from "@/lib/auth/session";
 import { query } from "@/lib/db";
 import { BusinessNotVerifiedError, createBulkBatch, processBulkBatch } from "@/lib/bulk/bulkBatchService";
+import { canDistribute, getMembership } from "@/lib/business/teamService";
 
 const VALID_SERVICE_TYPES = ["airtime", "data"];
 const VALID_NETWORKS = ["mtn", "glo", "airtel", "9mobile"];
@@ -10,13 +11,13 @@ export async function GET() {
   const userId = await getSessionUserId();
   if (!userId) return NextResponse.json({ error: "unauthenticated" }, { status: 401 });
 
-  const { rows: biz } = await query<{ id: string }>(`SELECT id FROM business_accounts WHERE owner_user_id = $1`, [userId]);
-  if (!biz[0]) return NextResponse.json({ batches: [] });
+  const membership = await getMembership(userId);
+  if (!membership) return NextResponse.json({ batches: [] });
 
   const { rows } = await query(
     `SELECT id, purpose, total_items, total_amount_minor, status, created_at, completed_at
      FROM bulk_batches WHERE business_account_id = $1 ORDER BY created_at DESC`,
-    [biz[0].id]
+    [membership.businessAccountId]
   );
   return NextResponse.json({ batches: rows });
 }
@@ -25,8 +26,14 @@ export async function POST(req: NextRequest) {
   const userId = await getSessionUserId();
   if (!userId) return NextResponse.json({ error: "unauthenticated" }, { status: 401 });
 
-  const { rows: biz } = await query<{ id: string }>(`SELECT id FROM business_accounts WHERE owner_user_id = $1`, [userId]);
-  if (!biz[0]) return NextResponse.json({ error: "no business account — apply first" }, { status: 404 });
+  const membership = await getMembership(userId);
+  if (!membership) return NextResponse.json({ error: "no business account — apply first" }, { status: 404 });
+
+  // Role gate (M9 permissions): viewers/marketing can see reports but not
+  // move value. Owner/admin/finance/hr can distribute.
+  if (!canDistribute(membership.role)) {
+    return NextResponse.json({ error: `Your role (${membership.role}) cannot run distributions` }, { status: 403 });
+  }
 
   const body = await req.json().catch(() => null);
   const { purpose, items } = body ?? {};
@@ -44,7 +51,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { batchId } = await createBulkBatch(biz[0].id, userId, purpose, items);
+    const { batchId } = await createBulkBatch(membership.businessAccountId, userId, purpose, items);
     const result = await processBulkBatch(batchId);
     return NextResponse.json({ batchId, ...result });
   } catch (err) {

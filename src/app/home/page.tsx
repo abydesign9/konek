@@ -163,6 +163,13 @@ export default async function HomeDashboard() {
           <p className="text-sm font-semibold text-indigo">Virtual card</p>
           <p className="text-xs text-indigo/60">Spend online →</p>
         </Link>
+        <Link
+          href="/business"
+          className="rounded-2xl border border-indigo/10 bg-white px-4 py-3 hover:border-indigo/25 col-span-2"
+        >
+          <p className="text-sm font-semibold text-indigo">Business hub</p>
+          <p className="text-xs text-indigo/60">Bulk airtime & data for your team →</p>
+        </Link>
       </div>
 
       {recent.length > 0 && (
