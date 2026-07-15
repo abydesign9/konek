@@ -9,6 +9,7 @@ import { usePathname } from "next/navigation";
 const TABS = [
   { href: "/admin", label: "Overview" },
   { href: "/admin/rates", label: "Rates" },
+  { href: "/admin/users", label: "Users" },
 ];
 
 export function AdminShell({ children }: { children: React.ReactNode }) {

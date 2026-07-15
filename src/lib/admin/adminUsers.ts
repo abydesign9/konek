@@ -68,3 +68,21 @@ export async function deactivateAdminUser(id: string, actorId: string): Promise<
   await query(`UPDATE admin_users SET active = false, deactivated_at = now() WHERE id = $1`, [id]);
   await logAudit(actorId, "admin_user_deactivated", "admin_user", id);
 }
+
+export class InvalidRoleError extends Error {
+  constructor(role: string) {
+    super(`'${role}' is not a valid role`);
+    this.name = "InvalidRoleError";
+  }
+}
+
+export async function isValidRole(role: string): Promise<boolean> {
+  const { rows } = await query<{ name: string }>(`SELECT name FROM admin_roles WHERE name = $1`, [role]);
+  return rows.length > 0;
+}
+
+export async function changeAdminUserRole(id: string, role: string, actorId: string): Promise<void> {
+  if (!(await isValidRole(role))) throw new InvalidRoleError(role);
+  await query(`UPDATE admin_users SET role = $2 WHERE id = $1`, [id, role]);
+  await logAudit(actorId, "admin_user_role_changed", "admin_user", id, { role });
+}

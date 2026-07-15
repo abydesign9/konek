@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminSession } from "@/lib/admin/session";
-import { inviteAdminUser, listAdminUsers } from "@/lib/admin/adminUsers";
+import { inviteAdminUser, isValidRole, listAdminUsers } from "@/lib/admin/adminUsers";
+import { assertPermission, ForbiddenError } from "@/lib/admin/permissions";
 
 export async function GET() {
   if (!getAdminSession()) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
@@ -17,9 +18,15 @@ export async function POST(req: NextRequest) {
   if (typeof email !== "string" || !email.includes("@")) {
     return NextResponse.json({ error: "a valid email is required" }, { status: 400 });
   }
-  const validRoles = ["support", "kyc_reviewer", "risk", "finance", "super_admin"];
-  const assignedRole = validRoles.includes(role) ? role : "support";
 
+  try {
+    await assertPermission(admin.role, "admin_users.manage");
+  } catch (err) {
+    if (err instanceof ForbiddenError) return NextResponse.json({ error: err.message }, { status: 403 });
+    throw err;
+  }
+
+  const assignedRole = typeof role === "string" && (await isValidRole(role)) ? role : "support";
   const result = await inviteAdminUser(email, assignedRole, admin.adminUserId);
   return NextResponse.json(result);
 }
