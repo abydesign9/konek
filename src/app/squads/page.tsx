@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import { PageHeader } from "@/components/PageHeader";
 
 interface Squad {
   id: string;
@@ -42,8 +42,9 @@ export default function SquadsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-background px-6 py-8">
-      <h1 className="font-heading text-xl font-bold text-indigo mb-6">Squads</h1>
+    <main className="min-h-screen bg-background">
+      <PageHeader title="Squads" backHref="/rewards" backLabel="Rewards" />
+      <div className="max-w-lg mx-auto px-4 sm:px-6 py-6">
       <p className="text-sm text-indigo/60 mb-6">
         Team up with friends or family — hit 10 purchases together this week for a group reward.
       </p>
@@ -91,10 +92,7 @@ export default function SquadsPage() {
           </button>
         </div>
       </div>
-
-      <Link href="/rewards" className="text-sm text-indigo/60 underline">
-        Back to rewards
-      </Link>
+      </div>
     </main>
   );
 }

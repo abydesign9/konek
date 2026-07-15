@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { PageHeader } from "@/components/PageHeader";
 import { PinPad } from "@/components/PinPad";
 import { QrCode } from "@/components/QrCode";
 import { esimLpaString } from "@/lib/esim";
@@ -160,13 +161,17 @@ function BuyEsim() {
   }
 
   return (
-    <main className="min-h-screen bg-background px-6 py-8">
-      <div className="flex items-center justify-between mb-1">
-        <h1 className="font-heading text-xl font-bold text-indigo">Buy eSIM</h1>
-        <Link href="/esim" className="text-sm font-semibold text-konek-green hover:underline">
-          My eSIMs
-        </Link>
-      </div>
+    <main className="min-h-screen bg-background">
+      <PageHeader
+        title="Buy eSIM"
+        backHref="/home"
+        right={
+          <Link href="/esim" className="text-sm font-semibold text-konek-green hover:underline">
+            Mine
+          </Link>
+        }
+      />
+      <div className="max-w-lg mx-auto px-4 sm:px-6 py-6">
       <p className="text-sm text-indigo/60 mb-6">
         Instant travel data. Priced in USD, charged from your NGN wallet.
       </p>
@@ -224,6 +229,7 @@ function BuyEsim() {
       </button>
 
       {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
+      </div>
     </main>
   );
 }

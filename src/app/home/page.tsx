@@ -88,28 +88,28 @@ export default async function HomeDashboard() {
   }
 
   return (
-    <main className="min-h-screen bg-background px-6 py-8">
-      <header className="mb-6 flex items-center justify-between">
-        <div>
+    <main className="min-h-screen bg-background px-4 sm:px-6 py-8 max-w-lg mx-auto">
+      <header className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <div className="min-w-0">
           <p className="text-sm text-indigo/60">Welcome back</p>
-          <h1 className="font-heading text-xl font-bold text-indigo">{phone}</h1>
+          <h1 className="font-heading text-xl font-bold text-indigo truncate">{phone}</h1>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <Link
             href="/wallet/history"
-            className="rounded-full bg-indigo/10 text-indigo text-xs font-semibold px-3 py-2"
+            className="rounded-full bg-indigo/10 text-indigo text-xs font-semibold px-3 py-2 whitespace-nowrap"
           >
             History
           </Link>
           <Link
             href="/notifications"
-            className="rounded-full bg-indigo/10 text-indigo text-xs font-semibold px-3 py-2"
+            className="rounded-full bg-indigo/10 text-indigo text-xs font-semibold px-3 py-2 whitespace-nowrap"
           >
             Alerts
           </Link>
           <Link
             href="/rewards"
-            className="rounded-full bg-gold/15 text-indigo text-xs font-semibold px-3 py-2"
+            className="rounded-full bg-gold/15 text-indigo text-xs font-semibold px-3 py-2 whitespace-nowrap"
           >
             Rewards
           </Link>

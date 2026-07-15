@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { PageHeader } from "@/components/PageHeader";
 
 interface Account {
   id: string;
@@ -120,14 +121,15 @@ export default function DollarAccountPage() {
     load();
   }
 
-  if (!data) return <main className="min-h-screen bg-background px-6 py-8" />;
+  if (!data) return <main className="min-h-screen bg-background" />;
 
   const usdPreview = Math.round(Number(convertUsd) * 100);
   const ngnPreview = usdPreview > 0 ? Math.floor(usdPreview * NGN_PER_USD * (1 - SPREAD)) : 0;
 
   return (
-    <main className="min-h-screen bg-background px-6 py-8">
-      <h1 className="font-heading text-xl font-bold text-indigo mb-1">Dollar account</h1>
+    <main className="min-h-screen bg-background">
+      <PageHeader title="Dollar account" backHref="/home" />
+      <div className="max-w-lg mx-auto px-4 sm:px-6 py-6">
       <p className="text-sm text-indigo/60 mb-6">
         Receive salary, freelance and client payments in USD. Receive-only — no outbound transfers.
       </p>
@@ -239,10 +241,7 @@ export default function DollarAccountPage() {
           </p>
         </>
       )}
-
-      <Link href="/home" className="text-sm text-indigo/60 underline">
-        Back to home
-      </Link>
+      </div>
     </main>
   );
 }

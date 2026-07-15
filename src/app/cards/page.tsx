@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { PageHeader } from "@/components/PageHeader";
 
 interface CardTxn {
   id: string;
@@ -222,8 +223,9 @@ export default function CardsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-background px-6 py-8">
-      <h1 className="font-heading text-xl font-bold text-indigo mb-1">Virtual cards</h1>
+    <main className="min-h-screen bg-background">
+      <PageHeader title="Virtual cards" backHref="/home" />
+      <div className="max-w-lg mx-auto px-4 sm:px-6 py-6">
       <p className="text-sm text-indigo/60 mb-6">USD wallet balance: ${(balanceMinor / 100).toLocaleString()}</p>
 
       {result && <p className="text-sm text-konek-green font-medium mb-4">{result}</p>}
@@ -345,6 +347,7 @@ export default function CardsPage() {
       <Link href="/home" className="text-sm text-indigo/60 underline">
         Back to home
       </Link>
+      </div>
     </main>
   );
 }

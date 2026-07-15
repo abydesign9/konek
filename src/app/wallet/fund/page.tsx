@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { PageHeader } from "@/components/PageHeader";
 
 const PRESETS_MINOR = [100000, 200000, 500000, 1000000]; // ₦1,000 / ₦2,000 / ₦5,000 / ₦10,000
 
@@ -43,8 +44,9 @@ export default function FundWalletPage() {
   }
 
   return (
-    <main className="min-h-screen bg-background px-6 py-8">
-      <h1 className="font-heading text-xl font-bold text-indigo mb-1">Fund wallet</h1>
+    <main className="min-h-screen bg-background">
+      <PageHeader title="Fund wallet" backHref="/home" />
+      <div className="max-w-lg mx-auto px-4 sm:px-6 py-6">
       <p className="text-sm text-indigo/60 mb-8">Choose an amount to add to your NGN wallet.</p>
 
       <div className="grid grid-cols-2 gap-3 mb-4">
@@ -89,6 +91,7 @@ export default function FundWalletPage() {
       </button>
 
       {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
+      </div>
     </main>
   );
 }

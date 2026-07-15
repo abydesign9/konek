@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { PageHeader } from "@/components/PageHeader";
 
 interface RewardEvent {
   kind: string;
@@ -62,14 +63,17 @@ export default function RewardsPage() {
     typeof window !== "undefined" ? `${window.location.origin}/login?ref=${data.referralCode}` : "";
 
   return (
-    <main className="min-h-screen bg-background px-6 py-8">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="font-heading text-xl font-bold text-indigo">Rewards</h1>
-        <span className={`rounded-full px-3 py-1.5 text-xs font-bold capitalize ${LEVEL_COLOR[data.level] ?? ""}`}>
-          {data.level}
-        </span>
-      </div>
-
+    <main className="min-h-screen bg-background">
+      <PageHeader
+        title="Rewards"
+        backHref="/home"
+        right={
+          <span className={`rounded-full px-2.5 py-1 text-xs font-bold capitalize ${LEVEL_COLOR[data.level] ?? ""}`}>
+            {data.level}
+          </span>
+        }
+      />
+      <div className="max-w-lg mx-auto px-4 sm:px-6 py-6">
       <div className="grid grid-cols-2 gap-4 mb-4">
         <div className="rounded-2xl bg-indigo px-5 py-4 text-white">
           <p className="text-xs text-white/60 mb-1">Coins</p>
@@ -154,13 +158,9 @@ export default function RewardsPage() {
         ))}
       </div>
 
-      <div className="flex gap-4">
-        <Link href="/squads" className="text-sm text-indigo/60 underline">
-          Squads
-        </Link>
-        <Link href="/home" className="text-sm text-indigo/60 underline">
-          Back to home
-        </Link>
+      <Link href="/squads" className="text-sm text-indigo/60 underline">
+        View squads →
+      </Link>
       </div>
     </main>
   );

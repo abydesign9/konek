@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import { PageHeader } from "@/components/PageHeader";
 
 interface AgentData {
   id: string;
@@ -32,12 +32,12 @@ export default function AgentPage() {
     load();
   }
 
-  if (agent === undefined) return <main className="min-h-screen bg-background px-6 py-8" />;
+  if (agent === undefined) return <main className="min-h-screen bg-background" />;
 
   return (
-    <main className="min-h-screen bg-background px-6 py-8">
-      <h1 className="font-heading text-xl font-bold text-indigo mb-6">Agent program</h1>
-
+    <main className="min-h-screen bg-background">
+      <PageHeader title="Agent program" backHref="/home" />
+      <div className="max-w-lg mx-auto px-4 sm:px-6 py-6">
       {!agent && (
         <div className="rounded-2xl border border-indigo/10 bg-white p-5">
           <p className="text-sm text-indigo/70 mb-4">
@@ -94,10 +94,7 @@ export default function AgentPage() {
           </div>
         </div>
       )}
-
-      <Link href="/home" className="text-sm text-indigo/60 underline mt-8 inline-block">
-        Back to home
-      </Link>
+      </div>
     </main>
   );
 }

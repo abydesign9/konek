@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { NetworkPicker } from "@/components/NetworkPicker";
+import { PageHeader } from "@/components/PageHeader";
 import { PinPad } from "@/components/PinPad";
 
 interface Plan {
@@ -153,8 +154,9 @@ function BuyData() {
   }
 
   return (
-    <main className="min-h-screen bg-background px-6 py-8">
-      <h1 className="font-heading text-xl font-bold text-indigo mb-1">Buy data</h1>
+    <main className="min-h-screen bg-background">
+      <PageHeader title="Buy data" backHref="/home" />
+      <div className="max-w-lg mx-auto px-4 sm:px-6 py-6">
       <p className="text-sm text-indigo/60 mb-6">Data bundles for any Nigerian network.</p>
 
       {beneficiaries.length > 0 && (
@@ -223,6 +225,7 @@ function BuyData() {
 
       {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
       {success && <p className="mt-4 text-sm text-konek-green font-semibold">{success}</p>}
+      </div>
     </main>
   );
 }

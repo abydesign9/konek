@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import { PageHeader } from "@/components/PageHeader";
 
 interface Business {
   id: string;
@@ -164,12 +164,12 @@ export default function BusinessPage() {
 
   const canManageTeam = role === "owner" || role === "admin";
 
-  if (business === undefined) return <main className="min-h-screen bg-background px-6 py-8" />;
+  if (business === undefined) return <main className="min-h-screen bg-background" />;
 
   return (
-    <main className="min-h-screen bg-background px-6 py-8 max-w-lg mx-auto">
-      <h1 className="font-heading text-xl font-bold text-indigo mb-6">Business account</h1>
-
+    <main className="min-h-screen bg-background">
+      <PageHeader title="Business account" backHref="/home" />
+      <div className="max-w-lg mx-auto px-4 sm:px-6 py-6">
       {!business && (
         <div className="rounded-2xl border border-indigo/10 bg-white p-5">
           <p className="text-sm text-indigo/70 mb-4">
@@ -256,15 +256,15 @@ export default function BusinessPage() {
             <div className="flex flex-col gap-2 mb-4">
               {team.length === 0 && <p className="text-sm text-indigo/50">Just you so far.</p>}
               {team.map((m) => (
-                <div key={m.id} className="flex items-center justify-between rounded-xl border border-indigo/10 px-3 py-2.5">
-                  <div>
-                    <p className="text-sm font-medium text-indigo">{m.full_name ?? m.phone}</p>
-                    <p className="text-xs text-indigo/50">
+                <div key={m.id} className="flex items-center justify-between gap-3 rounded-xl border border-indigo/10 px-3 py-2.5">
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-indigo truncate">{m.full_name ?? m.phone}</p>
+                    <p className="text-xs text-indigo/50 truncate">
                       {m.phone} · {m.role}
                     </p>
                   </div>
                   {canManageTeam && (
-                    <button onClick={() => remove(m.id)} className="text-xs text-red-600 underline">
+                    <button onClick={() => remove(m.id)} className="text-xs text-red-600 underline shrink-0">
                       Remove
                     </button>
                   )}
@@ -272,27 +272,29 @@ export default function BusinessPage() {
               ))}
             </div>
             {canManageTeam && (
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <input
                   value={invitePhone}
                   onChange={(e) => setInvitePhone(e.target.value)}
                   placeholder="+2348012345678"
-                  className="flex-1 rounded-xl border border-indigo/20 px-3 py-2.5 text-sm"
+                  className="w-full sm:flex-1 rounded-xl border border-indigo/20 px-3 py-2.5 text-sm"
                 />
-                <select
-                  value={inviteRole}
-                  onChange={(e) => setInviteRole(e.target.value)}
-                  className="rounded-xl border border-indigo/20 px-2 py-2.5 text-sm"
-                >
-                  {TEAM_ROLES.map((r) => (
-                    <option key={r} value={r}>
-                      {r}
-                    </option>
-                  ))}
-                </select>
-                <button onClick={invite} className="rounded-xl bg-indigo text-white text-sm font-semibold px-4">
-                  Add
-                </button>
+                <div className="flex gap-2">
+                  <select
+                    value={inviteRole}
+                    onChange={(e) => setInviteRole(e.target.value)}
+                    className="flex-1 sm:flex-none rounded-xl border border-indigo/20 px-2 py-2.5 text-sm"
+                  >
+                    {TEAM_ROLES.map((r) => (
+                      <option key={r} value={r}>
+                        {r}
+                      </option>
+                    ))}
+                  </select>
+                  <button onClick={invite} className="shrink-0 rounded-xl bg-indigo text-white text-sm font-semibold px-4">
+                    Add
+                  </button>
+                </div>
               </div>
             )}
             {teamMsg && <p className="text-sm text-indigo/70 mt-2">{teamMsg}</p>}
@@ -352,10 +354,7 @@ export default function BusinessPage() {
           </div>
         </>
       )}
-
-      <Link href="/home" className="text-sm text-indigo/60 underline">
-        Back to home
-      </Link>
+      </div>
     </main>
   );
 }

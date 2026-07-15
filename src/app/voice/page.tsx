@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import { PageHeader } from "@/components/PageHeader";
 
 interface Call {
   to_number: string;
@@ -55,8 +55,9 @@ export default function VoicePage() {
   }
 
   return (
-    <main className="min-h-screen bg-background px-6 py-8">
-      <h1 className="font-heading text-xl font-bold text-indigo mb-1">Voice</h1>
+    <main className="min-h-screen bg-background">
+      <PageHeader title="Voice" backHref="/home" />
+      <div className="max-w-lg mx-auto px-4 sm:px-6 py-6">
       <p className="text-sm text-indigo/60 mb-6">Free minutes as a loyalty perk — earn more by topping up ₦2,000+.</p>
 
       <div className="rounded-2xl bg-indigo px-5 py-4 text-white mb-6">
@@ -103,10 +104,7 @@ export default function VoicePage() {
         ))}
         {calls.length === 0 && <p className="text-sm text-indigo/50">No calls yet.</p>}
       </div>
-
-      <Link href="/home" className="text-sm text-indigo/60 underline">
-        Back to home
-      </Link>
+      </div>
     </main>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import { PageHeader } from "@/components/PageHeader";
 
 interface Notification {
   id: string;
@@ -36,9 +36,9 @@ export default function NotificationsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-background px-6 py-8">
-      <h1 className="font-heading text-xl font-bold text-indigo mb-6">Notifications</h1>
-
+    <main className="min-h-screen bg-background">
+      <PageHeader title="Notifications" backHref="/home" />
+      <div className="max-w-lg mx-auto px-4 sm:px-6 py-6">
       {loading && <p className="text-sm text-indigo/50">Loading…</p>}
       {!loading && items.length === 0 && <p className="text-sm text-indigo/50">No notifications yet.</p>}
 
@@ -59,10 +59,7 @@ export default function NotificationsPage() {
           </button>
         ))}
       </div>
-
-      <Link href="/home" className="text-sm text-indigo/60 underline">
-        Back to home
-      </Link>
+      </div>
     </main>
   );
 }
