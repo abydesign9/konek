@@ -3,7 +3,7 @@ import { withIdempotency } from "@/lib/idempotency";
 import { postJournal } from "@/lib/ledger/postJournal";
 import { getOrCreateAccount, getUserWalletAccount } from "@/lib/ledger/accounts";
 import { getBalance } from "@/lib/ledger/balance";
-import { NGN_PER_USD, USD_NGN_SPREAD, usdMinorToNgnMinorUserRate } from "@/lib/fx";
+import { getFxRateConfig, usdMinorToNgnMinorUserRate } from "@/lib/fx";
 import { logAudit } from "@/lib/audit";
 import { sendNotification } from "@/lib/notifications/send";
 
@@ -35,7 +35,8 @@ export async function convertUsdToNgn(
       const usdBalance = await getBalance(usdWallet);
       if (usdBalance < usdMinor) throw new InsufficientUsdBalanceError();
 
-      const ngnMinor = usdMinorToNgnMinorUserRate(usdMinor);
+      const ngnMinor = await usdMinorToNgnMinorUserRate(usdMinor);
+      const { ngnPerUsd, usdNgnSpreadPct } = await getFxRateConfig();
       const ngnWallet = await getUserWalletAccount(userId, "NGN");
       const usdReserve = await getOrCreateAccount("platform", null, "USD", "reserve");
       const ngnReserve = await getOrCreateAccount("platform", null, "NGN", "reserve");
@@ -47,7 +48,7 @@ export async function convertUsdToNgn(
           userId,
           idempotencyKey,
           usdMinor,
-          JSON.stringify({ ngnMinor, rate: NGN_PER_USD, spread: USD_NGN_SPREAD }),
+          JSON.stringify({ ngnMinor, rate: ngnPerUsd, spread: usdNgnSpreadPct }),
         ]
       );
       const txnId = rows[0].id;
@@ -79,7 +80,7 @@ export async function convertUsdToNgn(
         `$${(usdMinor / 100).toLocaleString()} converted to ₦${(ngnMinor / 100).toLocaleString()}.`
       );
 
-      return { txnId, usdMinor, ngnMinor, rate: NGN_PER_USD };
+      return { txnId, usdMinor, ngnMinor, rate: ngnPerUsd };
     }
   );
 }

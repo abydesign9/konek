@@ -286,8 +286,8 @@ export function AdminConsole() {
   }
 
   return (
-    <main className="min-h-screen bg-background px-6 py-8">
-      <h1 className="font-heading text-xl font-bold text-indigo mb-6">Admin console</h1>
+    <>
+      <h1 className="font-heading text-xl font-bold text-indigo mb-6">Overview</h1>
 
       <section className="mb-8">
         <p className="text-sm font-semibold text-indigo mb-3">Fraud queue</p>
@@ -598,6 +598,6 @@ export function AdminConsole() {
           </button>
         </div>
       </section>
-    </main>
+    </>
   );
 }

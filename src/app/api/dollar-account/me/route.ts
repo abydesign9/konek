@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSessionUserId } from "@/lib/auth/session";
 import { query } from "@/lib/db";
+import { getFxRateConfig } from "@/lib/fx";
 import { getUserWalletAccount } from "@/lib/ledger/accounts";
 import { getBalance } from "@/lib/ledger/balance";
 
@@ -29,11 +30,14 @@ export async function GET() {
     ngnBalanceMinor = await getBalance(await getUserWalletAccount(userId, "NGN"));
   }
 
+  const fx = await getFxRateConfig();
+
   return NextResponse.json({
     kycTier: userRows[0]?.kyc_tier ?? 0,
     account: account ?? null,
     balanceMinor,
     ngnBalanceMinor,
     inflows,
+    fx,
   });
 }

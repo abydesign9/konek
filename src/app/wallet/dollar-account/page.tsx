@@ -26,10 +26,8 @@ interface DollarAccountData {
   balanceMinor: number;
   ngnBalanceMinor: number;
   inflows: Inflow[];
+  fx: { ngnPerUsd: number; usdNgnSpreadPct: number };
 }
-
-const NGN_PER_USD = 1600;
-const SPREAD = 0.015;
 
 function CopyRow({ label, value }: { label: string; value: string }) {
   const [copied, setCopied] = useState(false);
@@ -124,7 +122,7 @@ export default function DollarAccountPage() {
   if (!data) return <main className="min-h-screen bg-background" />;
 
   const usdPreview = Math.round(Number(convertUsd) * 100);
-  const ngnPreview = usdPreview > 0 ? Math.floor(usdPreview * NGN_PER_USD * (1 - SPREAD)) : 0;
+  const ngnPreview = usdPreview > 0 ? Math.floor(usdPreview * data.fx.ngnPerUsd * (1 - data.fx.usdNgnSpreadPct)) : 0;
 
   return (
     <main className="min-h-screen bg-background">
@@ -206,7 +204,7 @@ export default function DollarAccountPage() {
             </div>
             {ngnPreview > 0 && (
               <p className="text-xs text-indigo/60">
-                You&rsquo;ll get ≈ ₦{(ngnPreview / 100).toLocaleString()} (rate ₦{NGN_PER_USD.toLocaleString()}/$ · {SPREAD * 100}% spread)
+                You&rsquo;ll get ≈ ₦{(ngnPreview / 100).toLocaleString()} (rate ₦{data.fx.ngnPerUsd.toLocaleString()}/$ · {(data.fx.usdNgnSpreadPct * 100).toFixed(1)}% spread)
               </p>
             )}
             {convertMsg && <p className="text-sm text-konek-green font-semibold mt-2">{convertMsg}</p>}

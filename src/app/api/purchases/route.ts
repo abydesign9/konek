@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
     }
     const priceMinor = Number(rows[0].price_minor);
     if (rows[0].currency === "USD") {
-      chargeAmountMinor = usdMinorToNgnMinor(priceMinor);
+      chargeAmountMinor = await usdMinorToNgnMinor(priceMinor);
       recipientExtra = { displayCurrency: "USD", displayAmountMinor: priceMinor };
     } else {
       chargeAmountMinor = priceMinor;
@@ -93,7 +93,7 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-    chargeAmountMinor = usdMinorToNgnMinor(amountMinor);
+    chargeAmountMinor = await usdMinorToNgnMinor(amountMinor);
     recipientExtra = { displayCurrency: "USD", displayAmountMinor: amountMinor };
   } else {
     if (!Number.isInteger(amountMinor) || amountMinor <= 0) {
