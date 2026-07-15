@@ -7,8 +7,13 @@ import { PageHeader } from "@/components/PageHeader";
 interface RewardEvent {
   kind: string;
   coins: number;
-  meta: Record<string, unknown>;
+  meta: { creditMinor?: number; label?: string } & Record<string, unknown>;
   created_at: string;
+}
+
+interface SpinStatus {
+  canSpin: boolean;
+  lastResult: { label: string; coins: number; creditMinor: number; budgetLimited: boolean } | null;
 }
 
 interface Mission {
@@ -48,12 +53,38 @@ const LEVEL_COLOR: Record<string, string> = {
 export default function RewardsPage() {
   const [data, setData] = useState<RewardsData | null>(null);
   const [copied, setCopied] = useState(false);
+  const [spinStatus, setSpinStatus] = useState<SpinStatus | null>(null);
+  const [spinning, setSpinning] = useState(false);
+  const [spinError, setSpinError] = useState<string | null>(null);
+
+  function loadSpin() {
+    fetch("/api/rewards/spin")
+      .then((res) => res.json())
+      .then(setSpinStatus);
+  }
 
   useEffect(() => {
     fetch("/api/rewards")
       .then((res) => res.json())
       .then(setData);
+    loadSpin();
   }, []);
+
+  async function doSpin() {
+    setSpinning(true);
+    setSpinError(null);
+    const res = await fetch("/api/rewards/spin", { method: "POST" });
+    const body = await res.json().catch(() => ({}));
+    setSpinning(false);
+    if (!res.ok) {
+      setSpinError(body.error ?? "Something went wrong");
+      return;
+    }
+    setSpinStatus({ canSpin: false, lastResult: body });
+    fetch("/api/rewards")
+      .then((res2) => res2.json())
+      .then(setData);
+  }
 
   if (!data) {
     return <main className="min-h-screen bg-background px-6 py-8" />;
@@ -102,6 +133,30 @@ export default function RewardsPage() {
         )}
       </div>
 
+      <div className="rounded-2xl border border-gold/30 bg-gold/10 p-5 mb-8">
+        <p className="text-sm font-semibold text-indigo mb-1">🎰 Daily spin</p>
+        <p className="text-xs text-indigo/60 mb-4">One free spin a day — coins or a wallet credit surprise.</p>
+        {spinStatus?.canSpin ? (
+          <button
+            onClick={doSpin}
+            disabled={spinning}
+            className="w-full rounded-xl bg-gold text-white font-semibold py-3 disabled:opacity-50"
+          >
+            {spinning ? "Spinning…" : "Spin now"}
+          </button>
+        ) : (
+          <div className="rounded-xl bg-white/70 px-4 py-3 text-center">
+            <p className="text-sm font-semibold text-indigo">
+              {spinStatus?.lastResult
+                ? `You won ${spinStatus.lastResult.label}`
+                : "Loading…"}
+            </p>
+            <p className="text-xs text-indigo/50 mt-0.5">Come back tomorrow for another spin</p>
+          </div>
+        )}
+        {spinError && <p className="text-xs text-red-600 mt-2">{spinError}</p>}
+      </div>
+
       <div className="rounded-2xl border border-indigo/10 bg-white p-5 mb-8">
         <p className="text-sm font-semibold text-indigo mb-1">Invite friends</p>
         <p className="text-xs text-indigo/60 mb-4">
@@ -147,20 +202,32 @@ export default function RewardsPage() {
       <p className="text-sm text-indigo/60 mb-3">History</p>
       <div className="flex flex-col gap-2 mb-8">
         {data.history.length === 0 && <p className="text-sm text-indigo/50">No rewards yet.</p>}
-        {data.history.map((event, i) => (
-          <div
-            key={i}
-            className="flex items-center justify-between rounded-xl border border-indigo/10 bg-white px-4 py-3"
-          >
-            <span className="text-sm text-indigo">{KIND_LABEL[event.kind] ?? event.kind}</span>
-            <span className="text-sm font-semibold text-konek-green">+{event.coins} coins</span>
-          </div>
-        ))}
+        {data.history.map((event, i) => {
+          const creditMinor = event.meta?.creditMinor ?? 0;
+          return (
+            <div
+              key={i}
+              className="flex items-center justify-between rounded-xl border border-indigo/10 bg-white px-4 py-3"
+            >
+              <span className="text-sm text-indigo">{KIND_LABEL[event.kind] ?? event.kind}</span>
+              <span className="text-sm font-semibold text-konek-green text-right">
+                {event.coins > 0 && `+${event.coins} coins`}
+                {event.coins > 0 && creditMinor > 0 && " · "}
+                {creditMinor > 0 && `+₦${(creditMinor / 100).toLocaleString()}`}
+              </span>
+            </div>
+          );
+        })}
       </div>
 
-      <Link href="/squads" className="text-sm text-indigo/60 underline">
-        View squads →
-      </Link>
+      <div className="flex gap-4">
+        <Link href="/squads" className="text-sm text-indigo/60 underline">
+          View squads →
+        </Link>
+        <Link href="/leaderboard" className="text-sm text-indigo/60 underline">
+          Leaderboard →
+        </Link>
+      </div>
       </div>
     </main>
   );
