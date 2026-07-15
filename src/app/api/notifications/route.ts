@@ -22,9 +22,14 @@ export async function PATCH(req: NextRequest) {
   const id = body?.id;
   if (typeof id !== "string") return NextResponse.json({ error: "id is required" }, { status: 400 });
 
-  await query(`UPDATE notifications SET read_at = now() WHERE id = $1 AND user_id = $2 AND read_at IS NULL`, [
-    id,
-    userId,
-  ]);
+  // Opening a campaign-driven notification counts as both "opened" and
+  // "clicked" for campaign analytics — a deliberate simplification rather
+  // than building a separate in-notification CTA-link click system.
+  await query(
+    `UPDATE notifications
+     SET read_at = now(), clicked_at = CASE WHEN campaign_id IS NOT NULL THEN now() ELSE clicked_at END
+     WHERE id = $1 AND user_id = $2 AND read_at IS NULL`,
+    [id, userId]
+  );
   return NextResponse.json({ ok: true });
 }

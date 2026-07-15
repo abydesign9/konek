@@ -35,26 +35,31 @@ async function deliver(channel: NotificationChannel, userId: string, title: stri
   console.log(`[mock-notify:${channel}] to user ${userId}: ${title} — ${body}`);
 }
 
+// Returns whether it actually queued a notification (false = skipped by
+// preference) so a campaign send can report a real recipient count rather
+// than counting everyone it merely attempted.
 export async function sendNotification(
   userId: string,
   channel: NotificationChannel,
   kind: NotificationKind,
   title: string,
-  body: string
-): Promise<void> {
+  body: string,
+  campaignId?: string
+): Promise<boolean> {
   if (kind === "price_alert") {
     const prefs = await getPreferences(userId);
-    if (!prefs.price_alerts) return;
+    if (!prefs.price_alerts) return false;
   }
 
   const prefs = await getPreferences(userId);
-  if (!channelEnabled(prefs, channel)) return;
+  if (!channelEnabled(prefs, channel)) return false;
 
   const { rows } = await query<{ id: string }>(
-    `INSERT INTO notifications (user_id, channel, kind, title, body) VALUES ($1, $2, $3, $4, $5) RETURNING id`,
-    [userId, channel, kind, title, body]
+    `INSERT INTO notifications (user_id, channel, kind, title, body, campaign_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
+    [userId, channel, kind, title, body, campaignId ?? null]
   );
 
   await deliver(channel, userId, title, body);
   await query(`UPDATE notifications SET sent_at = now() WHERE id = $1`, [rows[0].id]);
+  return true;
 }
