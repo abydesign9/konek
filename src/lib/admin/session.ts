@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
 import { cookies } from "next/headers";
 import { findActiveAdminByEmail } from "./adminUsers";
+import { verifyAdminSecret } from "./adminSecret";
 
 const ADMIN_COOKIE = "konek_admin";
 const ADMIN_TTL_HOURS = 12;
@@ -18,20 +19,13 @@ function sign(payload: string): string {
   return crypto.createHmac("sha256", secret).update(payload).digest("hex");
 }
 
-function checkSharedSecret(providedSecret: string): boolean {
-  const secret = process.env.ADMIN_SECRET;
-  if (!secret) throw new Error("Missing ADMIN_SECRET env var");
-  const a = Buffer.from(providedSecret);
-  const b = Buffer.from(secret);
-  return a.length === b.length && crypto.timingSafeEqual(a, b);
-}
-
 // Auth is two-factor in spirit: a shared site secret (gate #1) plus an
 // email that must match an active admin_users row (gate #2, and the
 // source of truth for who did what in the audit log — no more generic
-// "admin" actor string).
+// "admin" actor string). The secret itself may have been rotated in the DB
+// (see lib/admin/adminSecret) — falls back to the env var if never rotated.
 export async function createAdminSession(email: string, providedSecret: string): Promise<boolean> {
-  if (!checkSharedSecret(providedSecret)) return false;
+  if (!(await verifyAdminSecret(providedSecret))) return false;
 
   const admin = await findActiveAdminByEmail(email);
   if (!admin) return false;

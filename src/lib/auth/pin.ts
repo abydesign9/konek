@@ -67,3 +67,12 @@ export async function verifyPin(userId: string, pin: string): Promise<void> {
   const ok = await bcrypt.compare(pin, hash);
   if (!ok) throw new IncorrectPinError();
 }
+
+// Admin/support action: clears a customer's transaction PIN (e.g. they
+// forgot it, or it may be compromised). The user is prompted to set a new
+// one the next time they try to authorize a purchase — the same flow a
+// brand-new account goes through, never a direct admin-set PIN.
+export async function resetPin(userId: string, actorAdminId: string): Promise<void> {
+  await query(`UPDATE users SET pin_hash = NULL, updated_at = now() WHERE id = $1`, [userId]);
+  await logAudit(actorAdminId, "pin_reset_by_admin", "user", userId);
+}

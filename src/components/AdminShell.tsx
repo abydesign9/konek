@@ -13,6 +13,7 @@ const TABS = [
   { href: "/admin/referrals", label: "Referrals" },
   { href: "/admin/support", label: "Support" },
   { href: "/admin/notifications", label: "Notifications" },
+  { href: "/admin/settings", label: "Settings" },
 ];
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
