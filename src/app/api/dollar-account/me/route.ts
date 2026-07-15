@@ -17,6 +17,7 @@ export async function GET() {
 
   let inflows: unknown[] = [];
   let balanceMinor = 0;
+  let ngnBalanceMinor = 0;
   if (account) {
     const { rows } = await query(
       `SELECT sender_name, sender_bank, amount_minor, status, received_at FROM virtual_account_inflows
@@ -24,14 +25,15 @@ export async function GET() {
       [account.id]
     );
     inflows = rows;
-    const walletAccountId = await getUserWalletAccount(userId, "USD");
-    balanceMinor = await getBalance(walletAccountId);
+    balanceMinor = await getBalance(await getUserWalletAccount(userId, "USD"));
+    ngnBalanceMinor = await getBalance(await getUserWalletAccount(userId, "NGN"));
   }
 
   return NextResponse.json({
     kycTier: userRows[0]?.kyc_tier ?? 0,
     account: account ?? null,
     balanceMinor,
+    ngnBalanceMinor,
     inflows,
   });
 }

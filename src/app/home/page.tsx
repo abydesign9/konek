@@ -148,6 +148,23 @@ export default async function HomeDashboard() {
         </p>
       </Link>
 
+      <div className="grid grid-cols-2 gap-3 mb-8">
+        <Link
+          href="/wallet/dollar-account"
+          className="rounded-2xl border border-indigo/10 bg-white px-4 py-3 hover:border-indigo/25"
+        >
+          <p className="text-sm font-semibold text-indigo">Dollar account</p>
+          <p className="text-xs text-indigo/60">Receive USD →</p>
+        </Link>
+        <Link
+          href="/cards"
+          className="rounded-2xl border border-indigo/10 bg-white px-4 py-3 hover:border-indigo/25"
+        >
+          <p className="text-sm font-semibold text-indigo">Virtual card</p>
+          <p className="text-xs text-indigo/60">Spend online →</p>
+        </Link>
+      </div>
+
       {recent.length > 0 && (
         <section className="mb-8">
           <p className="text-sm text-indigo/60 mb-3">Buy again</p>

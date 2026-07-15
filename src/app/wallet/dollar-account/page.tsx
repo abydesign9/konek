@@ -23,7 +23,36 @@ interface DollarAccountData {
   kycTier: number;
   account: Account | null;
   balanceMinor: number;
+  ngnBalanceMinor: number;
   inflows: Inflow[];
+}
+
+const NGN_PER_USD = 1600;
+const SPREAD = 0.015;
+
+function CopyRow({ label, value }: { label: string; value: string }) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <button
+      type="button"
+      onClick={async () => {
+        try {
+          await navigator.clipboard.writeText(value);
+          setCopied(true);
+          setTimeout(() => setCopied(false), 1500);
+        } catch {
+          /* no-op */
+        }
+      }}
+      className="w-full flex items-center justify-between py-2.5 border-b border-indigo/5 last:border-0 text-left"
+    >
+      <span>
+        <span className="block text-xs text-indigo/50">{label}</span>
+        <span className="block font-mono text-sm text-indigo">{value}</span>
+      </span>
+      <span className="text-xs font-semibold text-konek-green ml-3">{copied ? "Copied" : "Copy"}</span>
+    </button>
+  );
 }
 
 export default function DollarAccountPage() {
@@ -31,6 +60,9 @@ export default function DollarAccountPage() {
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [simulating, setSimulating] = useState(false);
+  const [convertUsd, setConvertUsd] = useState("");
+  const [converting, setConverting] = useState(false);
+  const [convertMsg, setConvertMsg] = useState<string | null>(null);
 
   function load() {
     fetch("/api/dollar-account/me")
@@ -64,24 +96,59 @@ export default function DollarAccountPage() {
     load();
   }
 
+  async function convert() {
+    const usd = Math.round(Number(convertUsd) * 100);
+    if (!Number.isInteger(usd) || usd <= 0) {
+      setConvertMsg("Enter a valid USD amount");
+      return;
+    }
+    setConverting(true);
+    setConvertMsg(null);
+    const res = await fetch("/api/dollar-account/convert", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ usdMinor: usd, idempotencyKey: crypto.randomUUID() }),
+    });
+    const body = await res.json().catch(() => ({}));
+    setConverting(false);
+    if (!res.ok) {
+      setConvertMsg(body.error ?? "Conversion failed");
+      return;
+    }
+    setConvertMsg(`Converted $${(body.usdMinor / 100).toLocaleString()} → ₦${(body.ngnMinor / 100).toLocaleString()}`);
+    setConvertUsd("");
+    load();
+  }
+
   if (!data) return <main className="min-h-screen bg-background px-6 py-8" />;
+
+  const usdPreview = Math.round(Number(convertUsd) * 100);
+  const ngnPreview = usdPreview > 0 ? Math.floor(usdPreview * NGN_PER_USD * (1 - SPREAD)) : 0;
 
   return (
     <main className="min-h-screen bg-background px-6 py-8">
       <h1 className="font-heading text-xl font-bold text-indigo mb-1">Dollar account</h1>
-      <p className="text-sm text-indigo/60 mb-6">Receive USD from anywhere — receive-only, no outbound transfers.</p>
+      <p className="text-sm text-indigo/60 mb-6">
+        Receive salary, freelance and client payments in USD. Receive-only — no outbound transfers.
+      </p>
 
       {!data.account && data.kycTier < 2 && (
         <div className="rounded-2xl border border-gold/30 bg-gold/10 p-5">
-          <p className="text-sm text-indigo">
-            A dollar account requires KYC Tier 2 (liveness verification). Your account is currently
-            Tier {data.kycTier}.
+          <p className="text-sm text-indigo mb-3">
+            A dollar account needs KYC Tier 2 (liveness). You&rsquo;re currently Tier {data.kycTier}.
           </p>
+          <Link href="/kyc" className="inline-block rounded-xl bg-indigo text-white font-semibold px-5 py-2.5 text-sm">
+            Verify now
+          </Link>
         </div>
       )}
 
       {!data.account && data.kycTier >= 2 && (
         <div className="rounded-2xl border border-indigo/10 bg-white p-5">
+          <p className="text-sm text-indigo/70 mb-4">
+            Get US account details to receive dollars from anywhere. Convert to naira anytime to spend
+            on airtime, data, bills, eSIMs and more.
+          </p>
           <button
             onClick={create}
             disabled={creating}
@@ -95,18 +162,52 @@ export default function DollarAccountPage() {
 
       {data.account && (
         <>
-          <div className="rounded-2xl bg-indigo px-5 py-4 text-white mb-6">
-            <p className="text-xs text-white/60 mb-1">Balance</p>
-            <p className="font-heading text-2xl font-bold">${(data.balanceMinor / 100).toLocaleString()}</p>
+          <div className="rounded-2xl bg-indigo px-5 py-4 text-white mb-4">
+            <p className="text-xs text-white/60 mb-1">USD balance</p>
+            <p className="font-heading text-2xl font-bold">
+              ${(data.balanceMinor / 100).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+            </p>
+            <p className="text-xs text-white/70 mt-2">
+              Naira wallet: ₦{(data.ngnBalanceMinor / 100).toLocaleString()}
+            </p>
           </div>
 
-          <div className="rounded-2xl border border-indigo/10 bg-white p-5 mb-6">
-            <p className="text-xs text-indigo/60 mb-1">Account number</p>
-            <p className="font-mono text-sm text-indigo mb-3">{data.account.account_number}</p>
-            <p className="text-xs text-indigo/60 mb-1">Routing number</p>
-            <p className="font-mono text-sm text-indigo mb-3">{data.account.routing_number}</p>
-            <p className="text-xs text-indigo/60 mb-1">Bank</p>
-            <p className="text-sm text-indigo">{data.account.bank_name}</p>
+          {/* Account details to receive money */}
+          <p className="text-sm text-indigo/60 mb-2">Share these to get paid</p>
+          <div className="rounded-2xl border border-indigo/10 bg-white px-5 py-2 mb-6">
+            <CopyRow label="Account number" value={data.account.account_number} />
+            <CopyRow label="Routing number (ACH)" value={data.account.routing_number} />
+            <CopyRow label="Bank" value={data.account.bank_name} />
+          </div>
+
+          {/* Convert USD -> NGN */}
+          <div className="rounded-2xl border border-konek-green/30 bg-konek-green/5 p-5 mb-6">
+            <p className="font-heading font-semibold text-indigo mb-1">Convert to naira</p>
+            <p className="text-xs text-indigo/60 mb-4">
+              Move dollars into your naira wallet to spend on any Konek service.
+            </p>
+            <div className="flex gap-2 mb-3">
+              <input
+                inputMode="decimal"
+                value={convertUsd}
+                onChange={(e) => setConvertUsd(e.target.value.replace(/[^\d.]/g, ""))}
+                placeholder="USD amount"
+                className="flex-1 rounded-xl border border-indigo/20 bg-white px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-konek-green"
+              />
+              <button
+                onClick={convert}
+                disabled={converting || usdPreview <= 0}
+                className="rounded-xl bg-konek-green text-white font-semibold px-5 disabled:opacity-50"
+              >
+                {converting ? "…" : "Convert"}
+              </button>
+            </div>
+            {ngnPreview > 0 && (
+              <p className="text-xs text-indigo/60">
+                You&rsquo;ll get ≈ ₦{(ngnPreview / 100).toLocaleString()} (rate ₦{NGN_PER_USD.toLocaleString()}/$ · {SPREAD * 100}% spread)
+              </p>
+            )}
+            {convertMsg && <p className="text-sm text-konek-green font-semibold mt-2">{convertMsg}</p>}
           </div>
 
           <button
@@ -118,7 +219,7 @@ export default function DollarAccountPage() {
           </button>
 
           <p className="text-sm text-indigo/60 mb-3">Inflows</p>
-          <div className="flex flex-col gap-2 mb-8">
+          <div className="flex flex-col gap-2 mb-6">
             {data.inflows.length === 0 && <p className="text-sm text-indigo/50">No inflows yet.</p>}
             {data.inflows.map((inflow, i) => (
               <div key={i} className="rounded-xl border border-indigo/10 bg-white px-4 py-3">
@@ -131,6 +232,11 @@ export default function DollarAccountPage() {
               </div>
             ))}
           </div>
+
+          <p className="text-xs text-indigo/40 mb-8">
+            To cash out, convert to naira, then withdraw to your own verified Nigerian bank account.
+            Konek never sends money to third parties.
+          </p>
         </>
       )}
 

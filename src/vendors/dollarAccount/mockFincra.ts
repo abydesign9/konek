@@ -5,7 +5,12 @@ import { CreateAccountResult, DollarAccountAdapter, InflowVerifyResult } from ".
 // payload" pattern as the Paystack mock. Keyed by a per-inflow reference,
 // distinct from the account's own providerRef, since one account can
 // receive many inflows over its lifetime.
-const inflows = new Map<string, InflowVerifyResult>();
+//
+// Hung off globalThis so it survives across Next's per-route bundles — the
+// mock-inflow route registers here and the webhook route (a separate bundle)
+// reads it back; a plain module-level Map isn't shared between them in dev.
+const globalStore = globalThis as unknown as { __konekMockInflows?: Map<string, InflowVerifyResult> };
+const inflows = (globalStore.__konekMockInflows ??= new Map<string, InflowVerifyResult>());
 
 export function registerMockInflow(inflowRef: string, result: InflowVerifyResult) {
   inflows.set(inflowRef, result);
