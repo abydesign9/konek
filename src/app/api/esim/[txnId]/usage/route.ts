@@ -10,10 +10,14 @@ export async function GET(req: NextRequest, { params }: { params: { txnId: strin
     token: string | null;
     status: string;
     recipient: { network: string; planExternalId?: string };
+    plan_meta: { dataMb?: number; validityDays?: number } | null;
     created_at: string;
   }>(
-    `SELECT token, status, recipient, created_at FROM transactions
-     WHERE id = $1 AND user_id = $2 AND type = 'esim'`,
+    `SELECT t.token, t.status, t.recipient, t.created_at, c.meta AS plan_meta
+     FROM transactions t
+     LEFT JOIN catalog_items c
+       ON c.service_type = 'esim' AND c.external_id = t.recipient->>'planExternalId'
+     WHERE t.id = $1 AND t.user_id = $2 AND t.type = 'esim'`,
     [params.txnId, userId]
   );
   const txn = rows[0];
@@ -23,10 +27,10 @@ export async function GET(req: NextRequest, { params }: { params: { txnId: strin
   }
 
   // No real eSIM management API is wired up yet — deterministic mock usage
-  // derived from the activation token so the UI has something real to show.
+  // derived from the activation token, scaled to the plan's real allowance.
+  const totalMb = txn.plan_meta?.dataMb ?? 5000;
   const seed = (txn.token ?? "").split("").reduce((a, c) => a + c.charCodeAt(0), 0);
-  const usedMb = seed % 3000;
-  const totalMb = 5000;
+  const usedMb = Math.min(seed % totalMb, totalMb);
 
   return NextResponse.json({
     iccid: txn.token,

@@ -1,16 +1,19 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChipPicker } from "@/components/ChipPicker";
 import { PinPad } from "@/components/PinPad";
+import { QrCode } from "@/components/QrCode";
+import { esimLpaString } from "@/lib/esim";
 
-const COUNTRIES = [
-  { id: "us", label: "USA" },
-  { id: "uk", label: "UK" },
-  { id: "eu", label: "Europe" },
-];
-
+interface PlanMeta {
+  type?: "country" | "region" | "global";
+  dataMb?: number;
+  validityDays?: number;
+  flag?: string;
+  place?: string;
+}
 interface Plan {
   id: string;
   external_id: string;
@@ -18,30 +21,24 @@ interface Plan {
   network: string;
   price_minor: string;
   currency: string;
+  meta: PlanMeta | null;
 }
 
-// Cheap deterministic "QR" placeholder — a checkerboard pattern seeded from
-// the activation code, so it visually differs per eSIM without a QR lib.
-function FakeQr({ seed }: { seed: string }) {
-  const size = 10;
-  const hash = seed.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
-  const cells = Array.from({ length: size * size }, (_, i) => ((hash + i * 2654435761) % 997) % 5 < 2);
-  return (
-    <div
-      className="grid gap-0.5 w-48 h-48 bg-white p-3 rounded-xl border border-indigo/10"
-      style={{ gridTemplateColumns: `repeat(${size}, 1fr)` }}
-    >
-      {cells.map((on, i) => (
-        <div key={i} className={on ? "bg-indigo" : "bg-transparent"} />
-      ))}
-    </div>
-  );
+type PackType = "country" | "region" | "global";
+const TABS: { id: PackType; label: string }[] = [
+  { id: "country", label: "Country" },
+  { id: "region", label: "Region" },
+  { id: "global", label: "Global" },
+];
+
+function usd(minor: number) {
+  return `$${(minor / 100).toLocaleString(undefined, { minimumFractionDigits: 0 })}`;
 }
 
 function BuyEsim() {
   const router = useRouter();
 
-  const [country, setCountry] = useState<string | null>(null);
+  const [tab, setTab] = useState<PackType>("country");
   const [plans, setPlans] = useState<Plan[]>([]);
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
   const [showPin, setShowPin] = useState(false);
@@ -51,18 +48,19 @@ function BuyEsim() {
   const [issued, setIssued] = useState<{ token: string; txnId: string } | null>(null);
 
   useEffect(() => {
-    if (!country) {
-      setPlans([]);
-      return;
-    }
-    fetch(`/api/catalog?serviceType=esim&network=${country}`)
+    fetch(`/api/catalog?serviceType=esim`)
       .then((res) => res.json())
       .then((data) => setPlans(data.plans ?? []));
-  }, [country]);
+  }, []);
+
+  const visiblePlans = useMemo(
+    () => plans.filter((p) => (p.meta?.type ?? "country") === tab),
+    [plans, tab]
+  );
 
   function proceedToPin() {
-    if (!country || !selectedPlan) {
-      setError("Choose a country and plan");
+    if (!selectedPlan) {
+      setError("Choose a plan");
       return;
     }
     setError(null);
@@ -78,7 +76,7 @@ function BuyEsim() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         serviceType: "esim",
-        network: country,
+        network: selectedPlan!.network,
         phone: "na",
         planExternalId: selectedPlan!.external_id,
         pin: finalPin,
@@ -90,7 +88,7 @@ function BuyEsim() {
     setLoading(false);
 
     if (res.status === 428) {
-      router.push(`/settings/pin?next=${encodeURIComponent(window.location.pathname + window.location.search)}`);
+      router.push(`/settings/pin?next=${encodeURIComponent(window.location.pathname)}`);
       return;
     }
     if (!res.ok) {
@@ -112,20 +110,23 @@ function BuyEsim() {
   if (issued) {
     return (
       <main className="min-h-screen bg-background px-6 py-8 flex flex-col items-center justify-center text-center">
-        <h1 className="font-heading text-xl font-bold text-indigo mb-2">eSIM issued</h1>
-        <p className="text-indigo/60 mb-6">Scan to install — {selectedPlan?.name}</p>
-        <FakeQr seed={issued.token} />
-        <p className="font-mono text-xs text-indigo/50 mt-4 mb-8">{issued.token}</p>
+        <h1 className="font-heading text-xl font-bold text-indigo mb-1">eSIM issued 🎉</h1>
+        <p className="text-indigo/60 mb-6">Scan in your phone&rsquo;s eSIM settings — {selectedPlan?.name}</p>
+        <QrCode value={esimLpaString(issued.token)} size={200} />
+        <p className="font-mono text-xs text-indigo/50 mt-4 mb-8 break-all max-w-xs">{issued.token}</p>
         <div className="flex flex-col gap-3 w-full max-w-xs">
-          <a
+          <Link
             href={`/esim/${issued.txnId}`}
-            className="rounded-xl border border-indigo/20 text-indigo text-center font-semibold px-6 py-3"
+            className="rounded-xl bg-indigo text-white text-center font-semibold px-6 py-3"
           >
             View usage
-          </a>
-          <button onClick={() => router.push("/home")} className="rounded-xl bg-indigo text-white font-semibold px-6 py-3">
-            Back to home
-          </button>
+          </Link>
+          <Link
+            href="/esim"
+            className="rounded-xl border border-indigo/20 text-indigo text-center font-semibold px-6 py-3"
+          >
+            My eSIMs
+          </Link>
         </div>
       </main>
     );
@@ -138,7 +139,9 @@ function BuyEsim() {
           <h1 className="font-heading text-lg font-bold text-indigo mb-1 text-center">
             Confirm {selectedPlan?.name}
           </h1>
-          <p className="text-sm text-indigo/60 mb-8 text-center">Enter your PIN to authorize.</p>
+          <p className="text-sm text-indigo/60 mb-8 text-center">
+            Charged in naira at today&rsquo;s rate. Enter your PIN to authorize.
+          </p>
           <PinPad value={pin} onChange={setPin} onComplete={submit} />
           {loading && <p className="mt-4 text-sm text-indigo/60 text-center">Processing…</p>}
           {error && <p className="mt-4 text-sm text-red-600 text-center">{error}</p>}
@@ -158,16 +161,41 @@ function BuyEsim() {
 
   return (
     <main className="min-h-screen bg-background px-6 py-8">
-      <h1 className="font-heading text-xl font-bold text-indigo mb-1">Buy eSIM</h1>
+      <div className="flex items-center justify-between mb-1">
+        <h1 className="font-heading text-xl font-bold text-indigo">Buy eSIM</h1>
+        <Link href="/esim" className="text-sm font-semibold text-konek-green hover:underline">
+          My eSIMs
+        </Link>
+      </div>
       <p className="text-sm text-indigo/60 mb-6">
-        Priced in USD, charged from your NGN wallet at today&apos;s rate.
+        Instant travel data. Priced in USD, charged from your NGN wallet.
       </p>
 
-      <ChipPicker options={COUNTRIES} value={country} onChange={setCountry} columns={3} />
+      <div className="flex gap-2 mb-6">
+        {TABS.map((t) => (
+          <button
+            key={t.id}
+            type="button"
+            onClick={() => {
+              setTab(t.id);
+              setSelectedPlan(null);
+            }}
+            className={`flex-1 rounded-xl py-2.5 text-sm font-semibold transition-colors ${
+              tab === t.id ? "bg-indigo text-white" : "bg-indigo/10 text-indigo/70"
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
 
-      {country && (
-        <div className="flex flex-col gap-2 mb-8">
-          {plans.map((plan) => (
+      <div className="flex flex-col gap-2 mb-8">
+        {visiblePlans.length === 0 && (
+          <p className="text-sm text-indigo/50">No {tab} packs synced yet.</p>
+        )}
+        {visiblePlans.map((plan) => {
+          const gb = plan.meta?.dataMb ? plan.meta.dataMb / 1000 : null;
+          return (
             <button
               key={plan.id}
               type="button"
@@ -176,14 +204,20 @@ function BuyEsim() {
                 selectedPlan?.id === plan.id ? "border-konek-green bg-konek-green/10" : "border-indigo/20 hover:bg-indigo/5"
               }`}
             >
-              <span className="text-sm font-medium text-indigo">{plan.name}</span>
-              <span className="text-sm font-semibold text-indigo">
-                ${(Number(plan.price_minor) / 100).toLocaleString()}
+              <span className="flex items-center gap-3">
+                <span className="text-2xl">{plan.meta?.flag ?? "📶"}</span>
+                <span>
+                  <span className="block text-sm font-semibold text-indigo">{plan.meta?.place ?? plan.name}</span>
+                  <span className="block text-xs text-indigo/50">
+                    {gb ? `${gb}GB` : ""} {plan.meta?.validityDays ? `· ${plan.meta.validityDays} days` : ""}
+                  </span>
+                </span>
               </span>
+              <span className="text-sm font-semibold text-indigo">{usd(Number(plan.price_minor))}</span>
             </button>
-          ))}
-        </div>
-      )}
+          );
+        })}
+      </div>
 
       <button onClick={proceedToPin} className="w-full rounded-xl bg-indigo text-white py-3.5 font-semibold">
         Buy eSIM

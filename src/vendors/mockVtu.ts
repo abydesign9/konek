@@ -49,11 +49,47 @@ const GIFTCARD_PLANS: VendorPlan[] = GIFTCARD_BRANDS.flatMap((b) =>
   }))
 );
 
-const ESIM_PLANS: VendorPlan[] = [
-  { externalId: "us-3gb-7d", name: "USA — 3GB / 7 days", network: "us", costMinor: 900, priceMinor: 1000, currency: "USD" },
-  { externalId: "uk-5gb-15d", name: "UK — 5GB / 15 days", network: "uk", costMinor: 1400, priceMinor: 1500, currency: "USD" },
-  { externalId: "eu-10gb-30d", name: "Europe — 10GB / 30 days", network: "eu", costMinor: 2200, priceMinor: 2400, currency: "USD" },
+// eSIM packs across the three PRD tiers: single-country, regional, and
+// global. meta carries the machine-readable pack type + data allowance +
+// validity so the UI can group them and the usage meter can show the real
+// plan size. USD-priced, charged in NGN via FX at purchase time.
+interface EsimSpec {
+  network: string; // pack id
+  label: string; // human place/region name
+  type: "country" | "region" | "global";
+  flag: string;
+  dataGb: number;
+  days: number;
+  priceUsd: number;
+}
+const ESIM_SPECS: EsimSpec[] = [
+  // Country
+  { network: "us", label: "United States", type: "country", flag: "🇺🇸", dataGb: 1, days: 7, priceUsd: 4.5 },
+  { network: "us", label: "United States", type: "country", flag: "🇺🇸", dataGb: 3, days: 15, priceUsd: 9 },
+  { network: "us", label: "United States", type: "country", flag: "🇺🇸", dataGb: 5, days: 30, priceUsd: 14 },
+  { network: "uk", label: "United Kingdom", type: "country", flag: "🇬🇧", dataGb: 3, days: 15, priceUsd: 9 },
+  { network: "uk", label: "United Kingdom", type: "country", flag: "🇬🇧", dataGb: 10, days: 30, priceUsd: 19 },
+  { network: "ae", label: "United Arab Emirates", type: "country", flag: "🇦🇪", dataGb: 5, days: 15, priceUsd: 17 },
+  { network: "tr", label: "Türkiye", type: "country", flag: "🇹🇷", dataGb: 3, days: 15, priceUsd: 10 },
+  { network: "ng", label: "Nigeria", type: "country", flag: "🇳🇬", dataGb: 5, days: 30, priceUsd: 12 },
+  // Region
+  { network: "eu-region", label: "Europe (36 countries)", type: "region", flag: "🇪🇺", dataGb: 10, days: 30, priceUsd: 24 },
+  { network: "asia-region", label: "Asia (14 countries)", type: "region", flag: "🌏", dataGb: 10, days: 30, priceUsd: 29 },
+  { network: "africa-region", label: "Africa (18 countries)", type: "region", flag: "🌍", dataGb: 5, days: 30, priceUsd: 27 },
+  { network: "americas-region", label: "Americas (15 countries)", type: "region", flag: "🌎", dataGb: 8, days: 30, priceUsd: 26 },
+  // Global
+  { network: "global", label: "Global (120+ countries)", type: "global", flag: "🌐", dataGb: 5, days: 30, priceUsd: 35 },
+  { network: "global", label: "Global (120+ countries)", type: "global", flag: "🌐", dataGb: 10, days: 60, priceUsd: 59 },
 ];
+const ESIM_PLANS: VendorPlan[] = ESIM_SPECS.map((s) => ({
+  externalId: `${s.network}-${s.dataGb}gb-${s.days}d`,
+  name: `${s.label} — ${s.dataGb}GB / ${s.days} days`,
+  network: s.network,
+  costMinor: Math.round(s.priceUsd * 100) - 60,
+  priceMinor: Math.round(s.priceUsd * 100),
+  currency: "USD",
+  meta: { type: s.type, dataMb: s.dataGb * 1000, validityDays: s.days, flag: s.flag, place: s.label },
+}));
 
 function randomToken(prefix: string, digits = 16): string {
   let out = "";
