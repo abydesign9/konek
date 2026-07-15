@@ -9,7 +9,8 @@ export async function GET() {
   if (!userId) return NextResponse.json({ error: "unauthenticated" }, { status: 401 });
 
   const { rows: cards } = await query(
-    `SELECT id, brand, last4, status, currency, created_at FROM cards WHERE user_id = $1 ORDER BY created_at DESC`,
+    `SELECT id, brand, last4, status, currency, single_txn_limit_minor, monthly_limit_minor, merchant_lock, created_at
+     FROM cards WHERE user_id = $1 ORDER BY created_at DESC`,
     [userId]
   );
 

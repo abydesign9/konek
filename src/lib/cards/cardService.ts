@@ -5,7 +5,7 @@ import { getBalance } from "@/lib/ledger/balance";
 import { logAudit } from "@/lib/audit";
 import { sendNotification } from "@/lib/notifications/send";
 import { mockSudoAdapter } from "@/vendors/cards/mockSudo";
-import { CardIssuerAdapter } from "@/vendors/cards/types";
+import { CardIssuerAdapter, SensitiveCardDetails } from "@/vendors/cards/types";
 
 const CURRENCY = "USD";
 const DISPUTE_FEE_PCT = 0.2; // ~20% deterrent fee per spec, to discourage friendly fraud
@@ -23,6 +23,57 @@ export class CardNotActiveError extends Error {
     super("This card is not active");
     this.name = "CardNotActiveError";
   }
+}
+
+// A card control (merchant lock or spend limit) declined the authorization
+// before any 3DS challenge or money movement. `reason` maps to the
+// card_transactions.decline_reason value recorded for the attempt.
+export class CardDeclinedError extends Error {
+  constructor(readonly reason: "merchant_locked" | "single_txn_limit" | "monthly_limit", message: string) {
+    super(message);
+    this.name = "CardDeclinedError";
+  }
+}
+
+export interface CardControls {
+  singleTxnLimitMinor?: number | null;
+  monthlyLimitMinor?: number | null;
+  merchantLock?: string | null;
+}
+
+// Set/clear spend limits and merchant lock. Only fields provided are changed.
+export async function setCardControls(cardId: string, userId: string, controls: CardControls): Promise<void> {
+  const sets: string[] = [];
+  const vals: unknown[] = [cardId, userId];
+  if ("singleTxnLimitMinor" in controls) {
+    vals.push(controls.singleTxnLimitMinor ?? null);
+    sets.push(`single_txn_limit_minor = $${vals.length}`);
+  }
+  if ("monthlyLimitMinor" in controls) {
+    vals.push(controls.monthlyLimitMinor ?? null);
+    sets.push(`monthly_limit_minor = $${vals.length}`);
+  }
+  if ("merchantLock" in controls) {
+    const lock = controls.merchantLock?.trim() || null;
+    vals.push(lock);
+    sets.push(`merchant_lock = $${vals.length}`);
+  }
+  if (sets.length === 0) return;
+  await query(`UPDATE cards SET ${sets.join(", ")} WHERE id = $1 AND user_id = $2`, vals);
+  await logAudit(userId, "card_controls_updated", "card", cardId, controls as Record<string, unknown>);
+}
+
+// Reveal full card details. Fetched from the issuer on demand — never stored.
+export async function revealCardDetails(cardId: string, userId: string): Promise<SensitiveCardDetails> {
+  const { rows } = await query<{ provider_card_id: string; status: string }>(
+    `SELECT provider_card_id, status FROM cards WHERE id = $1 AND user_id = $2`,
+    [cardId, userId]
+  );
+  const card = rows[0];
+  if (!card) throw new CardNotActiveError();
+  const details = await adapter.getSensitiveDetails(card.provider_card_id);
+  await logAudit(userId, "card_details_revealed", "card", cardId);
+  return details;
 }
 
 export async function issueCard(userId: string): Promise<{ cardId: string }> {
@@ -57,12 +108,51 @@ export async function authorizeCardPurchase(
   amountMinor: number,
   merchantName: string
 ): Promise<{ cardTransactionId: string; threeDsChallengeId: string }> {
-  const { rows: cardRows } = await query<{ provider_card_id: string; status: string }>(
-    `SELECT provider_card_id, status FROM cards WHERE id = $1 AND user_id = $2`,
+  const { rows: cardRows } = await query<{
+    provider_card_id: string;
+    status: string;
+    single_txn_limit_minor: string | null;
+    monthly_limit_minor: string | null;
+    merchant_lock: string | null;
+  }>(
+    `SELECT provider_card_id, status, single_txn_limit_minor, monthly_limit_minor, merchant_lock
+     FROM cards WHERE id = $1 AND user_id = $2`,
     [cardId, userId]
   );
   const card = cardRows[0];
   if (!card || card.status !== "active") throw new CardNotActiveError();
+
+  // Card controls are enforced before the 3DS challenge — a blocked attempt
+  // is recorded as a declined card_transaction (so it shows in history) and
+  // the user is notified, then the caller gets a decline.
+  async function decline(reason: "merchant_locked" | "single_txn_limit" | "monthly_limit", message: string) {
+    await query(
+      `INSERT INTO card_transactions (card_id, provider_ref, merchant_name, amount_minor, currency, status, decline_reason, three_ds_challenge)
+       VALUES ($1, $2, $3, $4, $5, 'declined', $6, false)`,
+      [cardId, `blocked_${reason}`, merchantName, amountMinor, CURRENCY, reason]
+    );
+    await logAudit(userId, "card_purchase_declined", "card", cardId, { reason, amountMinor, merchantName });
+    await sendNotification(userId, "push", "txn_receipt", "Card purchase declined", `${message} ($${(amountMinor / 100).toLocaleString()} at ${merchantName}).`);
+    throw new CardDeclinedError(reason, message);
+  }
+
+  if (card.merchant_lock && card.merchant_lock.toLowerCase() !== merchantName.toLowerCase()) {
+    await decline("merchant_locked", `This card is locked to ${card.merchant_lock}`);
+  }
+  if (card.single_txn_limit_minor != null && amountMinor > Number(card.single_txn_limit_minor)) {
+    await decline("single_txn_limit", `Over the per-transaction limit of $${(Number(card.single_txn_limit_minor) / 100).toLocaleString()}`);
+  }
+  if (card.monthly_limit_minor != null) {
+    const { rows: spentRows } = await query<{ spent: string | null }>(
+      `SELECT SUM(amount_minor) AS spent FROM card_transactions
+       WHERE card_id = $1 AND status = 'settled' AND created_at >= date_trunc('month', now())`,
+      [cardId]
+    );
+    const spent = spentRows[0]?.spent ? Number(spentRows[0].spent) : 0;
+    if (spent + amountMinor > Number(card.monthly_limit_minor)) {
+      await decline("monthly_limit", `Over the monthly limit of $${(Number(card.monthly_limit_minor) / 100).toLocaleString()}`);
+    }
+  }
 
   const auth = await adapter.authorize(card.provider_card_id, amountMinor, merchantName);
 

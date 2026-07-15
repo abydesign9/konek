@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionUserId } from "@/lib/auth/session";
-import { authorizeCardPurchase, CardNotActiveError } from "@/lib/cards/cardService";
+import { authorizeCardPurchase, CardDeclinedError, CardNotActiveError } from "@/lib/cards/cardService";
 import { expectedOtpForChallenge } from "@/vendors/cards/mockSudo";
 
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
@@ -23,6 +23,10 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     const devOtpHint = expectedOtpForChallenge(result.threeDsChallengeId);
     return NextResponse.json({ ...result, devOtpHint });
   } catch (err) {
+    if (err instanceof CardDeclinedError) {
+      // A control blocked it — not a server error; the UI shows the decline.
+      return NextResponse.json({ declined: true, reason: err.reason, message: err.message });
+    }
     if (err instanceof CardNotActiveError) {
       return NextResponse.json({ error: err.message }, { status: 409 });
     }

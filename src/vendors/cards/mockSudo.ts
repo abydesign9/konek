@@ -1,4 +1,4 @@
-import { AuthorizeResult, CardIssuerAdapter, IssueCardResult, ThreeDsResult } from "./types";
+import { AuthorizeResult, CardIssuerAdapter, IssueCardResult, SensitiveCardDetails, ThreeDsResult } from "./types";
 
 function randomDigits(n: number): string {
   let out = "";
@@ -36,5 +36,18 @@ export const mockSudoAdapter: CardIssuerAdapter = {
 
   async completeThreeDs(threeDsChallengeId: string, code: string): Promise<ThreeDsResult> {
     return { passed: code === expectedOtpFor(threeDsChallengeId) };
+  },
+
+  // Deterministic from the provider card id so reveal is stable across calls
+  // without persisting the PAN. A real issuer returns these from its vault.
+  async getSensitiveDetails(providerCardId: string): Promise<SensitiveCardDetails> {
+    const seed = providerCardId.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
+    let digits = "";
+    for (let i = 0; i < 15; i++) digits += ((seed * (i + 7) + i * 31) % 10).toString();
+    const pan = "4" + digits; // 16-digit Visa-style
+    const expMonth = (seed % 12) + 1;
+    const expYear = 2029 + (seed % 3);
+    const cvv = String((seed * 13) % 1000).padStart(3, "0");
+    return { pan, expMonth, expYear, cvv };
   },
 };
