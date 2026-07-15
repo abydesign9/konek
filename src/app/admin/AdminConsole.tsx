@@ -77,6 +77,17 @@ interface AdminUserRow {
   active: boolean;
 }
 
+interface SupportRow {
+  id: string;
+  subject: string;
+  body: string;
+  status: string;
+  phone: string;
+  created_at: string;
+}
+
+const SUPPORT_STATUS_LABEL: Record<string, string> = { open: "Open", in_progress: "In progress", resolved: "Resolved" };
+
 const PRIORITY_COLOR: Record<string, string> = {
   critical: "bg-red-100 text-red-700",
   high: "bg-orange-100 text-orange-700",
@@ -108,6 +119,9 @@ export function AdminConsole() {
   const [newAdminEmail, setNewAdminEmail] = useState("");
   const [refunding, setRefunding] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const [supportMessages, setSupportMessages] = useState<SupportRow[]>([]);
+  const [openReplyId, setOpenReplyId] = useState<string | null>(null);
+  const [replyText, setReplyText] = useState("");
 
   async function loadTxns(q: string) {
     const res = await fetch(`/api/admin/transactions?q=${encodeURIComponent(q)}`);
@@ -157,6 +171,12 @@ export function AdminConsole() {
     setAdminUsers(data.admins ?? []);
   }
 
+  async function loadSupportMessages() {
+    const res = await fetch("/api/admin/support?status=open");
+    const data = await res.json();
+    setSupportMessages(data.messages ?? []);
+  }
+
   useEffect(() => {
     loadTxns("");
     loadVendors();
@@ -166,7 +186,20 @@ export function AdminConsole() {
     loadFraudQueue();
     loadReconRuns();
     loadAdminUsers();
+    loadSupportMessages();
   }, []);
+
+  async function sendSupportReply(id: string, resolve: boolean) {
+    if (!replyText.trim()) return;
+    await fetch(`/api/admin/support/${id}/reply`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ body: replyText, resolve }),
+    });
+    setReplyText("");
+    setOpenReplyId(null);
+    loadSupportMessages();
+  }
 
   async function assignToMe(id: string) {
     await fetch(`/api/admin/fraud-queue/${id}/assign`, { method: "POST" });
@@ -295,6 +328,50 @@ export function AdminConsole() {
             </div>
           ))}
           {fraudQueue.length === 0 && <p className="text-sm text-indigo/50">Queue is clear.</p>}
+        </div>
+      </section>
+
+      <section className="mb-8">
+        <p className="text-sm font-semibold text-indigo mb-3">Support (open)</p>
+        <div className="flex flex-col gap-2">
+          {supportMessages.map((m) => (
+            <div key={m.id} className="rounded-xl border border-indigo/10 bg-white px-4 py-3">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-sm font-medium text-indigo">{m.phone} · {m.subject}</span>
+                <span className="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase bg-gold/20 text-gold">
+                  {SUPPORT_STATUS_LABEL[m.status] ?? m.status}
+                </span>
+              </div>
+              <p className="text-xs text-indigo/60 mb-2 break-words">{m.body}</p>
+              {openReplyId === m.id ? (
+                <div className="flex flex-col gap-2">
+                  <textarea
+                    value={replyText}
+                    onChange={(e) => setReplyText(e.target.value)}
+                    rows={2}
+                    placeholder="Reply to the customer…"
+                    className="w-full rounded-lg border border-indigo/20 px-3 py-2 text-sm"
+                  />
+                  <div className="flex gap-3">
+                    <button onClick={() => sendSupportReply(m.id, false)} className="text-xs font-semibold text-indigo underline">
+                      Reply
+                    </button>
+                    <button onClick={() => sendSupportReply(m.id, true)} className="text-xs font-semibold text-konek-green underline">
+                      Reply &amp; resolve
+                    </button>
+                    <button onClick={() => { setOpenReplyId(null); setReplyText(""); }} className="text-xs text-indigo/50 underline">
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <button onClick={() => setOpenReplyId(m.id)} className="text-xs font-semibold text-indigo underline">
+                  Reply
+                </button>
+              )}
+            </div>
+          ))}
+          {supportMessages.length === 0 && <p className="text-sm text-indigo/50">No open support requests.</p>}
         </div>
       </section>
 

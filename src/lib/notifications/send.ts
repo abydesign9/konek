@@ -7,24 +7,25 @@ interface Preferences {
   push_enabled: boolean;
   sms_enabled: boolean;
   email_enabled: boolean;
+  whatsapp_enabled: boolean;
   price_alerts: boolean;
 }
 
 async function getPreferences(userId: string): Promise<Preferences> {
   const { rows } = await query<Preferences>(
-    `SELECT push_enabled, sms_enabled, email_enabled, price_alerts FROM notification_preferences WHERE user_id = $1`,
+    `SELECT push_enabled, sms_enabled, email_enabled, whatsapp_enabled, price_alerts FROM notification_preferences WHERE user_id = $1`,
     [userId]
   );
   if (rows[0]) return rows[0];
   await query(`INSERT INTO notification_preferences (user_id) VALUES ($1) ON CONFLICT DO NOTHING`, [userId]);
-  return { push_enabled: true, sms_enabled: true, email_enabled: true, price_alerts: true };
+  return { push_enabled: true, sms_enabled: true, email_enabled: true, whatsapp_enabled: true, price_alerts: true };
 }
 
 function channelEnabled(prefs: Preferences, channel: NotificationChannel): boolean {
   if (channel === "push") return prefs.push_enabled;
   if (channel === "sms") return prefs.sms_enabled;
   if (channel === "email") return prefs.email_enabled;
-  return true; // whatsapp has no dedicated toggle yet
+  return prefs.whatsapp_enabled;
 }
 
 // Mock delivery — logs like the SMS/mock-checkout pattern elsewhere in the

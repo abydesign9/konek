@@ -9,7 +9,7 @@ export async function GET() {
   const { rows } = await query(
     `INSERT INTO notification_preferences (user_id) VALUES ($1)
      ON CONFLICT (user_id) DO UPDATE SET user_id = EXCLUDED.user_id
-     RETURNING push_enabled, sms_enabled, email_enabled, price_alerts`,
+     RETURNING push_enabled, sms_enabled, email_enabled, whatsapp_enabled, price_alerts`,
     [userId]
   );
   return NextResponse.json(rows[0]);
@@ -20,7 +20,7 @@ export async function PATCH(req: NextRequest) {
   if (!userId) return NextResponse.json({ error: "unauthenticated" }, { status: 401 });
 
   const body = await req.json().catch(() => null);
-  const fields = ["push_enabled", "sms_enabled", "email_enabled", "price_alerts"] as const;
+  const fields = ["push_enabled", "sms_enabled", "email_enabled", "whatsapp_enabled", "price_alerts"] as const;
   const updates: Record<string, boolean> = {};
   for (const f of fields) {
     if (typeof body?.[f] === "boolean") updates[f] = body[f];
