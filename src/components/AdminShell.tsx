@@ -11,6 +11,7 @@ const TABS = [
   { href: "/admin/rates", label: "Rates" },
   { href: "/admin/users", label: "Users" },
   { href: "/admin/referrals", label: "Referrals" },
+  { href: "/admin/support", label: "Support" },
 ];
 
 export function AdminShell({ children }: { children: React.ReactNode }) {

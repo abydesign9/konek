@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionUserId } from "@/lib/auth/session";
-import { createMessage, listMessagesForUser } from "@/lib/support/supportService";
+import { createMessage, listMessagesForUser, type SupportPriority } from "@/lib/support/supportService";
 import { checkRateLimit, RateLimitExceededError } from "@/lib/rateLimit";
+
+const VALID_CATEGORIES = ["kyc", "payments", "vtu", "esim", "card", "dollar_account", "other"];
 
 export async function GET() {
   const userId = await getSessionUserId();
@@ -16,6 +18,7 @@ export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
   const subject = body?.subject;
   const message = body?.body;
+  const category = VALID_CATEGORIES.includes(body?.category) ? body.category : undefined;
   if (typeof subject !== "string" || !subject.trim()) {
     return NextResponse.json({ error: "subject is required" }, { status: 400 });
   }
@@ -32,6 +35,8 @@ export async function POST(req: NextRequest) {
     throw err;
   }
 
-  const result = await createMessage(userId, subject.trim(), message.trim());
+  // Priority always starts at 'medium' from the customer side — only an
+  // admin can escalate/de-escalate, so a customer can't self-assign 'urgent'.
+  const result = await createMessage(userId, subject.trim(), message.trim(), category, "medium" as SupportPriority);
   return NextResponse.json(result);
 }

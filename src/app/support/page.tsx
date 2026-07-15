@@ -15,19 +15,37 @@ interface SupportMessage {
 const STATUS_LABEL: Record<string, string> = {
   open: "Open",
   in_progress: "In progress",
+  assigned: "In progress",
+  waiting_on_customer: "Awaiting your reply",
   resolved: "Resolved",
+  closed: "Closed",
 };
 const STATUS_CLASS: Record<string, string> = {
   open: "bg-gold/15 text-gold",
   in_progress: "bg-indigo/10 text-indigo",
+  assigned: "bg-indigo/10 text-indigo",
+  waiting_on_customer: "bg-gold/15 text-gold",
   resolved: "bg-konek-green/15 text-konek-green",
+  closed: "bg-indigo/10 text-indigo/60",
 };
+
+const CATEGORIES = [
+  { id: "", label: "Choose a topic (optional)" },
+  { id: "kyc", label: "Verification" },
+  { id: "payments", label: "Payments & wallet" },
+  { id: "vtu", label: "Airtime, data & bills" },
+  { id: "esim", label: "eSIM" },
+  { id: "card", label: "Virtual card" },
+  { id: "dollar_account", label: "Dollar account" },
+  { id: "other", label: "Something else" },
+];
 
 export default function SupportPage() {
   const [messages, setMessages] = useState<SupportMessage[] | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [subject, setSubject] = useState("");
   const [body, setBody] = useState("");
+  const [category, setCategory] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -49,7 +67,7 @@ export default function SupportPage() {
     const res = await fetch("/api/support", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ subject, body }),
+      body: JSON.stringify({ subject, body, category: category || undefined }),
     });
     setSubmitting(false);
     const data = await res.json().catch(() => ({}));
@@ -59,6 +77,7 @@ export default function SupportPage() {
     }
     setSubject("");
     setBody("");
+    setCategory("");
     setShowForm(false);
     load();
   }
@@ -76,12 +95,25 @@ export default function SupportPage() {
       />
       <div className="max-w-lg mx-auto px-4 sm:px-6 py-6">
         <p className="text-sm text-indigo/60 mb-6">
-          Send us a message and we&rsquo;ll reply here. For urgent issues, email{" "}
-          <a href="mailto:support@konek.app" className="text-indigo underline">support@konek.app</a>.
+          Send us a message and we&rsquo;ll reply here. Check the{" "}
+          <Link href="/faq" className="text-indigo underline">help center</Link> for quick answers, or for urgent
+          issues email <a href="mailto:support@konek.app" className="text-indigo underline">support@konek.app</a>.
         </p>
 
         {showForm && (
           <div className="rounded-2xl border border-indigo/10 bg-white p-5 mb-6">
+            <label className="block text-sm text-indigo/60 mb-2">Topic</label>
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="w-full rounded-xl border border-indigo/20 px-4 py-2.5 text-sm mb-4"
+            >
+              {CATEGORIES.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.label}
+                </option>
+              ))}
+            </select>
             <label className="block text-sm text-indigo/60 mb-2">Subject</label>
             <input
               value={subject}
