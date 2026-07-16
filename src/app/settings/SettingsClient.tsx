@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { PageHeader } from "@/components/PageHeader";
 import { PinPad } from "@/components/PinPad";
@@ -117,54 +116,19 @@ function ChangePinCard() {
   );
 }
 
-function CloseAccountCard() {
-  const router = useRouter();
-  const [confirming, setConfirming] = useState(false);
-  const [pin, setPin] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [closing, setClosing] = useState(false);
-
-  async function submit(finalPin: string) {
-    setClosing(true);
-    setError(null);
-    const res = await fetch("/api/account/close", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ pin: finalPin }),
-    });
-    setClosing(false);
-    const body = await res.json().catch(() => ({}));
-    if (!res.ok) {
-      setError(body.error ?? "Failed to close account");
-      setPin("");
-      return;
-    }
-    router.push("/login");
-  }
-
-  if (!confirming) {
-    return (
-      <button
-        onClick={() => setConfirming(true)}
-        className="w-full rounded-2xl border border-red-200 bg-red-50 px-4 py-3.5 text-center text-sm font-semibold text-red-600"
-      >
-        Delete account
-      </button>
-    );
-  }
-
+// Biometrics and 2-step verification aren't built yet — this is the config
+// layer readers see while that work is scoped, not a fake toggle. Same
+// "honest deferral" the notification scheduler and recurring top-up use.
+function ComingSoonRow({ label, sub }: { label: string; sub: string }) {
   return (
-    <div className="rounded-2xl border border-red-200 bg-red-50 px-5 py-6">
-      <p className="mb-1 text-center text-sm font-semibold text-red-700">This closes your account for good</p>
-      <p className="mb-4 text-center text-xs text-red-600/80">
-        Your wallet must be at ₦0 / $0 first. Enter your PIN to confirm.
-      </p>
-      <PinPad value={pin} onChange={setPin} onComplete={submit} />
-      {error && <p className="mt-3 text-center text-xs text-red-600">{error}</p>}
-      {closing && <p className="mt-3 text-center text-xs text-red-600/70">Closing…</p>}
-      <button onClick={() => setConfirming(false)} className="mt-4 w-full text-center text-xs text-indigo/50">
-        Cancel
-      </button>
+    <div className="flex w-full items-center justify-between rounded-2xl bg-white px-4 py-3.5 konek-card-shadow opacity-70">
+      <span className="min-w-0 flex-1">
+        <span className="block text-sm font-semibold text-indigo">{label}</span>
+        <span className="block text-xs text-indigo/50">{sub}</span>
+      </span>
+      <span className="shrink-0 rounded-full bg-hover-tint px-2.5 py-1 text-[11px] font-semibold text-indigo/50">
+        Coming soon
+      </span>
     </div>
   );
 }
@@ -172,20 +136,27 @@ function CloseAccountCard() {
 export function SettingsClient() {
   return (
     <main className="min-h-screen bg-background pb-12">
-      <PageHeader title="Settings" backHref="/profile" />
+      <PageHeader title="Privacy and security" backHref="/profile" />
 
       <div className="mx-auto flex max-w-lg flex-col gap-6 px-5 py-6">
         <section>
-          <p className="mb-3 text-xs font-bold uppercase tracking-wide text-indigo/40">Security</p>
+          <p className="mb-3 text-xs font-bold uppercase tracking-wide text-indigo/40">Transaction PIN</p>
           <div className="flex flex-col gap-2.5">
             <ChangePinCard />
-            <Link
-              href="/notifications"
-              className="flex items-center justify-between rounded-2xl bg-white px-4 py-3.5 konek-card-shadow konek-tile"
-            >
-              <span className="text-sm font-semibold text-indigo">Notification preferences</span>
-              <IconChevronRight className="h-4 w-4 text-indigo/30" />
-            </Link>
+          </div>
+        </section>
+
+        <section>
+          <p className="mb-3 text-xs font-bold uppercase tracking-wide text-indigo/40">Extra protection</p>
+          <div className="flex flex-col gap-2.5">
+            <ComingSoonRow label="2-step verification" sub="Confirm sign-in with a one-time code" />
+            <ComingSoonRow label="Biometrics" sub="Unlock Konek with Face ID or fingerprint" />
+          </div>
+        </section>
+
+        <section>
+          <p className="mb-3 text-xs font-bold uppercase tracking-wide text-indigo/40">Legal</p>
+          <div className="flex flex-col gap-2.5">
             <Link
               href="/privacy"
               className="flex items-center justify-between rounded-2xl bg-white px-4 py-3.5 konek-card-shadow konek-tile"
@@ -194,11 +165,6 @@ export function SettingsClient() {
               <IconChevronRight className="h-4 w-4 text-indigo/30" />
             </Link>
           </div>
-        </section>
-
-        <section>
-          <p className="mb-3 text-xs font-bold uppercase tracking-wide text-red-600/60">Danger zone</p>
-          <CloseAccountCard />
         </section>
       </div>
     </main>

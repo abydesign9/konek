@@ -241,6 +241,59 @@ export function IconCard(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
+// Filled circle with a question mark — get help / support.
+export function IconHelp(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <Base {...props}>
+      <circle cx="12" cy="12" r="9.5" />
+      <path
+        d="M9.5 9.3a2.6 2.6 0 0 1 5-.8c0 1.7-2.5 1.8-2.5 3.7"
+        fill="none"
+        stroke="white"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      <circle cx="12" cy="16.3" r="1.1" fill="white" />
+    </Base>
+  );
+}
+
+// Filled sliders — preferences.
+export function IconSliders(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <Base {...props}>
+      <rect x="3" y="5.5" width="18" height="2.4" rx="1.2" />
+      <rect x="3" y="10.8" width="18" height="2.4" rx="1.2" />
+      <rect x="3" y="16.1" width="18" height="2.4" rx="1.2" />
+      <circle cx="8" cy="6.7" r="2.3" fill="white" stroke="currentColor" strokeWidth="1.4" />
+      <circle cx="16" cy="12" r="2.3" fill="white" stroke="currentColor" strokeWidth="1.4" />
+      <circle cx="10" cy="17.3" r="2.3" fill="white" stroke="currentColor" strokeWidth="1.4" />
+    </Base>
+  );
+}
+
+// Filled link — connected accounts.
+export function IconLink(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <Base {...props}>
+      <rect x="2.3" y="8.5" width="10" height="7" rx="3.5" />
+      <rect x="11.7" y="8.5" width="10" height="7" rx="3.5" />
+      <rect x="8" y="10.2" width="8" height="3.6" rx="1.8" fill="white" />
+    </Base>
+  );
+}
+
+// Filled circle with an "i" — about / info.
+export function IconInfo(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <Base {...props}>
+      <circle cx="12" cy="12" r="9.5" />
+      <rect x="10.9" y="10" width="2.2" height="7" rx="1.1" fill="white" />
+      <circle cx="12" cy="7.3" r="1.3" fill="white" />
+    </Base>
+  );
+}
+
 // Chevron-right — nav row affordance.
 export function IconChevronRight(props: React.SVGProps<SVGSVGElement>) {
   return (
