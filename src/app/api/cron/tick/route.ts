@@ -1,24 +1,32 @@
 import { NextRequest, NextResponse } from "next/server";
 import { refreshVendorHealth } from "@/vendors/registry";
 import { dispatchDueCampaigns } from "@/lib/notifications/campaigns";
+import { dispatchDueRecurringTopups } from "@/lib/recurring/recurringTopups";
+import { dispatchDueRecurringDistributions } from "@/lib/recurring/recurringDistributions";
 
 // The one worker this app has: a single endpoint a scheduler calls on an
 // interval (Vercel Cron in prod — see vercel.json; scripts/cron_dev.mjs
 // polls it locally). Everything "scheduled" or "recurring" in this app
-// (vendor health, notification campaigns, and — once built — recurring
-// intl top-up and bulk distributions) is real config sitting in Postgres
-// with nothing to make it fire on its own; this route is that trigger.
-// Same auth convention as /api/admin/catalog-sync.
+// (vendor health, notification campaigns, recurring intl top-up, and bulk
+// distributions) is real config sitting in Postgres with nothing to make
+// it fire on its own; this route is that trigger. Same auth convention as
+// /api/admin/catalog-sync.
+async function runTick() {
+  await refreshVendorHealth();
+  const { dispatched: campaignsDispatched } = await dispatchDueCampaigns();
+  const { dispatched: recurringTopupsDispatched } = await dispatchDueRecurringTopups();
+  const { dispatched: recurringDistributionsDispatched } = await dispatchDueRecurringDistributions();
+  return { campaignsDispatched, recurringTopupsDispatched, recurringDistributionsDispatched };
+}
+
 export async function POST(req: NextRequest) {
   const secret = req.headers.get("x-cron-secret");
   if (!process.env.CRON_SECRET || secret !== process.env.CRON_SECRET) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
-  await refreshVendorHealth();
-  const { dispatched } = await dispatchDueCampaigns();
-
-  return NextResponse.json({ ok: true, campaignsDispatched: dispatched, ranAt: new Date().toISOString() });
+  const result = await runTick();
+  return NextResponse.json({ ok: true, ...result, ranAt: new Date().toISOString() });
 }
 
 // Vercel Cron invokes GET with an Authorization: Bearer <CRON_SECRET>
@@ -31,8 +39,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
-  await refreshVendorHealth();
-  const { dispatched } = await dispatchDueCampaigns();
-
-  return NextResponse.json({ ok: true, campaignsDispatched: dispatched, ranAt: new Date().toISOString() });
+  const result = await runTick();
+  return NextResponse.json({ ok: true, ...result, ranAt: new Date().toISOString() });
 }

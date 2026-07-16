@@ -4,6 +4,7 @@ import { findOrCreateUserByPhone } from "@/lib/auth/users";
 import { createSession } from "@/lib/auth/session";
 import { logAudit } from "@/lib/audit";
 import { query } from "@/lib/db";
+import { clientIp } from "@/lib/rateLimit";
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
@@ -33,7 +34,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "This account is not active. Contact support for help." }, { status: 403 });
   }
 
-  await createSession(userId);
+  await createSession(userId, { userAgent: req.headers.get("user-agent"), ip: clientIp(req) });
   await logAudit(userId, "login", "user", userId, { phone });
 
   return NextResponse.json({ ok: true });

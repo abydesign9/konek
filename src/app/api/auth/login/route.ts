@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "This account is not active. Contact support for help." }, { status: 403 });
     }
 
-    await createSession(userId);
+    await createSession(userId, { userAgent: req.headers.get("user-agent"), ip: clientIp(req) });
     await logAudit(userId, "login", "user", userId, { method: "email_password" });
     return NextResponse.json({ ok: true });
   } catch (err) {

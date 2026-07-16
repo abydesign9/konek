@@ -1,24 +1,63 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/PageHeader";
 import { IconChevronRight } from "@/components/icons";
 
-function ComingSoonRow({ label, sub }: { label: string; sub: string }) {
-  return (
-    <div className="flex w-full items-center justify-between rounded-2xl bg-white px-4 py-3.5 konek-card-shadow opacity-70">
-      <span className="min-w-0 flex-1">
-        <span className="block text-sm font-semibold text-indigo">{label}</span>
-        <span className="block text-xs text-indigo/50">{sub}</span>
-      </span>
-      <span className="shrink-0 rounded-full bg-hover-tint px-2.5 py-1 text-[11px] font-semibold text-indigo/50">
-        Coming soon
-      </span>
-    </div>
-  );
-}
+const THEMES = [
+  { value: "light", label: "Light" },
+  { value: "dark", label: "Dark" },
+  { value: "system", label: "Match device" },
+];
+
+const LANGUAGES = [
+  { value: "en", label: "English" },
+  { value: "fr", label: "Français" },
+  { value: "pcm", label: "Pidgin" },
+];
 
 export function PreferencesClient() {
+  const router = useRouter();
+  const [theme, setTheme] = useState<string | null>(null);
+  const [language, setLanguage] = useState<string | null>(null);
+  const [saving, setSaving] = useState<"theme" | "language" | null>(null);
+
+  useEffect(() => {
+    fetch("/api/settings/me")
+      .then((r) => r.json())
+      .then((d) => {
+        setTheme(d.theme ?? "system");
+        setLanguage(d.language ?? "en");
+      });
+  }, []);
+
+  async function updateTheme(next: string) {
+    setTheme(next);
+    setSaving("theme");
+    await fetch("/api/settings/theme", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ theme: next }),
+    });
+    setSaving(null);
+    // Server layout sets data-theme from the DB on render — refresh so the
+    // change is visible immediately instead of on the next navigation.
+    router.refresh();
+  }
+
+  async function updateLanguage(next: string) {
+    setLanguage(next);
+    setSaving("language");
+    await fetch("/api/settings/language", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ language: next }),
+    });
+    setSaving(null);
+  }
+
   return (
     <main className="min-h-screen bg-background pb-12">
       <PageHeader title="Preferences" backHref="/profile" />
@@ -40,9 +79,48 @@ export function PreferencesClient() {
 
         <section>
           <p className="mb-3 text-xs font-bold uppercase tracking-wide text-indigo/40">Appearance</p>
-          <div className="flex flex-col gap-2.5">
-            <ComingSoonRow label="Theme" sub="Light, dark, or match your device" />
-            <ComingSoonRow label="Language" sub="Switch the app's display language" />
+          <div className="konek-card-shadow rounded-2xl bg-white px-4 py-3.5">
+            <p className="mb-2 text-sm font-semibold text-indigo">Theme</p>
+            <div className="flex gap-2">
+              {THEMES.map((t) => (
+                <button
+                  key={t.value}
+                  onClick={() => updateTheme(t.value)}
+                  disabled={saving === "theme"}
+                  className={`flex-1 rounded-xl px-3 py-2 text-xs font-semibold transition-colors ${
+                    theme === t.value ? "bg-indigo text-white" : "bg-hover-tint text-indigo/60"
+                  }`}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+            <p className="mt-2 text-xs text-indigo/45">
+              Applies to backgrounds now; full dark styling for every screen is still rolling out.
+            </p>
+          </div>
+        </section>
+
+        <section>
+          <p className="mb-3 text-xs font-bold uppercase tracking-wide text-indigo/40">Language</p>
+          <div className="konek-card-shadow rounded-2xl bg-white px-4 py-3.5">
+            <div className="flex gap-2">
+              {LANGUAGES.map((l) => (
+                <button
+                  key={l.value}
+                  onClick={() => updateLanguage(l.value)}
+                  disabled={saving === "language"}
+                  className={`flex-1 rounded-xl px-3 py-2 text-xs font-semibold transition-colors ${
+                    language === l.value ? "bg-indigo text-white" : "bg-hover-tint text-indigo/60"
+                  }`}
+                >
+                  {l.label}
+                </button>
+              ))}
+            </div>
+            <p className="mt-2 text-xs text-indigo/45">
+              Your choice is saved. Translated app copy is coming soon — everything still displays in English today.
+            </p>
           </div>
         </section>
       </div>

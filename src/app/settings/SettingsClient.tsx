@@ -116,9 +116,9 @@ function ChangePinCard() {
   );
 }
 
-// Biometrics and 2-step verification aren't built yet — this is the config
-// layer readers see while that work is scoped, not a fake toggle. Same
-// "honest deferral" the notification scheduler and recurring top-up use.
+// 2-step verification isn't built yet — this is the config layer readers
+// see while that work is scoped, not a fake toggle. Same "honest deferral"
+// the notification scheduler and recurring top-up use.
 function ComingSoonRow({ label, sub }: { label: string; sub: string }) {
   return (
     <div className="flex w-full items-center justify-between rounded-2xl bg-white px-4 py-3.5 konek-card-shadow opacity-70">
@@ -129,6 +129,112 @@ function ComingSoonRow({ label, sub }: { label: string; sub: string }) {
       <span className="shrink-0 rounded-full bg-hover-tint px-2.5 py-1 text-[11px] font-semibold text-indigo/50">
         Coming soon
       </span>
+    </div>
+  );
+}
+
+function bufToBase64Url(buf: ArrayBuffer): string {
+  return btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+// Registers a real platform-authenticator credential (Face ID / Touch ID /
+// Windows Hello / Android biometric unlock — whatever the device offers)
+// and stores its id server-side. This gates re-entry to the app on this
+// device: the browser itself refuses navigator.credentials.get() unless
+// the same biometric that created the credential unlocks it. It is not a
+// server-verified signature check and does not replace the password —
+// see the route's own comment for why that's a deliberately smaller scope.
+function BiometricsCard() {
+  const [enabled, setEnabled] = useState<boolean | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [supported, setSupported] = useState(true);
+
+  useEffect(() => {
+    setSupported(typeof window !== "undefined" && !!window.PublicKeyCredential);
+    fetch("/api/settings/me")
+      .then((r) => r.json())
+      .then((d) => setEnabled(Boolean(d.biometric_enabled)));
+  }, []);
+
+  async function enable() {
+    setError(null);
+    setBusy(true);
+    try {
+      const challenge = crypto.getRandomValues(new Uint8Array(32));
+      const userId = crypto.getRandomValues(new Uint8Array(16));
+      const credential = (await navigator.credentials.create({
+        publicKey: {
+          challenge,
+          rp: { name: "Konek" },
+          user: { id: userId, name: "konek-user", displayName: "Konek" },
+          pubKeyCredParams: [
+            { type: "public-key", alg: -7 },
+            { type: "public-key", alg: -257 },
+          ],
+          authenticatorSelection: { authenticatorAttachment: "platform", userVerification: "required" },
+          timeout: 60000,
+        },
+      })) as PublicKeyCredential | null;
+
+      if (!credential) throw new Error("Could not register biometric unlock");
+      const credentialId = bufToBase64Url(credential.rawId);
+
+      const res = await fetch("/api/settings/biometrics", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ enabled: true, credentialId }),
+      });
+      if (!res.ok) throw new Error("Could not save biometric setting");
+      setEnabled(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not enable biometrics on this device");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function disable() {
+    setBusy(true);
+    await fetch("/api/settings/biometrics", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ enabled: false }),
+    });
+    setEnabled(false);
+    setBusy(false);
+  }
+
+  return (
+    <div className="rounded-2xl bg-white px-4 py-3.5 konek-card-shadow">
+      <div className="flex items-center justify-between">
+        <span className="min-w-0 flex-1">
+          <span className="block text-sm font-semibold text-indigo">Biometrics</span>
+          <span className="block text-xs text-indigo/55">Unlock Konek with Face ID or fingerprint</span>
+        </span>
+        {!supported ? (
+          <span className="shrink-0 rounded-full bg-hover-tint px-2.5 py-1 text-[11px] font-semibold text-indigo/50">
+            Not available
+          </span>
+        ) : enabled === null ? null : enabled ? (
+          <button
+            onClick={disable}
+            disabled={busy}
+            className="shrink-0 rounded-full bg-hover-tint px-3 py-1.5 text-xs font-semibold text-indigo disabled:opacity-50"
+          >
+            {busy ? "…" : "Turn off"}
+          </button>
+        ) : (
+          <button
+            onClick={enable}
+            disabled={busy}
+            className="shrink-0 rounded-full bg-indigo px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50"
+          >
+            {busy ? "…" : "Turn on"}
+          </button>
+        )}
+      </div>
+      {error && <p className="mt-2 text-xs text-red-600">{error}</p>}
     </div>
   );
 }
@@ -150,8 +256,22 @@ export function SettingsClient() {
           <p className="mb-3 text-xs font-bold uppercase tracking-wide text-indigo/40">Extra protection</p>
           <div className="flex flex-col gap-2.5">
             <ComingSoonRow label="2-step verification" sub="Confirm sign-in with a one-time code" />
-            <ComingSoonRow label="Biometrics" sub="Unlock Konek with Face ID or fingerprint" />
+            <BiometricsCard />
           </div>
+        </section>
+
+        <section>
+          <p className="mb-3 text-xs font-bold uppercase tracking-wide text-indigo/40">Devices</p>
+          <Link
+            href="/settings/sessions"
+            className="flex items-center justify-between rounded-2xl bg-white px-4 py-3.5 konek-card-shadow konek-tile"
+          >
+            <span className="min-w-0 flex-1">
+              <span className="block text-sm font-semibold text-indigo">Device and session management</span>
+              <span className="block text-xs text-indigo/55">See where you&apos;re signed in and sign out other devices</span>
+            </span>
+            <IconChevronRight className="h-4 w-4 shrink-0 text-indigo/30" />
+          </Link>
         </section>
 
         <section>

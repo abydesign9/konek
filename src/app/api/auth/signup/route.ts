@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const { userId } = await signUpWithPassword(fullName, email, password, referralCode);
-    await createSession(userId);
+    await createSession(userId, { userAgent: req.headers.get("user-agent"), ip: clientIp(req) });
     await logAudit(userId, "signup", "user", userId, { method: "email_password" });
     return NextResponse.json({ ok: true });
   } catch (err) {

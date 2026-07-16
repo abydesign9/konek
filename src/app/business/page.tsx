@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { PageHeader } from "@/components/PageHeader";
 
 interface Business {
@@ -328,6 +329,9 @@ export default function BusinessPage() {
                   {uploading ? "Processing…" : "Upload & process"}
                 </button>
                 {uploadResult && <p className="text-sm text-indigo/70 mt-3">{uploadResult}</p>}
+                <Link href="/business/recurring" className="mt-4 inline-block text-sm font-semibold text-indigo underline">
+                  Manage recurring distributions →
+                </Link>
               </div>
             ) : (
               <p className="text-sm text-indigo/60 mb-8">

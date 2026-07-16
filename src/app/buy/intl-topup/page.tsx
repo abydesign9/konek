@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ChipPicker } from "@/components/ChipPicker";
 import { PageHeader } from "@/components/PageHeader";
@@ -165,7 +166,15 @@ function BuyIntlTopup() {
 
   return (
     <main className="min-h-screen bg-background">
-      <PageHeader title="International top-up" backHref="/home" />
+      <PageHeader
+        title="International top-up"
+        backHref="/home"
+        right={
+          <Link href="/wallet/recurring" className="text-xs font-semibold text-indigo">
+            Recurring
+          </Link>
+        }
+      />
       <div className="max-w-lg mx-auto px-4 sm:px-6 py-6">
       <p className="text-sm text-indigo/60 mb-6">
         Priced in USD, charged from your NGN wallet at today&apos;s rate.

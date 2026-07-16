@@ -7,6 +7,21 @@
   --foreground: #22315c;
 }
 
+/* Dark theme: swaps the base page surface/text. Card surfaces
+   (bg-white), the indigo brand color, etc. are not yet re-themed per
+   component — this covers the page canvas, which is what most screens
+   are mostly made of, while full per-screen dark coverage is finished. */
+[data-theme="dark"] {
+  --background: #14182b;
+  --foreground: #f3eee7;
+}
+@media (prefers-color-scheme: dark) {
+  [data-theme="system"] {
+    --background: #14182b;
+    --foreground: #f3eee7;
+  }
+}
+
 body {
   color: var(--foreground);
   background: var(--background);
