@@ -213,6 +213,36 @@ export async function sendCampaignNow(campaignId: string, actorId: string): Prom
   return { recipients: queued };
 }
 
+// Called by the cron worker (see /api/cron/tick). Fires any one-off
+// 'scheduled' campaign whose time has come, and any 'active' recurring
+// campaign whose interval has elapsed since it last sent. sendCampaignNow()
+// always leaves a campaign as 'sent' — for recurring campaigns we flip it
+// back to 'active' immediately after so the next interval can fire it
+// again; last_sent_at (also set by sendCampaignNow) is what the recurring
+// due-check keys off.
+export async function dispatchDueCampaigns(): Promise<{ dispatched: number }> {
+  const { rows: due } = await query<{ id: string; schedule_type: string }>(
+    `SELECT id, schedule_type FROM notification_campaigns
+     WHERE (
+       (status = 'scheduled' AND scheduled_at IS NOT NULL AND scheduled_at <= now())
+       OR (
+         status = 'active' AND schedule_type = 'recurring' AND recurring_interval_hours IS NOT NULL
+         AND last_sent_at IS NOT NULL
+         AND last_sent_at <= now() - (recurring_interval_hours || ' hours')::interval
+       )
+     )
+     AND (expiry_at IS NULL OR expiry_at > now())`
+  );
+
+  for (const c of due) {
+    await sendCampaignNow(c.id, "system:cron");
+    if (c.schedule_type === "recurring") {
+      await setCampaignStatus(c.id, "active", "system:cron");
+    }
+  }
+  return { dispatched: due.length };
+}
+
 export interface CampaignAnalytics {
   delivered: number;
   opened: number;
