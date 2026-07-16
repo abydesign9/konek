@@ -14,7 +14,7 @@ import {
 } from "@/components/icons";
 
 interface ProfileData {
-  phone: string;
+  phone: string | null;
   full_name: string | null;
   email: string | null;
   country_code: string;
@@ -101,13 +101,13 @@ export function ProfileClient() {
         <div className="rounded-2xl bg-white px-5 py-5 konek-card-shadow">
           <div className="mb-4 flex items-center gap-3">
             <span className="flex h-14 w-14 items-center justify-center rounded-full bg-indigo/10 font-heading text-lg font-bold text-indigo">
-              {(profile.full_name || profile.phone).charAt(0).toUpperCase()}
+              {(profile.full_name || profile.phone || "?").charAt(0).toUpperCase()}
             </span>
             <div className="min-w-0 flex-1">
               <p className="truncate font-heading text-base font-bold text-indigo">
                 {profile.full_name || "Add your name"}
               </p>
-              <p className="text-sm text-indigo/55">{profile.phone}</p>
+              <p className="text-sm text-indigo/55">{profile.phone || "No phone on file"}</p>
             </div>
             {!editing && (
               <button onClick={() => setEditing(true)} className="shrink-0 text-xs font-semibold text-indigo underline">

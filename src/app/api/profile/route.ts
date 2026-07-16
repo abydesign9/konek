@@ -8,7 +8,7 @@ export async function GET() {
   if (!userId) return NextResponse.json({ error: "unauthenticated" }, { status: 401 });
 
   const { rows } = await query<{
-    phone: string;
+    phone: string | null;
     full_name: string | null;
     email: string | null;
     country_code: string;

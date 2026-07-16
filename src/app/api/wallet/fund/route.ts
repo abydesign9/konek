@@ -38,12 +38,15 @@ export async function POST(req: NextRequest) {
     throw err;
   }
 
-  const { rows: userRows } = await query<{ phone: string; email: string | null }>(
+  const { rows: userRows } = await query<{ phone: string | null; email: string | null }>(
     `SELECT phone, email FROM users WHERE id = $1`,
     [userId]
   );
   const user = userRows[0];
   if (!user) return NextResponse.json({ error: "user not found" }, { status: 404 });
+  // Every account has one or the other now (email required at signup;
+  // phone-only accounts predate this and still have a phone).
+  const gatewayEmail = user.email ?? (user.phone ? `${user.phone.replace("+", "")}@konek.app` : `${userId}@konek.app`);
 
   const result = await withIdempotency(
     `wallet_fund:${userId}:${idempotencyKey}`,
@@ -59,7 +62,7 @@ export async function POST(req: NextRequest) {
 
       const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
       const { authorizationUrl, reference } = await paymentGateway.initialize({
-        email: user.email ?? `${user.phone.replace("+", "")}@konek.app`,
+        email: gatewayEmail,
         amountMinor,
         currency: CURRENCY,
         reference: txnId,

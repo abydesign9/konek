@@ -4,23 +4,23 @@ import { Suspense, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { FloatingBadge } from "@/components/FloatingBadge";
 
-type Step = "details" | "code";
+const MIN_PASSWORD_LENGTH = 8;
 
 function Signup() {
   const router = useRouter();
   const params = useSearchParams();
   const referralCode = params.get("ref");
 
-  const [step, setStep] = useState<Step>("details");
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [code, setCode] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [agreed, setAgreed] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  async function requestOtp(e: React.FormEvent) {
+  async function signUp(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
 
@@ -28,30 +28,16 @@ function Signup() {
       setError("Please agree to the Terms and Privacy Policy to continue.");
       return;
     }
-
-    setLoading(true);
-    const res = await fetch("/api/auth/otp/request", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ phone, name, referralCode }),
-    });
-    setLoading(false);
-    if (!res.ok) {
-      const data = await res.json().catch(() => ({}));
-      setError(data.error ?? "Something went wrong");
+    if (password.length < MIN_PASSWORD_LENGTH) {
+      setError(`Password must be at least ${MIN_PASSWORD_LENGTH} characters.`);
       return;
     }
-    setStep("code");
-  }
 
-  async function verifyOtp(e: React.FormEvent) {
-    e.preventDefault();
-    setError(null);
     setLoading(true);
-    const res = await fetch("/api/auth/otp/verify", {
+    const res = await fetch("/api/auth/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ phone, code, name, referralCode, isSignup: true }),
+      body: JSON.stringify({ fullName, email, password, referralCode }),
     });
     setLoading(false);
     if (!res.ok) {
@@ -66,176 +52,146 @@ function Signup() {
   return (
     <main className="min-h-screen bg-background md:grid md:grid-cols-[1.1fr_1fr]">
       {/* Brand panel */}
-      <aside className="hidden md:flex flex-col justify-between bg-indigo relative overflow-hidden p-12">
-        <div
-          aria-hidden
-          className="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-konek-green/20 blur-3xl"
-        />
-        <div
-          aria-hidden
-          className="absolute -bottom-32 -right-32 w-96 h-96 rounded-full bg-gold/20 blur-3xl"
-        />
+      <aside className="relative hidden flex-col justify-between overflow-hidden bg-indigo p-12 md:flex">
+        <div aria-hidden className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-konek-green/20 blur-3xl" />
+        <div aria-hidden className="absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-gold/20 blur-3xl" />
 
-        <Link href="/" className="relative flex items-center gap-3 w-fit">
-          <span className="w-11 h-12 rounded-xl bg-white flex items-center justify-center p-1.5">
+        <Link href="/" className="relative flex w-fit items-center gap-3">
+          <span className="flex h-12 w-11 items-center justify-center rounded-xl bg-white p-1.5">
             <Image src="/brand/logo.png" alt="Konek logo" width={32} height={40} />
           </span>
           <span className="font-heading text-2xl font-bold text-white">Konek</span>
         </Link>
 
         <div className="relative">
-          <h1 className="font-heading text-4xl font-bold text-white leading-tight mb-4">
+          <div className="relative mb-8 aspect-[2000/1125] w-full max-w-md overflow-hidden rounded-3xl shadow-2xl shadow-black/40">
+            <Image
+              src="/landing/konek_hero_image.jpg"
+              alt="The Konek app connecting a phone to family, money, travel, bills, eSIM and card"
+              fill
+              sizes="400px"
+              className="object-cover"
+            />
+            <FloatingBadge icon="📶" className="-left-4 -top-4" size="md" />
+            <FloatingBadge icon="👨‍👩‍👧" className="-right-4 top-6" delay={0.7} size="md" />
+            <FloatingBadge icon="💳" className="-bottom-4 -left-4" delay={1.4} size="md" />
+          </div>
+          <h1 className="mb-4 font-heading text-4xl font-bold leading-tight text-white">
             Everything you send home, in one place
           </h1>
-          <p className="text-white/70 max-w-md">
-            Top up family, buy data, get an eSIM, and open a dollar account, all without the risk
-            of a money transfer app.
+          <p className="max-w-md text-white/70">
+            Top up family, buy data, get an eSIM, and open a dollar account, all without the risk of a money
+            transfer app.
           </p>
         </div>
 
-        <figure className="relative rounded-2xl bg-white/10 backdrop-blur border border-white/10 p-5 max-w-md">
-          <blockquote className="text-white/90 text-sm leading-relaxed mb-4">
-            &ldquo;Signed up in under a minute, no card details, no password to remember. Just my
-            phone number.&rdquo;
+        <figure className="relative max-w-md rounded-2xl border border-white/10 bg-white/10 p-5 backdrop-blur">
+          <blockquote className="mb-4 text-sm leading-relaxed text-white/90">
+            &ldquo;I landed in Dubai and had data before I left the airport. That is the whole point.&rdquo;
           </blockquote>
           <figcaption className="flex items-center gap-3">
-            <Image
-              src="/brand/avatar_2.png"
-              alt="Portrait of Ada O."
-              width={36}
-              height={36}
-              className="rounded-full"
-            />
+            <Image src="/brand/avatar_4.png" alt="Portrait of Bola A." width={36} height={36} className="rounded-full" />
             <div>
-              <p className="text-sm font-semibold text-white">Ada O.</p>
-              <p className="text-xs text-white/50">London</p>
+              <p className="text-sm font-semibold text-white">Bola A.</p>
+              <p className="text-xs text-white/50">Dubai</p>
             </div>
           </figcaption>
         </figure>
       </aside>
 
       {/* Form panel */}
-      <section className="min-h-screen md:min-h-0 flex flex-col items-center justify-center px-6 py-12">
+      <section className="flex min-h-screen flex-col items-center justify-center px-6 py-12 md:min-h-0">
         <div className="w-full max-w-sm">
-          <Link href="/" className="md:hidden flex items-center gap-2 justify-center mb-10">
-            <Image
-              src="/brand/logo.png"
-              alt="Konek logo"
-              width={30}
-              height={37}
-              className="mix-blend-multiply"
-            />
+          <Link href="/" className="mb-10 flex items-center justify-center gap-2 md:hidden">
+            <Image src="/brand/logo.png" alt="Konek logo" width={30} height={37} className="mix-blend-multiply" />
             <span className="font-heading text-xl font-bold text-indigo">Konek</span>
           </Link>
 
-          <h2 className="font-heading text-2xl font-bold text-indigo mb-1.5">
-            {step === "details" ? "Create your account" : "Check your phone"}
-          </h2>
-          <p className="text-sm text-indigo/60 mb-8">
-            {step === "details"
-              ? "Enter your details and we'll send you a code. No password needed."
-              : `We sent a 6-digit code to ${phone}.`}
-          </p>
+          <h2 className="mb-1.5 font-heading text-2xl font-bold text-indigo">Create your account</h2>
+          <p className="mb-8 text-sm text-indigo/60">Your full name, email, and a password is all it takes.</p>
 
           {referralCode && (
-            <p className="rounded-xl bg-konek-green/10 border border-konek-green/20 text-konek-green text-sm font-semibold px-4 py-3 mb-6">
+            <p className="mb-6 rounded-xl border border-konek-green/20 bg-konek-green/10 px-4 py-3 text-sm font-semibold text-konek-green">
               Invited with code {referralCode} — you both earn coins on your first purchase.
             </p>
           )}
 
-          {step === "details" ? (
-            <form onSubmit={requestOtp} className="flex flex-col gap-3">
-              <label className="text-sm font-medium text-indigo/70" htmlFor="name">
-                Full name
-              </label>
-              <input
-                id="name"
-                type="text"
-                placeholder="Ada Obi"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                className="w-full rounded-xl border border-indigo/20 bg-white px-4 py-3.5 text-base focus:outline-none focus:ring-2 focus:ring-konek-green"
-              />
+          <form onSubmit={signUp} className="flex flex-col gap-3">
+            <label className="text-sm font-medium text-indigo/70" htmlFor="fullName">
+              Full name
+            </label>
+            <input
+              id="fullName"
+              type="text"
+              placeholder="Ada Obi"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              required
+              className="w-full rounded-xl border border-indigo/20 bg-white px-4 py-3.5 text-base focus:outline-none focus:ring-2 focus:ring-konek-green"
+            />
 
-              <label className="text-sm font-medium text-indigo/70 mt-2" htmlFor="phone">
-                Phone number
-              </label>
-              <input
-                id="phone"
-                type="tel"
-                inputMode="tel"
-                placeholder="+2348012345678"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                required
-                className="w-full rounded-xl border border-indigo/20 bg-white px-4 py-3.5 text-base focus:outline-none focus:ring-2 focus:ring-konek-green"
-              />
+            <label className="mt-2 text-sm font-medium text-indigo/70" htmlFor="email">
+              Email
+            </label>
+            <input
+              id="email"
+              type="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full rounded-xl border border-indigo/20 bg-white px-4 py-3.5 text-base focus:outline-none focus:ring-2 focus:ring-konek-green"
+            />
 
-              <label className="flex items-start gap-2.5 mt-2 text-xs text-indigo/60 leading-relaxed">
-                <input
-                  type="checkbox"
-                  checked={agreed}
-                  onChange={(e) => setAgreed(e.target.checked)}
-                  className="mt-0.5 h-4 w-4 rounded border-indigo/30 text-konek-green focus:ring-konek-green"
-                />
-                <span>
-                  I agree to Konek&rsquo;s{" "}
-                  <Link href="/terms" className="text-indigo underline">
-                    Terms of Service
-                  </Link>{" "}
-                  and{" "}
-                  <Link href="/privacy" className="text-indigo underline">
-                    Privacy Policy
-                  </Link>
-                  .
-                </span>
-              </label>
+            <label className="mt-2 text-sm font-medium text-indigo/70" htmlFor="password">
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              placeholder="At least 8 characters"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={MIN_PASSWORD_LENGTH}
+              className="w-full rounded-xl border border-indigo/20 bg-white px-4 py-3.5 text-base focus:outline-none focus:ring-2 focus:ring-konek-green"
+            />
+            {password.length > 0 && password.length < MIN_PASSWORD_LENGTH && (
+              <p className="text-xs text-gold">{MIN_PASSWORD_LENGTH - password.length} more character(s) needed</p>
+            )}
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full rounded-xl bg-indigo text-white py-3.5 font-semibold hover:bg-indigo/90 transition-colors disabled:opacity-50 mt-2"
-              >
-                {loading ? "Sending…" : "Send code"}
-              </button>
-            </form>
-          ) : (
-            <form onSubmit={verifyOtp} className="flex flex-col gap-3">
-              <label className="text-sm font-medium text-indigo/70" htmlFor="code">
-                6-digit code
-              </label>
+            <label className="mt-2 flex items-start gap-2.5 text-xs leading-relaxed text-indigo/60">
               <input
-                id="code"
-                type="text"
-                inputMode="numeric"
-                placeholder="••••••"
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-                maxLength={6}
-                required
-                className="w-full rounded-xl border border-indigo/20 bg-white px-4 py-3.5 text-xl tracking-[0.5em] text-center focus:outline-none focus:ring-2 focus:ring-konek-green"
+                type="checkbox"
+                checked={agreed}
+                onChange={(e) => setAgreed(e.target.checked)}
+                className="mt-0.5 h-4 w-4 rounded border-indigo/30 text-konek-green focus:ring-konek-green"
               />
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full rounded-xl bg-konek-green text-white py-3.5 font-semibold hover:bg-konek-green/90 transition-colors disabled:opacity-50 mt-2"
-              >
-                {loading ? "Verifying…" : "Verify & continue"}
-              </button>
-              <button
-                type="button"
-                onClick={() => setStep("details")}
-                className="text-sm text-indigo/60 underline mt-1"
-              >
-                Use a different number
-              </button>
-            </form>
-          )}
+              <span>
+                I agree to Konek&rsquo;s{" "}
+                <Link href="/terms" className="text-indigo underline">
+                  Terms of Service
+                </Link>{" "}
+                and{" "}
+                <Link href="/privacy" className="text-indigo underline">
+                  Privacy Policy
+                </Link>
+                .
+              </span>
+            </label>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="mt-2 w-full rounded-xl bg-indigo py-3.5 font-semibold text-white transition-colors hover:bg-indigo/90 disabled:opacity-50"
+            >
+              {loading ? "Creating account…" : "Create Free Account"}
+            </button>
+          </form>
 
           {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
 
-          <p className="text-xs text-indigo/40 mt-10 text-center">
+          <p className="mt-10 text-center text-xs text-indigo/40">
             Already have an account?{" "}
             <Link href={referralCode ? `/login?ref=${referralCode}` : "/login"} className="text-indigo underline">
               Log in

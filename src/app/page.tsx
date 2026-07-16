@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { FloatingBadge } from "@/components/FloatingBadge";
 
 const NAV_LINKS = [
   { label: "Platform", href: "#platform" },
@@ -125,32 +126,6 @@ function SectionLabel({ children, tone = "green" }: { children: React.ReactNode;
     >
       {children}
     </p>
-  );
-}
-
-// A small emoji badge that bobs gently — the recurring "floating icon"
-// motif the brief asked for, used instead of dense paragraphs wherever a
-// single glance can carry the idea (connectivity, family, money, travel).
-function FloatingBadge({
-  icon,
-  className,
-  delay = 0,
-  size = "md",
-}: {
-  icon: string;
-  className?: string;
-  delay?: number;
-  size?: "sm" | "md" | "lg";
-}) {
-  const dims = size === "lg" ? "h-16 w-16 text-2xl" : size === "sm" ? "h-9 w-9 text-sm" : "h-12 w-12 text-lg";
-  return (
-    <div
-      className={`konek-float absolute z-10 flex ${dims} items-center justify-center rounded-full bg-white konek-card-shadow ${className ?? ""}`}
-      style={{ animationDelay: `${delay}s` }}
-      aria-hidden
-    >
-      {icon}
-    </div>
   );
 }
 
