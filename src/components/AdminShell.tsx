@@ -1,55 +1,187 @@
 "use client";
 
+import { useState, type ReactNode } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import {
+  BellIcon,
+  ChevronDownIcon,
+  DashboardIcon,
+  LogoutIcon,
+  MenuIcon,
+  RatesIcon,
+  ReferralsIcon,
+  SearchIcon,
+  SettingsIcon,
+  SupportIcon,
+  UsersIcon,
+} from "./adminIcons";
 
-// Tabs grow as each M12 slice lands (Rates, Users/Roles, Referrals,
-// Customer service, Messaging, Settings). Keeping this list here means
-// every admin sub-page gets the same nav for free.
-const TABS = [
-  { href: "/admin", label: "Overview" },
-  { href: "/admin/rates", label: "Rates" },
-  { href: "/admin/users", label: "Users" },
-  { href: "/admin/referrals", label: "Referrals" },
-  { href: "/admin/support", label: "Support" },
-  { href: "/admin/notifications", label: "Notifications" },
-  { href: "/admin/settings", label: "Settings" },
+// Desktop-first ops dashboard shell (Stripe/Linear/Vercel-style) — deliberately
+// separate from the customer app's mobile-first PageHeader/bottom-nav
+// language. Fixed sidebar + sticky topnav on desktop; collapses to a drawer
+// on mobile. Nav points at the real, fully-built pages (not stubs).
+const NAV_GROUPS = [
+  {
+    label: "Overview",
+    items: [{ label: "Dashboard", href: "/admin", icon: DashboardIcon }],
+  },
+  {
+    label: "Operations",
+    items: [
+      { label: "Rates", href: "/admin/rates", icon: RatesIcon },
+      { label: "Users & Roles", href: "/admin/users", icon: UsersIcon },
+      { label: "Referrals", href: "/admin/referrals", icon: ReferralsIcon },
+      { label: "Support", href: "/admin/support", icon: SupportIcon },
+    ],
+  },
+  {
+    label: "Marketing",
+    items: [{ label: "Notifications", href: "/admin/notifications", icon: BellIcon }],
+  },
+  {
+    label: "Configuration",
+    items: [{ label: "Settings", href: "/admin/settings", icon: SettingsIcon }],
+  },
 ];
 
-export function AdminShell({ children }: { children: React.ReactNode }) {
+function isActive(pathname: string, href: string) {
+  if (href === "/admin") return pathname === "/admin";
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
+function SidebarContent({ pathname, onNavigate }: { pathname: string; onNavigate?: () => void }) {
+  return (
+    <nav className="flex h-full flex-col px-3 py-6">
+      <div className="mb-8 flex items-center gap-2 px-3">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 font-heading text-sm font-bold text-white">
+          K
+        </div>
+        <span className="font-heading text-base font-bold text-white">KONEK Admin</span>
+      </div>
+
+      <div className="flex-1 space-y-6 overflow-y-auto">
+        {NAV_GROUPS.map((group) => (
+          <div key={group.label}>
+            <p className="mb-2 px-3 text-[10px] font-bold uppercase tracking-wider text-white/40">
+              {group.label}
+            </p>
+            <div className="space-y-0.5">
+              {group.items.map((item) => {
+                const active = isActive(pathname, item.href);
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={onNavigate}
+                    className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                      active ? "bg-white/15 text-white" : "text-white/60 hover:bg-white/10 hover:text-white"
+                    }`}
+                  >
+                    <Icon className="h-[18px] w-[18px]" />
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+    </nav>
+  );
+}
+
+export function AdminShell({ adminEmail, children }: { adminEmail?: string; children: ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+
+  async function logout() {
+    await fetch("/api/admin/logout", { method: "POST" });
+    router.push("/admin/login");
+  }
 
   return (
-    <main className="min-h-screen bg-background">
-      <nav className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b border-indigo/10">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-3 pb-2">
-          <div className="flex items-center justify-between mb-3">
-            <span className="font-heading text-lg font-bold text-indigo">Konek Admin</span>
-            <form action="/api/admin/logout" method="post">
-              <button type="submit" className="text-xs text-indigo/50 underline">
-                Log out
-              </button>
-            </form>
-          </div>
-          <div className="flex gap-2 overflow-x-auto pb-1">
-            {TABS.map((t) => {
-              const active = pathname === t.href;
-              return (
-                <Link
-                  key={t.href}
-                  href={t.href}
-                  className={`whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
-                    active ? "bg-indigo text-white" : "bg-indigo/10 text-indigo/70 hover:bg-indigo/15"
-                  }`}
-                >
-                  {t.label}
-                </Link>
-              );
-            })}
-          </div>
+    <div className="min-h-screen bg-ivory">
+      {/* Desktop fixed sidebar — 272px, full height */}
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-[272px] bg-indigo lg:block">
+        <SidebarContent pathname={pathname} />
+      </aside>
+
+      {/* Mobile drawer */}
+      {drawerOpen && (
+        <div className="fixed inset-0 z-40 lg:hidden">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setDrawerOpen(false)} />
+          <aside className="absolute inset-y-0 left-0 w-[272px] bg-indigo shadow-xl">
+            <SidebarContent pathname={pathname} onNavigate={() => setDrawerOpen(false)} />
+          </aside>
         </div>
-      </nav>
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6">{children}</div>
-    </main>
+      )}
+
+      <div className="lg:pl-[272px]">
+        {/* Sticky top nav */}
+        <header className="sticky top-0 z-20 flex h-16 items-center gap-4 border-b border-border-soft bg-white px-4 sm:px-6">
+          <button
+            onClick={() => setDrawerOpen(true)}
+            className="rounded-lg p-2 text-indigo hover:bg-hover-tint lg:hidden"
+            aria-label="Open menu"
+          >
+            <MenuIcon className="h-5 w-5" />
+          </button>
+
+          <div className="relative hidden max-w-md flex-1 sm:block">
+            <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-secondary" />
+            <input
+              type="text"
+              placeholder="Search users, transactions, businesses…"
+              className="w-full rounded-lg border border-border-soft bg-ivory py-2 pl-9 pr-3 text-sm text-indigo placeholder:text-text-secondary focus:border-indigo focus:outline-none focus:ring-1 focus:ring-indigo"
+            />
+          </div>
+
+          <div className="flex flex-1 items-center justify-end gap-2 sm:flex-none">
+            <Link
+              href="/admin/support"
+              className="relative rounded-lg p-2 text-indigo hover:bg-hover-tint"
+              aria-label="Notifications"
+            >
+              <BellIcon className="h-5 w-5" />
+              <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-gold" />
+            </Link>
+
+            <div className="relative">
+              <button
+                onClick={() => setProfileOpen((v) => !v)}
+                className="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-hover-tint"
+              >
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo/10 text-xs font-bold text-indigo">
+                  {(adminEmail ?? "A").slice(0, 2).toUpperCase()}
+                </div>
+                {adminEmail && (
+                  <span className="hidden text-sm font-medium text-indigo md:inline">{adminEmail}</span>
+                )}
+                <ChevronDownIcon className="hidden h-4 w-4 text-text-secondary md:inline" />
+              </button>
+
+              {profileOpen && (
+                <div className="absolute right-0 top-full mt-2 w-48 rounded-xl border border-border-soft bg-white p-1.5 shadow-lg">
+                  <button
+                    onClick={logout}
+                    className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-medium text-indigo hover:bg-hover-tint"
+                  >
+                    <LogoutIcon className="h-4 w-4" />
+                    Log out
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </header>
+
+        {/* Full-width content — no centered max-w container on desktop */}
+        <main className="px-4 py-6 sm:px-6 sm:py-8">{children}</main>
+      </div>
+    </div>
   );
 }
