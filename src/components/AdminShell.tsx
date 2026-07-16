@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   BellIcon,
   ChevronDownIcon,
+  CompassIcon,
   DashboardIcon,
   LogoutIcon,
   MenuIcon,
@@ -39,7 +40,10 @@ const NAV_GROUPS = [
   },
   {
     label: "Marketing",
-    items: [{ label: "Notifications", href: "/admin/notifications", icon: BellIcon }],
+    items: [
+      { label: "Notifications", href: "/admin/notifications", icon: BellIcon },
+      { label: "Onboarding tour", href: "/admin/onboarding", icon: CompassIcon },
+    ],
   },
   {
     label: "Configuration",

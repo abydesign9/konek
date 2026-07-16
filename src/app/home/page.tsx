@@ -8,6 +8,7 @@ import { getStreak } from "@/lib/rewards/getStreak";
 import { listActiveInAppMessages } from "@/lib/notifications/inAppMessages";
 import { NetworkLogo } from "@/components/NetworkLogo";
 import { BottomNav } from "@/components/BottomNav";
+import { OnboardingTour } from "@/components/OnboardingTour";
 import {
   IconAirtime,
   IconData,
@@ -356,6 +357,7 @@ export default async function HomeDashboard() {
       )}
 
       <BottomNav />
+      <OnboardingTour />
     </main>
   );
 }
