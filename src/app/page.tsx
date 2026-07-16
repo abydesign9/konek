@@ -429,7 +429,7 @@ export default function LandingPage() {
           </div>
           <div className="order-1 md:order-2">
             <SectionLabel>Built to be trusted</SectionLabel>
-            <h2 className="mb-6 font-heading text-3xl font-bold text-indigo">Security isn't a footnote here</h2>
+            <h2 className="mb-6 font-heading text-3xl font-bold text-indigo">Security isn&apos;t a footnote here</h2>
             <div className="grid gap-5 sm:grid-cols-2">
               {SECURITY_POINTS.map((point) => (
                 <div key={point.title}>
@@ -446,7 +446,7 @@ export default function LandingPage() {
       <section className="bg-white/60 border-y border-indigo/10">
         <div className="mx-auto max-w-4xl px-6 py-20">
           <SectionLabel>Built in the open</SectionLabel>
-          <h2 className="mb-12 text-center font-heading text-3xl font-bold text-indigo">Where we are, and what's next</h2>
+          <h2 className="mb-12 text-center font-heading text-3xl font-bold text-indigo">Where we are, and what&apos;s next</h2>
           <div className="grid gap-6 sm:grid-cols-2">
             <div className="rounded-2xl border border-konek-green/20 bg-konek-green/5 p-6">
               <h3 className="mb-4 font-heading font-semibold text-konek-green">Live today</h3>

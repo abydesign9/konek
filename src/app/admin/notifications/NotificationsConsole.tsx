@@ -184,7 +184,7 @@ export function NotificationsConsole() {
     await fetch(`/api/admin/notifications/templates/${id}`, { method: "DELETE" });
     loadTemplates();
   }
-  function useTemplateForCampaign(t: Template) {
+  function applyTemplateToCampaign(t: Template) {
     setSection("campaigns");
     setShowCampaignForm(true);
     setCSubject(t.subject);
@@ -412,7 +412,7 @@ export function NotificationsConsole() {
                   )}
                   {cScheduleType !== "immediate" && (
                     <p className="mb-2 text-[11px] text-konek-green">
-                      Dispatches automatically via the cron worker (every 5 minutes in production) once it's due.
+                      Dispatches automatically via the cron worker (once a day in production) once it&apos;s due.
                     </p>
                   )}
 
@@ -521,7 +521,7 @@ export function NotificationsConsole() {
                     <p className="text-sm font-medium text-indigo">{t.name}</p>
                     <p className="mb-2 text-xs text-text-secondary">{t.subject}</p>
                     <div className="flex gap-3">
-                      <button onClick={() => useTemplateForCampaign(t)} className="text-xs font-semibold text-konek-green underline">
+                      <button onClick={() => applyTemplateToCampaign(t)} className="text-xs font-semibold text-konek-green underline">
                         Use in campaign
                       </button>
                       <button onClick={() => editTemplate(t)} className="text-xs font-semibold text-indigo underline">
