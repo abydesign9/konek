@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Card, Grid, PageHeader } from "@/components/adminUi";
 
 export function SettingsConsole() {
   const [currentSecret, setCurrentSecret] = useState("");
@@ -69,72 +70,72 @@ export function SettingsConsole() {
 
   return (
     <>
-      <h1 className="font-heading text-xl font-bold text-indigo mb-1">Settings</h1>
-      <p className="text-sm text-indigo/60 mb-6">
-        Konek admins share one secret (plus an allowlisted email) rather than individual
-        passwords — this is where you rotate it. Customers authenticate with a transaction PIN,
-        not a password, so &ldquo;reset customer password&rdquo; resets that PIN instead.
-      </p>
+      <PageHeader
+        title="Settings"
+        description="Konek admins share one secret (plus an allowlisted email) rather than individual passwords — this is where you rotate it. Customers authenticate with a transaction PIN, not a password, so “reset customer password” resets that PIN instead."
+      />
 
-      <section className="rounded-2xl border border-indigo/10 bg-white p-5 mb-6">
-        <p className="text-sm font-semibold text-indigo mb-1">Change admin secret</p>
-        <p className="text-xs text-indigo/50 mb-4">
-          Requires the current secret. Every admin will need the new one to log in afterwards.
-        </p>
-        <input
-          type="password"
-          value={currentSecret}
-          onChange={(e) => setCurrentSecret(e.target.value)}
-          placeholder="Current secret"
-          className="w-full rounded-xl border border-indigo/20 px-4 py-2.5 text-sm mb-2"
-        />
-        <input
-          type="password"
-          value={newSecret}
-          onChange={(e) => setNewSecret(e.target.value)}
-          placeholder="New secret (min 12 characters)"
-          className="w-full rounded-xl border border-indigo/20 px-4 py-2.5 text-sm mb-2"
-        />
-        <input
-          type="password"
-          value={confirmSecret}
-          onChange={(e) => setConfirmSecret(e.target.value)}
-          placeholder="Confirm new secret"
-          className="w-full rounded-xl border border-indigo/20 px-4 py-2.5 text-sm mb-3"
-        />
-        <button
-          onClick={rotateSecret}
-          disabled={secretSaving}
-          className="rounded-xl bg-indigo text-white font-semibold px-5 py-2.5 text-sm disabled:opacity-50"
-        >
-          {secretSaving ? "Saving…" : "Update secret"}
-        </button>
-        {secretMsg && <p className="text-xs text-indigo/70 mt-3">{secretMsg}</p>}
-      </section>
-
-      <section className="rounded-2xl border border-indigo/10 bg-white p-5">
-        <p className="text-sm font-semibold text-indigo mb-1">Reset a customer&rsquo;s PIN</p>
-        <p className="text-xs text-indigo/50 mb-4">
-          Clears their transaction PIN — they&rsquo;ll set a new one the next time they buy
-          something. Use this if a customer reports a lost or compromised PIN.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-2">
-          <input
-            value={resetPhone}
-            onChange={(e) => setResetPhone(e.target.value)}
-            placeholder="+2348012345678"
-            className="w-full sm:flex-1 rounded-xl border border-indigo/20 px-4 py-2.5 text-sm"
-          />
-          <button
-            onClick={resetCustomerPin}
-            disabled={resetting}
-            className="shrink-0 rounded-xl bg-gold text-white font-semibold px-5 py-2.5 text-sm disabled:opacity-50"
-          >
-            {resetting ? "Resetting…" : "Reset PIN"}
-          </button>
+      <Grid>
+        <div className="col-span-1 lg:col-span-6">
+          <Card title="Change admin secret" description="Requires the current secret. Every admin will need the new one to log in afterwards.">
+            <div className="flex flex-col gap-3">
+              <input
+                type="password"
+                value={currentSecret}
+                onChange={(e) => setCurrentSecret(e.target.value)}
+                placeholder="Current secret"
+                className="w-full rounded-xl border border-border-soft px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-indigo"
+              />
+              <input
+                type="password"
+                value={newSecret}
+                onChange={(e) => setNewSecret(e.target.value)}
+                placeholder="New secret (min 12 characters)"
+                className="w-full rounded-xl border border-border-soft px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-indigo"
+              />
+              <input
+                type="password"
+                value={confirmSecret}
+                onChange={(e) => setConfirmSecret(e.target.value)}
+                placeholder="Confirm new secret"
+                className="w-full rounded-xl border border-border-soft px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-indigo"
+              />
+              <button
+                onClick={rotateSecret}
+                disabled={secretSaving}
+                className="self-start rounded-xl bg-indigo px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
+              >
+                {secretSaving ? "Saving…" : "Update secret"}
+              </button>
+              {secretMsg && <p className="text-xs text-text-secondary">{secretMsg}</p>}
+            </div>
+          </Card>
         </div>
-        {resetMsg && <p className="text-xs text-indigo/70 mt-3">{resetMsg}</p>}
-      </section>
+
+        <div className="col-span-1 lg:col-span-6">
+          <Card
+            title="Reset a customer's PIN"
+            description="Clears their transaction PIN — they'll set a new one the next time they buy something. Use this if a customer reports a lost or compromised PIN."
+          >
+            <div className="flex flex-col gap-3">
+              <input
+                value={resetPhone}
+                onChange={(e) => setResetPhone(e.target.value)}
+                placeholder="+2348012345678"
+                className="w-full rounded-xl border border-border-soft px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-indigo"
+              />
+              <button
+                onClick={resetCustomerPin}
+                disabled={resetting}
+                className="self-start rounded-xl bg-gold px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
+              >
+                {resetting ? "Resetting…" : "Reset PIN"}
+              </button>
+              {resetMsg && <p className="text-xs text-text-secondary">{resetMsg}</p>}
+            </div>
+          </Card>
+        </div>
+      </Grid>
     </>
   );
 }

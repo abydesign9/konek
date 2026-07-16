@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Badge, Card, EmptyState, Grid, PageHeader, StatCard, Table, Td, Th } from "@/components/adminUi";
 
 interface TopReferrer {
   phone: string;
@@ -26,21 +27,11 @@ interface ReferralsData {
   recent: RecentReferral[];
 }
 
-const STATUS_CLASS: Record<string, string> = {
-  pending: "bg-indigo/10 text-indigo",
-  qualified: "bg-konek-green/15 text-konek-green",
-  paid: "bg-gold/15 text-gold",
+const STATUS_TONE: Record<string, "indigo" | "green" | "gold"> = {
+  pending: "indigo",
+  qualified: "green",
+  paid: "gold",
 };
-
-function StatCard({ label, value, sub }: { label: string; value: string | number; sub?: string }) {
-  return (
-    <div className="rounded-2xl border border-indigo/10 bg-white p-4">
-      <p className="text-xs text-indigo/50 mb-1">{label}</p>
-      <p className="font-heading text-2xl font-bold text-indigo">{value}</p>
-      {sub && <p className="text-xs text-indigo/40 mt-0.5">{sub}</p>}
-    </div>
-  );
-}
 
 export function ReferralsConsole() {
   const [data, setData] = useState<ReferralsData | null>(null);
@@ -51,64 +42,85 @@ export function ReferralsConsole() {
       .then(setData);
   }, []);
 
-  if (!data) return <p className="text-sm text-indigo/50">Loading…</p>;
-
   return (
     <>
-      <h1 className="font-heading text-xl font-bold text-indigo mb-1">Referrals</h1>
-      <p className="text-sm text-indigo/60 mb-6">Who&rsquo;s bringing people onto Konek, and what it&rsquo;s costing.</p>
+      <PageHeader title="Referrals" description="Who's bringing people onto Konek, and what it's costing." />
 
-      <div className="grid grid-cols-2 gap-3 mb-8">
-        <StatCard label="Total referred" value={data.totalReferred} />
-        <StatCard label="Signed up & qualified" value={data.qualified} sub={`${data.pending} pending`} />
-        <StatCard label="Coins paid out" value={data.coinsPaidOut.toLocaleString()} sub="both sides combined" />
-        <StatCard
-          label="Conversion rate"
-          value={data.totalReferred > 0 ? `${Math.round((data.qualified / data.totalReferred) * 100)}%` : "—"}
-        />
-      </div>
+      {!data ? (
+        <EmptyState message="Loading…" />
+      ) : (
+        <Grid>
+          <div className="col-span-1 lg:col-span-3">
+            <StatCard label="Total referred" value={data.totalReferred} />
+          </div>
+          <div className="col-span-1 lg:col-span-3">
+            <StatCard label="Signed up & qualified" value={data.qualified} sub={`${data.pending} pending`} tone="green" />
+          </div>
+          <div className="col-span-1 lg:col-span-3">
+            <StatCard label="Coins paid out" value={data.coinsPaidOut.toLocaleString()} sub="both sides combined" tone="gold" />
+          </div>
+          <div className="col-span-1 lg:col-span-3">
+            <StatCard
+              label="Conversion rate"
+              value={data.totalReferred > 0 ? `${Math.round((data.qualified / data.totalReferred) * 100)}%` : "—"}
+            />
+          </div>
 
-      <section className="mb-8">
-        <p className="text-sm font-semibold text-indigo mb-3">Top referrers</p>
-        <div className="flex flex-col gap-2">
-          {data.topReferrers.map((r) => (
-            <div
-              key={r.referral_code}
-              className="flex items-center justify-between rounded-xl border border-indigo/10 bg-white px-4 py-3"
-            >
-              <div>
-                <p className="text-sm font-medium text-indigo">{r.phone}</p>
-                <p className="text-xs text-indigo/50 font-mono">{r.referral_code}</p>
-              </div>
-              <div className="text-right">
-                <p className="text-sm font-semibold text-indigo">{r.total_referred} referred</p>
-                <p className="text-xs text-konek-green">{r.qualified} qualified</p>
-              </div>
-            </div>
-          ))}
-          {data.topReferrers.length === 0 && <p className="text-sm text-indigo/50">No referrals yet.</p>}
-        </div>
-      </section>
+          <div className="col-span-1 lg:col-span-5">
+            <Card title="Top referrers">
+              {data.topReferrers.length === 0 ? (
+                <EmptyState message="No referrals yet." />
+              ) : (
+                <div className="flex flex-col gap-2">
+                  {data.topReferrers.map((r) => (
+                    <div key={r.referral_code} className="flex items-center justify-between rounded-xl border border-border-soft px-4 py-3">
+                      <div>
+                        <p className="text-sm font-medium text-indigo">{r.phone}</p>
+                        <p className="font-mono text-xs text-text-secondary">{r.referral_code}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm font-semibold text-indigo">{r.total_referred} referred</p>
+                        <p className="text-xs text-konek-green">{r.qualified} qualified</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </Card>
+          </div>
 
-      <section>
-        <p className="text-sm font-semibold text-indigo mb-3">Recent referrals</p>
-        <div className="flex flex-col gap-2">
-          {data.recent.map((r, i) => (
-            <div key={i} className="flex items-center justify-between gap-3 rounded-xl border border-indigo/10 bg-white px-4 py-3">
-              <div className="min-w-0">
-                <p className="text-sm text-indigo truncate">
-                  {r.referrer_phone} → {r.referred_phone}
-                </p>
-                <p className="text-xs text-indigo/50">{new Date(r.created_at).toLocaleDateString()}</p>
-              </div>
-              <span className={`shrink-0 rounded-full px-2 py-1 text-[11px] font-semibold capitalize ${STATUS_CLASS[r.status] ?? ""}`}>
-                {r.status}
-              </span>
-            </div>
-          ))}
-          {data.recent.length === 0 && <p className="text-sm text-indigo/50">No referrals yet.</p>}
-        </div>
-      </section>
+          <div className="col-span-1 lg:col-span-7">
+            <Card title="Recent referrals">
+              {data.recent.length === 0 ? (
+                <EmptyState message="No referrals yet." />
+              ) : (
+                <Table>
+                  <thead>
+                    <tr>
+                      <Th>Referrer</Th>
+                      <Th>Referred</Th>
+                      <Th>Status</Th>
+                      <Th>Date</Th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {data.recent.map((r, i) => (
+                      <tr key={i}>
+                        <Td>{r.referrer_phone}</Td>
+                        <Td>{r.referred_phone}</Td>
+                        <Td>
+                          <Badge tone={STATUS_TONE[r.status] ?? "indigo"}>{r.status}</Badge>
+                        </Td>
+                        <Td className="text-text-secondary">{new Date(r.created_at).toLocaleDateString()}</Td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              )}
+            </Card>
+          </div>
+        </Grid>
+      )}
     </>
   );
 }

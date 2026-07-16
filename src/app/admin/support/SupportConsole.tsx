@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Badge, Card, EmptyState, Grid, PageHeader } from "@/components/adminUi";
 
 interface Stats {
   total: number;
@@ -65,19 +66,19 @@ const BUCKET_TABS = [
   { id: "", label: "All" },
 ];
 
-const PRIORITY_CLASS: Record<string, string> = {
-  low: "bg-indigo/10 text-indigo/60",
-  medium: "bg-indigo/10 text-indigo",
-  high: "bg-orange-100 text-orange-700",
-  urgent: "bg-red-100 text-red-700",
+const PRIORITY_TONE: Record<string, "indigo" | "gold" | "red"> = {
+  low: "indigo",
+  medium: "indigo",
+  high: "gold",
+  urgent: "red",
 };
 
-const STATUS_CLASS: Record<string, string> = {
-  open: "bg-gold/15 text-gold",
-  assigned: "bg-indigo/10 text-indigo",
-  waiting_on_customer: "bg-gold/15 text-gold",
-  resolved: "bg-konek-green/15 text-konek-green",
-  closed: "bg-indigo/10 text-indigo/50",
+const STATUS_TONE: Record<string, "gold" | "indigo" | "green" | "neutral"> = {
+  open: "gold",
+  assigned: "indigo",
+  waiting_on_customer: "gold",
+  resolved: "green",
+  closed: "neutral",
 };
 
 function isOverdue(t: TicketRow): boolean {
@@ -86,8 +87,8 @@ function isOverdue(t: TicketRow): boolean {
 
 function StatBox({ label, value, danger }: { label: string; value: number | string; danger?: boolean }) {
   return (
-    <div className={`rounded-xl border px-3 py-2.5 ${danger && Number(value) > 0 ? "border-red-200 bg-red-50" : "border-indigo/10 bg-white"}`}>
-      <p className="text-[11px] text-indigo/50">{label}</p>
+    <div className={`rounded-xl border px-4 py-3 ${danger && Number(value) > 0 ? "border-red-200 bg-red-50" : "border-border-soft bg-white"}`}>
+      <p className="text-[11px] text-text-secondary">{label}</p>
       <p className={`font-heading text-lg font-bold ${danger && Number(value) > 0 ? "text-red-600" : "text-indigo"}`}>{value}</p>
     </div>
   );
@@ -210,11 +211,10 @@ export function SupportConsole() {
 
   return (
     <>
-      <h1 className="font-heading text-xl font-bold text-indigo mb-1">Customer support</h1>
-      <p className="text-sm text-indigo/60 mb-6">Tickets, assignment, and the help center.</p>
+      <PageHeader title="Customer support" description="Tickets, assignment, and the help center." />
 
       {stats && (
-        <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-6">
+        <div className="mb-6 grid grid-cols-3 gap-3 sm:grid-cols-6">
           <StatBox label="Total" value={stats.total} />
           <StatBox label="Open" value={stats.open} />
           <StatBox label="Assigned" value={stats.assigned} />
@@ -224,160 +224,172 @@ export function SupportConsole() {
         </div>
       )}
 
-      <div className="flex gap-2 mb-4">
-        {BUCKET_TABS.map((t) => (
-          <button
-            key={t.id}
-            onClick={() => {
-              setBucket(t.id);
-              setSelectedId(null);
-              setThread(null);
-            }}
-            className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
-              bucket === t.id ? "bg-indigo text-white" : "bg-indigo/10 text-indigo/70"
-            }`}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
-
-      <div className="flex flex-col gap-2 mb-8">
-        {tickets.map((t) => (
-          <button
-            key={t.id}
-            onClick={() => setSelectedId(t.id)}
-            className={`text-left rounded-xl border px-4 py-3 ${
-              selectedId === t.id ? "border-indigo/40 bg-indigo/5" : "border-indigo/10 bg-white"
-            }`}
-          >
-            <div className="flex items-center justify-between gap-2 mb-1">
-              <p className="text-sm font-medium text-indigo truncate">{t.phone} · {t.subject}</p>
-              <div className="flex items-center gap-1.5 shrink-0">
-                {isOverdue(t) && <span className="rounded-full px-2 py-0.5 text-[10px] font-bold bg-red-100 text-red-700">SLA</span>}
-                <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${PRIORITY_CLASS[t.priority]}`}>
-                  {t.priority}
-                </span>
+      <Grid className="mb-8">
+        {/* Ticket list — left column */}
+        <div className="col-span-1 lg:col-span-5">
+          <Card
+            title="Tickets"
+            padding={false}
+            action={
+              <div className="flex gap-1.5 p-1">
+                {BUCKET_TABS.map((t) => (
+                  <button
+                    key={t.id}
+                    onClick={() => {
+                      setBucket(t.id);
+                      setSelectedId(null);
+                      setThread(null);
+                    }}
+                    className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
+                      bucket === t.id ? "bg-indigo text-white" : "bg-indigo/10 text-indigo/70"
+                    }`}
+                  >
+                    {t.label}
+                  </button>
+                ))}
               </div>
-            </div>
-            <p className="text-xs text-indigo/50 truncate mb-1">{t.body}</p>
-            <div className="flex items-center gap-2">
-              <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${STATUS_CLASS[t.status] ?? ""}`}>
-                {t.status.replace(/_/g, " ")}
-              </span>
-              {t.category && <span className="text-[10px] text-indigo/40">{t.category}</span>}
-              {t.assigned_admin_email && <span className="text-[10px] text-indigo/40">· {t.assigned_admin_email}</span>}
-            </div>
-          </button>
-        ))}
-        {tickets.length === 0 && <p className="text-sm text-indigo/50">No tickets in this view.</p>}
-      </div>
-
-      {thread && (
-        <section className="rounded-2xl border border-indigo/10 bg-white p-5 mb-8">
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-sm font-semibold text-indigo">{thread.message.subject}</p>
-            <button onClick={() => setSelectedId(null)} className="text-xs text-indigo/50 underline">
-              Close panel
-            </button>
-          </div>
-
-          <div className="flex flex-wrap gap-2 mb-4">
-            <select value={category} onChange={(e) => setCategory(e.target.value)} className="rounded-lg border border-indigo/20 px-2 py-1.5 text-xs">
-              {["kyc", "payments", "vtu", "esim", "card", "dollar_account", "other"].map((c) => (
-                <option key={c} value={c}>{c}</option>
+            }
+            className="flex h-full flex-col"
+          >
+            <div className="flex max-h-[720px] flex-col gap-2 overflow-y-auto p-6 pt-0">
+              {tickets.map((t) => (
+                <button
+                  key={t.id}
+                  onClick={() => setSelectedId(t.id)}
+                  className={`rounded-xl border px-4 py-3 text-left ${
+                    selectedId === t.id ? "border-indigo/40 bg-indigo/5" : "border-border-soft bg-white"
+                  }`}
+                >
+                  <div className="mb-1 flex items-center justify-between gap-2">
+                    <p className="truncate text-sm font-medium text-indigo">
+                      {t.phone} · {t.subject}
+                    </p>
+                    <div className="flex shrink-0 items-center gap-1.5">
+                      {isOverdue(t) && <Badge tone="red">SLA</Badge>}
+                      <Badge tone={PRIORITY_TONE[t.priority] ?? "indigo"} uppercase>
+                        {t.priority}
+                      </Badge>
+                    </div>
+                  </div>
+                  <p className="mb-1 truncate text-xs text-text-secondary">{t.body}</p>
+                  <div className="flex items-center gap-2">
+                    <Badge tone={STATUS_TONE[t.status] ?? "neutral"}>{t.status.replace(/_/g, " ")}</Badge>
+                    {t.category && <span className="text-[10px] text-text-secondary">{t.category}</span>}
+                    {t.assigned_admin_email && <span className="text-[10px] text-text-secondary">· {t.assigned_admin_email}</span>}
+                  </div>
+                </button>
               ))}
-            </select>
-            <select value={priority} onChange={(e) => setPriority(e.target.value)} className="rounded-lg border border-indigo/20 px-2 py-1.5 text-xs">
-              {["low", "medium", "high", "urgent"].map((p) => (
-                <option key={p} value={p}>{p}</option>
-              ))}
-            </select>
-            <button onClick={saveCategoryPriority} className="rounded-lg bg-indigo/10 text-indigo text-xs font-semibold px-3 py-1.5">
-              Save
-            </button>
-            <button onClick={assignToMe} className="rounded-lg bg-indigo text-white text-xs font-semibold px-3 py-1.5">
-              Assign to me
-            </button>
-            {thread.message.status === "resolved" && (
-              <button onClick={closeTicket} className="rounded-lg bg-indigo/10 text-indigo text-xs font-semibold px-3 py-1.5">
-                Close ticket
-              </button>
-            )}
-          </div>
+              {tickets.length === 0 && <EmptyState message="No tickets in this view." />}
+            </div>
+          </Card>
+        </div>
 
-          <div className="flex flex-col gap-2 mb-4">
-            <div className="rounded-xl bg-indigo/5 px-3 py-2 text-sm text-indigo">{thread.message.body}</div>
-            {thread.replies.map((r) => (
-              <div
-                key={r.id}
-                className={`rounded-xl px-3 py-2 text-sm max-w-[90%] ${
-                  r.author_type === "admin" ? "bg-konek-green/10 text-indigo self-start" : "bg-indigo text-white self-end ml-auto"
-                }`}
-              >
-                {r.body}
+        {/* Ticket detail — right column */}
+        <div className="col-span-1 lg:col-span-7">
+          {!thread ? (
+            <Card className="flex h-full items-center justify-center">
+              <EmptyState message="Select a ticket to see the thread, notes, and timeline." />
+            </Card>
+          ) : (
+            <Card title={thread.message.subject}>
+              <div className="mb-4 flex flex-wrap gap-2">
+                <select value={category} onChange={(e) => setCategory(e.target.value)} className="rounded-lg border border-border-soft px-2 py-1.5 text-xs">
+                  {["kyc", "payments", "vtu", "esim", "card", "dollar_account", "other"].map((c) => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
+                <select value={priority} onChange={(e) => setPriority(e.target.value)} className="rounded-lg border border-border-soft px-2 py-1.5 text-xs">
+                  {["low", "medium", "high", "urgent"].map((p) => (
+                    <option key={p} value={p}>{p}</option>
+                  ))}
+                </select>
+                <button onClick={saveCategoryPriority} className="rounded-lg bg-indigo/10 px-3 py-1.5 text-xs font-semibold text-indigo">
+                  Save
+                </button>
+                <button onClick={assignToMe} className="rounded-lg bg-indigo px-3 py-1.5 text-xs font-semibold text-white">
+                  Assign to me
+                </button>
+                {thread.message.status === "resolved" && (
+                  <button onClick={closeTicket} className="rounded-lg bg-indigo/10 px-3 py-1.5 text-xs font-semibold text-indigo">
+                    Close ticket
+                  </button>
+                )}
               </div>
-            ))}
-          </div>
 
-          <div className="flex gap-2 mb-4">
-            <input
-              value={replyText}
-              onChange={(e) => setReplyText(e.target.value)}
-              placeholder="Reply to the customer…"
-              className="flex-1 rounded-lg border border-indigo/20 px-3 py-2 text-sm"
-            />
-            <button onClick={() => sendReply(false)} className="rounded-lg bg-indigo text-white text-xs font-semibold px-3">
-              Reply
-            </button>
-            <button onClick={() => sendReply(true)} className="rounded-lg bg-konek-green text-white text-xs font-semibold px-3">
-              Resolve
-            </button>
-          </div>
+              <div className="mb-4 flex flex-col gap-2">
+                <div className="rounded-xl bg-indigo/5 px-3 py-2 text-sm text-indigo">{thread.message.body}</div>
+                {thread.replies.map((r) => (
+                  <div
+                    key={r.id}
+                    className={`max-w-[90%] rounded-xl px-3 py-2 text-sm ${
+                      r.author_type === "admin" ? "self-start bg-konek-green/10 text-indigo" : "ml-auto self-end bg-indigo text-white"
+                    }`}
+                  >
+                    {r.body}
+                  </div>
+                ))}
+              </div>
 
-          <p className="text-xs font-semibold text-indigo/60 mb-2">Internal notes (not visible to customer)</p>
-          <div className="flex flex-col gap-1.5 mb-2">
-            {thread.notes.map((n) => (
-              <p key={n.id} className="text-xs text-indigo/70 bg-gold/10 rounded-lg px-2.5 py-1.5">
-                <span className="font-semibold">{n.admin_email}:</span> {n.body}
-              </p>
-            ))}
-          </div>
-          <div className="flex gap-2 mb-4">
-            <input
-              value={noteText}
-              onChange={(e) => setNoteText(e.target.value)}
-              placeholder="Add an internal note…"
-              className="flex-1 rounded-lg border border-indigo/20 px-3 py-2 text-sm"
-            />
-            <button onClick={addNote} className="rounded-lg bg-gold text-white text-xs font-semibold px-3">
-              Add
-            </button>
-          </div>
+              <div className="mb-4 flex gap-2">
+                <input
+                  value={replyText}
+                  onChange={(e) => setReplyText(e.target.value)}
+                  placeholder="Reply to the customer…"
+                  className="flex-1 rounded-lg border border-border-soft px-3 py-2 text-sm"
+                />
+                <button onClick={() => sendReply(false)} className="rounded-lg bg-indigo px-3 text-xs font-semibold text-white">
+                  Reply
+                </button>
+                <button onClick={() => sendReply(true)} className="rounded-lg bg-konek-green px-3 text-xs font-semibold text-white">
+                  Resolve
+                </button>
+              </div>
 
-          <p className="text-xs font-semibold text-indigo/60 mb-2">Status timeline</p>
-          <div className="flex flex-col gap-1">
-            {thread.timeline.map((e, i) => (
-              <p key={i} className="text-xs text-indigo/50">
-                {e.from_status ? `${e.from_status} → ` : ""}
-                {e.to_status.replace(/_/g, " ")} · {e.actor_type} · {new Date(e.created_at).toLocaleString()}
-              </p>
-            ))}
-          </div>
-        </section>
-      )}
+              <p className="mb-2 text-xs font-semibold text-text-secondary">Internal notes (not visible to customer)</p>
+              <div className="mb-2 flex flex-col gap-1.5">
+                {thread.notes.map((n) => (
+                  <p key={n.id} className="rounded-lg bg-gold/10 px-2.5 py-1.5 text-xs text-text-secondary">
+                    <span className="font-semibold">{n.admin_email}:</span> {n.body}
+                  </p>
+                ))}
+              </div>
+              <div className="mb-4 flex gap-2">
+                <input
+                  value={noteText}
+                  onChange={(e) => setNoteText(e.target.value)}
+                  placeholder="Add an internal note…"
+                  className="flex-1 rounded-lg border border-border-soft px-3 py-2 text-sm"
+                />
+                <button onClick={addNote} className="rounded-lg bg-gold px-3 text-xs font-semibold text-white">
+                  Add
+                </button>
+              </div>
 
-      <section>
-        <div className="flex items-center justify-between mb-3">
-          <p className="text-sm font-semibold text-indigo">Knowledge base</p>
+              <p className="mb-2 text-xs font-semibold text-text-secondary">Status timeline</p>
+              <div className="flex flex-col gap-1">
+                {thread.timeline.map((e, i) => (
+                  <p key={i} className="text-xs text-text-secondary">
+                    {e.from_status ? `${e.from_status} → ` : ""}
+                    {e.to_status.replace(/_/g, " ")} · {e.actor_type} · {new Date(e.created_at).toLocaleString()}
+                  </p>
+                ))}
+              </div>
+            </Card>
+          )}
+        </div>
+      </Grid>
+
+      <Card
+        title="Knowledge base"
+        action={
           <button onClick={() => setShowFaqForm((s) => !s)} className="text-xs font-semibold text-konek-green">
             {showFaqForm ? "Cancel" : "New article"}
           </button>
-        </div>
-
+        }
+      >
         {showFaqForm && (
-          <div className="rounded-2xl border border-indigo/10 bg-white p-4 mb-4">
-            <select value={faqCategory} onChange={(e) => setFaqCategory(e.target.value)} className="w-full rounded-lg border border-indigo/20 px-3 py-2 text-sm mb-2">
+          <div className="mb-4 rounded-2xl border border-border-soft p-4">
+            <select value={faqCategory} onChange={(e) => setFaqCategory(e.target.value)} className="mb-2 w-full rounded-lg border border-border-soft px-3 py-2 text-sm">
               {["general", "kyc", "payments", "vtu", "esim", "card", "dollar_account"].map((c) => (
                 <option key={c} value={c}>{c}</option>
               ))}
@@ -386,31 +398,29 @@ export function SupportConsole() {
               value={faqQuestion}
               onChange={(e) => setFaqQuestion(e.target.value)}
               placeholder="Question"
-              className="w-full rounded-lg border border-indigo/20 px-3 py-2 text-sm mb-2"
+              className="mb-2 w-full rounded-lg border border-border-soft px-3 py-2 text-sm"
             />
             <textarea
               value={faqAnswer}
               onChange={(e) => setFaqAnswer(e.target.value)}
               placeholder="Answer"
               rows={3}
-              className="w-full rounded-lg border border-indigo/20 px-3 py-2 text-sm mb-2"
+              className="mb-2 w-full rounded-lg border border-border-soft px-3 py-2 text-sm"
             />
-            <button onClick={createFaq} className="rounded-lg bg-indigo text-white text-sm font-semibold px-4 py-2">
+            <button onClick={createFaq} className="rounded-lg bg-indigo px-4 py-2 text-sm font-semibold text-white">
               Publish
             </button>
           </div>
         )}
 
-        <div className="flex flex-col gap-2">
+        <div className="grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3">
           {faqs.map((f) => (
-            <div key={f.id} className="rounded-xl border border-indigo/10 bg-white px-4 py-3">
-              <div className="flex items-center justify-between gap-2 mb-1">
-                <p className="text-sm font-medium text-indigo truncate">{f.question}</p>
-                <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${f.published ? "bg-konek-green/15 text-konek-green" : "bg-indigo/10 text-indigo/50"}`}>
-                  {f.published ? "Published" : "Draft"}
-                </span>
+            <div key={f.id} className="rounded-xl border border-border-soft px-4 py-3">
+              <div className="mb-1 flex items-center justify-between gap-2">
+                <p className="truncate text-sm font-medium text-indigo">{f.question}</p>
+                <Badge tone={f.published ? "green" : "neutral"}>{f.published ? "Published" : "Draft"}</Badge>
               </div>
-              <p className="text-xs text-indigo/50 mb-2">{f.answer}</p>
+              <p className="mb-2 text-xs text-text-secondary">{f.answer}</p>
               <div className="flex gap-3">
                 <button onClick={() => togglePublish(f)} className="text-xs font-semibold text-indigo underline">
                   {f.published ? "Unpublish" : "Publish"}
@@ -421,9 +431,9 @@ export function SupportConsole() {
               </div>
             </div>
           ))}
-          {faqs.length === 0 && <p className="text-sm text-indigo/50">No articles yet.</p>}
+          {faqs.length === 0 && <EmptyState message="No articles yet." />}
         </div>
-      </section>
+      </Card>
     </>
   );
 }
