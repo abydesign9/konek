@@ -14,6 +14,8 @@ export const SERVICE_COLORS: Record<string, { bg: string; fg: string }> = {
   gift:      { bg: "#FFF3D6", fg: "#E2932F" }, // gold (gift box)
   intl:      { bg: "#E6F0FF", fg: "#22315C" }, // indigo (globe)
   esim:      { bg: "#E8F8F0", fg: "#00C48C" }, // konek green (plane/travel)
+  dollar:    { bg: "#E8F8F0", fg: "#1E9E6B" }, // green (USD account)
+  card:      { bg: "#F3E8FF", fg: "#8E44AD" }, // purple (virtual card)
   wallet:    { bg: "#E6F0FF", fg: "#22315C" },
   more:      { bg: "#F1F1F4", fg: "#6B7280" },
 };
@@ -208,6 +210,33 @@ export function IconHome(props: React.SVGProps<SVGSVGElement>) {
   return (
     <Base {...props}>
       <path d="M12 2.8 2.5 10.6c-.5.4-.2 1.2.4 1.2H4.5v8.4c0 .6.4 1 1 1H10v-6h4v6h4.5c.6 0 1-.4 1-1v-8.4h1.6c.6 0 .9-.8.4-1.2Z" />
+    </Base>
+  );
+}
+
+// Filled coin with a dollar mark — USD account.
+export function IconDollar(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <Base {...props}>
+      <circle cx="12" cy="12" r="9.5" />
+      <path
+        d="M12 6.5v11M15 9c0-1.4-1.3-2.2-3-2.2S9 7.6 9 9c0 3 6 1.6 6 4.6 0 1.4-1.5 2.2-3 2.2s-3-.8-3-2.2"
+        fill="none"
+        stroke="white"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+      />
+    </Base>
+  );
+}
+
+// Filled card with a stripe — virtual card.
+export function IconCard(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <Base {...props}>
+      <rect x="2.5" y="5" width="19" height="14" rx="2.5" />
+      <rect x="2.5" y="8.5" width="19" height="3" fill="white" opacity=".9" />
+      <rect x="5" y="14.5" width="6" height="2" rx="1" fill="white" opacity=".85" />
     </Base>
   );
 }

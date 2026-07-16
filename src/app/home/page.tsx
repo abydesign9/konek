@@ -13,6 +13,9 @@ import {
   IconData,
   IconElectricity,
   IconEsim,
+  IconGlobe,
+  IconDollar,
+  IconCard,
   IconWallet,
   IconGift,
   IconBell,
@@ -22,15 +25,26 @@ import {
 
 // Home is structured, not one long scroll: greeting+wallet, promo
 // carousel (real CMS data via in_app_messages — was built and waiting,
-// just never wired to a screen), 4 quick actions (the rest of the
-// catalog moved to /connect per the design brief), recent transactions,
+// just never wired to a screen), quick actions, recent transactions,
 // family/beneficiary hub, rewards, and a business section that only
 // renders for accounts that have one.
-const QUICK_ACTIONS = [
+//
+// Quick actions lead with the connectivity/global row (what Konek is,
+// per the positioning), then local VTU underneath — not the other way
+// round. Icons here are deliberately smaller than the old 56px tiles so
+// two rows sit comfortably without the screen feeling like a grid of
+// app-store buttons.
+const GLOBAL_ACTIONS = [
+  { key: "esim", label: "eSIM", Icon: IconEsim, href: "/buy/esim" },
+  { key: "intl", label: "Int'l Top-Up", Icon: IconGlobe, href: "/buy/intl-topup" },
+  { key: "dollar", label: "USD Account", Icon: IconDollar, href: "/wallet/dollar-account" },
+  { key: "card", label: "Card", Icon: IconCard, href: "/cards" },
+];
+
+const LOCAL_ACTIONS = [
   { key: "airtime", label: "Airtime", Icon: IconAirtime, href: "/buy/airtime" },
   { key: "data", label: "Data", Icon: IconData, href: "/buy/data" },
   { key: "electricity", label: "Bills", Icon: IconElectricity, href: "/buy/electricity" },
-  { key: "esim", label: "eSIM", Icon: IconEsim, href: "/buy/esim" },
 ];
 
 interface RecentPurchase {
@@ -220,24 +234,43 @@ export default async function HomeDashboard() {
         </section>
       )}
 
-      {/* ---------- Section 3: Quick actions ---------- */}
+      {/* ---------- Section 3: Quick actions (global first, local underneath) ---------- */}
       <section className="mt-7 px-5">
-        <div className="grid grid-cols-4 gap-3">
-          {QUICK_ACTIONS.map(({ key, label, Icon, href }) => {
+        <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-indigo/45">Go global</p>
+        <div className="grid grid-cols-4 gap-x-2 gap-y-2">
+          {GLOBAL_ACTIONS.map(({ key, label, Icon, href }) => {
             const c = SERVICE_COLORS[key] ?? SERVICE_COLORS.more;
             return (
-              <Link key={key} href={href} className="konek-tile flex flex-col items-center gap-2">
-                <div className="konek-card-shadow flex h-14 w-14 items-center justify-center rounded-2xl" style={{ backgroundColor: c.bg }}>
-                  <Icon className="h-7 w-7" style={{ color: c.fg }} />
+              <Link key={key} href={href} className="konek-tile flex flex-col items-center gap-1.5">
+                <div className="konek-card-shadow flex h-11 w-11 items-center justify-center rounded-xl" style={{ backgroundColor: c.bg }}>
+                  <Icon className="h-5 w-5" style={{ color: c.fg }} />
                 </div>
-                <span className="text-center text-xs font-semibold leading-tight text-indigo">{label}</span>
+                <span className="text-center text-[11px] font-semibold leading-tight text-indigo">{label}</span>
               </Link>
             );
           })}
         </div>
-        <Link href="/connect" className="konek-tile mt-3 flex items-center justify-center gap-1 text-xs font-semibold text-indigo/60">
-          See everything on Connect <IconChevronRight className="h-3.5 w-3.5" />
-        </Link>
+
+        <p className="mb-3 mt-6 text-xs font-semibold uppercase tracking-wide text-indigo/45">Local essentials</p>
+        <div className="grid grid-cols-4 gap-x-2 gap-y-2">
+          {LOCAL_ACTIONS.map(({ key, label, Icon, href }) => {
+            const c = SERVICE_COLORS[key] ?? SERVICE_COLORS.more;
+            return (
+              <Link key={key} href={href} className="konek-tile flex flex-col items-center gap-1.5">
+                <div className="konek-card-shadow flex h-11 w-11 items-center justify-center rounded-xl" style={{ backgroundColor: c.bg }}>
+                  <Icon className="h-5 w-5" style={{ color: c.fg }} />
+                </div>
+                <span className="text-center text-[11px] font-semibold leading-tight text-indigo">{label}</span>
+              </Link>
+            );
+          })}
+          <Link href="/connect" className="konek-tile flex flex-col items-center gap-1.5">
+            <div className="konek-card-shadow flex h-11 w-11 items-center justify-center rounded-xl bg-hover-tint">
+              <IconChevronRight className="h-5 w-5 text-indigo/60" />
+            </div>
+            <span className="text-center text-[11px] font-semibold leading-tight text-indigo/60">More</span>
+          </Link>
+        </div>
       </section>
 
       {/* ---------- Section 4: Recent transactions ---------- */}
