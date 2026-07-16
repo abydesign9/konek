@@ -102,3 +102,12 @@ export const ReferralsIcon = (p: IconProps) => (
     <path d="M17 8V5a2 2 0 0 0-2-2h-2" />
   </Base>
 );
+
+export const ProvidersIcon = (p: IconProps) => (
+  <Base {...p}>
+    <rect x="3" y="4" width="18" height="6" rx="2" />
+    <rect x="3" y="14" width="18" height="6" rx="2" />
+    <circle cx="7" cy="7" r="0.6" fill="currentColor" />
+    <circle cx="7" cy="17" r="0.6" fill="currentColor" />
+  </Base>
+);

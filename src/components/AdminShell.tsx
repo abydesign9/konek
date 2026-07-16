@@ -9,6 +9,7 @@ import {
   DashboardIcon,
   LogoutIcon,
   MenuIcon,
+  ProvidersIcon,
   RatesIcon,
   ReferralsIcon,
   SearchIcon,
@@ -33,6 +34,7 @@ const NAV_GROUPS = [
       { label: "Users & Roles", href: "/admin/users", icon: UsersIcon },
       { label: "Referrals", href: "/admin/referrals", icon: ReferralsIcon },
       { label: "Support", href: "/admin/support", icon: SupportIcon },
+      { label: "Providers", href: "/admin/providers", icon: ProvidersIcon },
     ],
   },
   {

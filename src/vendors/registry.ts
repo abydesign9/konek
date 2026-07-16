@@ -1,5 +1,6 @@
 import { query } from "@/lib/db";
 import { sendExternalAlert } from "@/lib/alerts/externalAlert";
+import { logAudit } from "@/lib/audit";
 import { VendorAdapter, VendorServiceType } from "./types";
 import { mockVtuAdapter, mockVtuAdapter2 } from "./mockVtu";
 
@@ -50,17 +51,26 @@ export async function selectVendor(serviceType: VendorServiceType): Promise<Vend
   throw new NoHealthyVendorError(kind);
 }
 
-// Not yet on a schedule — there's no worker/cron in this app. Written so a
-// cron route can call it directly the moment one exists; the outage alert
-// already fires correctly whenever it does run.
+// Called on every /api/cron/tick (see src/app/api/cron/tick) and from the
+// Provider Monitoring page's manual "Run check now". Measures latency
+// around each adapter's health() call, persists it alongside healthy/
+// last_health_check, and appends a system audit_log row per check —
+// that log is the health-check history the monitoring page reads, rather
+// than a bespoke table.
 export async function refreshVendorHealth(): Promise<void> {
   for (const adapter of Object.values(ADAPTERS)) {
     const { rows: before } = await query<{ healthy: boolean }>(`SELECT healthy FROM vendors WHERE id = $1`, [adapter.id]);
+
+    const startedAt = Date.now();
     const healthy = await adapter.health();
+    const latencyMs = Date.now() - startedAt;
+
     await query(
-      `UPDATE vendors SET healthy = $2, last_health_check = now() WHERE id = $1`,
-      [adapter.id, healthy]
+      `UPDATE vendors SET healthy = $2, last_health_check = now(), last_health_latency_ms = $3 WHERE id = $1`,
+      [adapter.id, healthy, latencyMs]
     );
+    await logAudit("system:cron", "vendor_health_check", "vendor", adapter.id, { healthy, latencyMs });
+
     if (before[0]?.healthy && !healthy) {
       await sendExternalAlert("provider_outage", `${adapter.id} failed automated health check`, { vendor: adapter.id });
     }

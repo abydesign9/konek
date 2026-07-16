@@ -3,6 +3,7 @@ import { getAdminSession } from "@/lib/admin/session";
 import { query } from "@/lib/db";
 import { logAudit } from "@/lib/audit";
 import { sendExternalAlert } from "@/lib/alerts/externalAlert";
+import { assertPermission, ForbiddenError } from "@/lib/admin/permissions";
 
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
   const admin = getAdminSession();
@@ -12,6 +13,13 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   const healthy = body?.healthy;
   if (typeof healthy !== "boolean") {
     return NextResponse.json({ error: "healthy (boolean) is required" }, { status: 400 });
+  }
+
+  try {
+    await assertPermission(admin.role, "vendors.manage");
+  } catch (err) {
+    if (err instanceof ForbiddenError) return NextResponse.json({ error: err.message }, { status: 403 });
+    throw err;
   }
 
   const { rows: before } = await query<{ healthy: boolean }>(`SELECT healthy FROM vendors WHERE id = $1`, [params.id]);
