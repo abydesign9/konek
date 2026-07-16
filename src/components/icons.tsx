@@ -182,3 +182,41 @@ export function IconBell(props: React.SVGProps<SVGSVGElement>) {
     </Base>
   );
 }
+
+// Clock face — transaction history.
+export function IconHistory(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <Base {...props}>
+      <circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" strokeWidth="2" />
+      <path d="M12 6.5v6l4 2.3" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+    </Base>
+  );
+}
+
+// Filled person silhouette — profile.
+export function IconProfile(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <Base {...props}>
+      <circle cx="12" cy="7.5" r="4.2" />
+      <path d="M4 20.5c.9-4.2 3.9-6.5 8-6.5s7.1 2.3 8 6.5c.1.6-.3 1-.9 1H4.9c-.6 0-1-.4-.9-1Z" />
+    </Base>
+  );
+}
+
+// Filled house — home tab.
+export function IconHome(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <Base {...props}>
+      <path d="M12 2.8 2.5 10.6c-.5.4-.2 1.2.4 1.2H4.5v8.4c0 .6.4 1 1 1H10v-6h4v6h4.5c.6 0 1-.4 1-1v-8.4h1.6c.6 0 .9-.8.4-1.2Z" />
+    </Base>
+  );
+}
+
+// Chevron-right — nav row affordance.
+export function IconChevronRight(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <path d="m9 6 6 6-6 6" />
+    </svg>
+  );
+}
