@@ -1,4 +1,5 @@
 import { query } from "@/lib/db";
+import { sendExternalAlert } from "@/lib/alerts/externalAlert";
 import { VendorAdapter, VendorServiceType } from "./types";
 import { mockVtuAdapter, mockVtuAdapter2 } from "./mockVtu";
 
@@ -49,12 +50,19 @@ export async function selectVendor(serviceType: VendorServiceType): Promise<Vend
   throw new NoHealthyVendorError(kind);
 }
 
+// Not yet on a schedule — there's no worker/cron in this app. Written so a
+// cron route can call it directly the moment one exists; the outage alert
+// already fires correctly whenever it does run.
 export async function refreshVendorHealth(): Promise<void> {
   for (const adapter of Object.values(ADAPTERS)) {
+    const { rows: before } = await query<{ healthy: boolean }>(`SELECT healthy FROM vendors WHERE id = $1`, [adapter.id]);
     const healthy = await adapter.health();
     await query(
       `UPDATE vendors SET healthy = $2, last_health_check = now() WHERE id = $1`,
       [adapter.id, healthy]
     );
+    if (before[0]?.healthy && !healthy) {
+      await sendExternalAlert("provider_outage", `${adapter.id} failed automated health check`, { vendor: adapter.id });
+    }
   }
 }

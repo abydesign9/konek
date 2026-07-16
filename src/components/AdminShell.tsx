@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -92,11 +92,46 @@ function SidebarContent({ pathname, onNavigate }: { pathname: string; onNavigate
   );
 }
 
+interface OpsAlertItem {
+  id: string;
+  type: "ticket" | "provider" | "kyb" | "fraud";
+  label: string;
+  detail: string;
+  href: string;
+  created_at: string;
+}
+
+const OPS_ALERT_ICON: Record<OpsAlertItem["type"], string> = {
+  ticket: "🎫",
+  provider: "🔌",
+  kyb: "🏢",
+  fraud: "🚩",
+};
+
 export function AdminShell({ adminEmail, children }: { adminEmail?: string; children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [bellOpen, setBellOpen] = useState(false);
+  const [opsTotal, setOpsTotal] = useState(0);
+  const [opsItems, setOpsItems] = useState<OpsAlertItem[]>([]);
+
+  async function loadOpsAlerts() {
+    const res = await fetch("/api/admin/ops-alerts");
+    if (!res.ok) return;
+    const data = await res.json();
+    setOpsTotal(data.total ?? 0);
+    setOpsItems(data.items ?? []);
+  }
+
+  useEffect(() => {
+    loadOpsAlerts();
+    // Real unread counts (open tickets, unhealthy providers, pending KYB,
+    // open fraud items) — polled since there's no push/websocket layer yet.
+    const interval = setInterval(loadOpsAlerts, 30_000);
+    return () => clearInterval(interval);
+  }, []);
 
   async function logout() {
     await fetch("/api/admin/logout", { method: "POST" });
@@ -141,14 +176,51 @@ export function AdminShell({ adminEmail, children }: { adminEmail?: string; chil
           </div>
 
           <div className="flex flex-1 items-center justify-end gap-2 sm:flex-none">
-            <Link
-              href="/admin/support"
-              className="relative rounded-lg p-2 text-indigo hover:bg-hover-tint"
-              aria-label="Notifications"
-            >
-              <BellIcon className="h-5 w-5" />
-              <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-gold" />
-            </Link>
+            <div className="relative">
+              <button
+                onClick={() => {
+                  setBellOpen((v) => !v);
+                  setProfileOpen(false);
+                }}
+                className="relative rounded-lg p-2 text-indigo hover:bg-hover-tint"
+                aria-label="Notifications"
+              >
+                <BellIcon className="h-5 w-5" />
+                {opsTotal > 0 && (
+                  <span className="absolute -right-1 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-gold px-1 text-[10px] font-bold text-white">
+                    {opsTotal > 9 ? "9+" : opsTotal}
+                  </span>
+                )}
+              </button>
+
+              {bellOpen && (
+                <div className="absolute right-0 top-full mt-2 w-80 rounded-xl border border-border-soft bg-white p-1.5 shadow-lg">
+                  <p className="px-3 py-2 text-xs font-bold uppercase tracking-wider text-text-secondary">
+                    {opsTotal === 0 ? "All clear" : `${opsTotal} item${opsTotal === 1 ? "" : "s"} need attention`}
+                  </p>
+                  <div className="max-h-80 overflow-y-auto">
+                    {opsItems.length === 0 ? (
+                      <p className="px-3 py-4 text-center text-sm text-text-secondary">Nothing to review right now.</p>
+                    ) : (
+                      opsItems.map((item) => (
+                        <Link
+                          key={`${item.type}-${item.id}`}
+                          href={item.href}
+                          onClick={() => setBellOpen(false)}
+                          className="flex items-start gap-2.5 rounded-lg px-3 py-2 text-left hover:bg-hover-tint"
+                        >
+                          <span className="text-base leading-5">{OPS_ALERT_ICON[item.type]}</span>
+                          <span className="min-w-0 flex-1">
+                            <span className="block text-sm font-semibold text-indigo">{item.label}</span>
+                            <span className="block truncate text-xs text-text-secondary">{item.detail}</span>
+                          </span>
+                        </Link>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
 
             <div className="relative">
               <button

@@ -1,5 +1,6 @@
 import { query } from "@/lib/db";
 import { logAudit } from "@/lib/audit";
+import { sendExternalAlert } from "@/lib/alerts/externalAlert";
 
 export class AlreadyHasBusinessError extends Error {
   constructor() {
@@ -25,6 +26,7 @@ export async function applyAsBusiness(
     [ownerUserId, legalName, regNumber, businessType]
   );
   await logAudit(ownerUserId, "business_apply", "business_account", rows[0].id, { businessType });
+  await sendExternalAlert("kyc_pending", `New business (KYB) application: ${legalName}`, { businessAccountId: rows[0].id, businessType });
   return { businessAccountId: rows[0].id };
 }
 

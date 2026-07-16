@@ -202,7 +202,7 @@ export async function getAdminThread(messageId: string): Promise<{
 }
 
 export async function assignTicket(messageId: string, adminUserId: string, actorId: string): Promise<void> {
-  const { rows } = await query<{ status: string }>(`SELECT status FROM support_messages WHERE id = $1`, [messageId]);
+  const { rows } = await query<{ status: string; subject: string }>(`SELECT status, subject FROM support_messages WHERE id = $1`, [messageId]);
   if (!rows[0]) throw new NotFoundError();
 
   const nextStatus: SupportStatus = rows[0].status === "open" ? "assigned" : (rows[0].status as SupportStatus);
@@ -212,6 +212,9 @@ export async function assignTicket(messageId: string, adminUserId: string, actor
   );
   if (rows[0].status !== nextStatus) await recordStatusEvent(messageId, rows[0].status, nextStatus, "admin", actorId);
   await logAudit(actorId, "support_ticket_assigned", "support_message", messageId, { adminUserId });
+
+  const { rows: assigneeRows } = await query<{ email: string }>(`SELECT email FROM admin_users WHERE id = $1`, [adminUserId]);
+  await sendExternalAlert("support_ticket_assigned", `"${rows[0].subject}" assigned to ${assigneeRows[0]?.email ?? adminUserId}`, { messageId });
 }
 
 export async function addAdminReply(

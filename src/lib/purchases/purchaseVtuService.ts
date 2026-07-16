@@ -7,6 +7,7 @@ import { checkVelocityLimits } from "@/lib/limits/checkLimits";
 import { awardPurchaseCoins, awardReferralBonusIfEligible } from "@/lib/rewards/awardCoins";
 import { logAudit } from "@/lib/audit";
 import { sendNotification } from "@/lib/notifications/send";
+import { sendExternalAlert } from "@/lib/alerts/externalAlert";
 import { recordCommissionIfAgent } from "@/lib/agents/agentService";
 import { updateStreak } from "@/lib/gamification/streaks";
 import { computeAndUpdateLevel } from "@/lib/gamification/levels";
@@ -101,6 +102,11 @@ export async function purchaseVtu(input: PurchaseInput) {
         await logAudit(input.userId, "purchase_failed", "transaction", txnId, {
           serviceType: input.serviceType,
           vendor: adapter.id,
+        });
+        await sendExternalAlert("transaction_failed", `${input.serviceType} purchase declined by ${adapter.id}`, {
+          txnId,
+          vendor: adapter.id,
+          amountMinor: input.amountMinor,
         });
         return { txnId, status: "failed" as const };
       }

@@ -1,4 +1,5 @@
 import { query } from "@/lib/db";
+import { sendExternalAlert } from "@/lib/alerts/externalAlert";
 
 export class LimitExceededError extends Error {
   constructor(metric: string, maxMinor: number) {
@@ -77,4 +78,11 @@ async function flagVelocity(userId: string, metric: string, attemptedMinor: numb
     `INSERT INTO fraud_queue (risk_flag_id, priority) VALUES ($1, $2)`,
     [rows[0].id, priority]
   );
+
+  if (metric === "single_txn") {
+    await sendExternalAlert("large_transaction", `Attempted ₦${(attemptedMinor / 100).toLocaleString()} exceeds single-txn cap of ₦${(maxMinor / 100).toLocaleString()}`, { userId, priority });
+  }
+  if (priority === "high" || priority === "critical") {
+    await sendExternalAlert("fraud_score_high", `${priority.toUpperCase()} velocity flag on ${metric}: ${overBy.toFixed(1)}x the limit`, { userId, metric, priority });
+  }
 }
