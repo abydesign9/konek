@@ -10,6 +10,7 @@ import {
   TXN_STATUS_CLASS,
   TXN_STATUS_LABEL,
 } from "@/lib/format";
+import { PageHeader } from "@/components/PageHeader";
 
 interface TxnRow {
   id: string;
@@ -53,20 +54,18 @@ export default async function HistoryPage({
 
   return (
     <main className="min-h-screen bg-background">
-      <nav className="sticky top-0 z-50 bg-background border-b border-indigo/10">
-        <div className="max-w-lg mx-auto flex items-center justify-between px-6 py-3">
-          <Link href="/home" className="text-sm text-indigo/60 hover:text-indigo">
-            ← Home
-          </Link>
-          <span className="font-heading font-bold text-indigo">Transactions</span>
+      <PageHeader
+        title="Transactions"
+        backHref="/home"
+        right={
           <a
             href={`/api/wallet/statement?currency=${currency}`}
             className="text-sm font-semibold text-konek-green hover:underline"
           >
             Export
           </a>
-        </div>
-      </nav>
+        }
+      />
 
       <div className="max-w-lg mx-auto px-6 py-6">
         {/* Currency filter */}

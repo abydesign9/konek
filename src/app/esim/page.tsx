@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getSessionUserId } from "@/lib/auth/session";
 import { query } from "@/lib/db";
 import { formatDateTime } from "@/lib/format";
+import { PageHeader } from "@/components/PageHeader";
 
 interface EsimRow {
   id: string;
@@ -31,17 +32,15 @@ export default async function MyEsimsPage() {
 
   return (
     <main className="min-h-screen bg-background">
-      <nav className="sticky top-0 z-50 bg-background border-b border-indigo/10">
-        <div className="max-w-lg mx-auto flex items-center justify-between px-6 py-3">
-          <Link href="/home" className="text-sm text-indigo/60 hover:text-indigo">
-            ← Home
-          </Link>
-          <span className="font-heading font-bold text-indigo">My eSIMs</span>
+      <PageHeader
+        title="My eSIMs"
+        backHref="/home"
+        right={
           <Link href="/buy/esim" className="text-sm font-semibold text-konek-green hover:underline">
             Buy
           </Link>
-        </div>
-      </nav>
+        }
+      />
 
       <div className="max-w-lg mx-auto px-6 py-6">
         {rows.length === 0 ? (

@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getSessionUserId } from "@/lib/auth/session";
 import { query } from "@/lib/db";
@@ -12,6 +11,7 @@ import {
   TXN_STATUS_CLASS,
   TXN_STATUS_LABEL,
 } from "@/lib/format";
+import { PageHeader } from "@/components/PageHeader";
 
 interface Txn {
   id: string;
@@ -119,20 +119,19 @@ export default async function ReceiptPage({ params }: { params: { id: string } }
 
   return (
     <main className="min-h-screen bg-background">
-      <nav className="sticky top-0 z-50 bg-background border-b border-indigo/10">
-        <div className="max-w-lg mx-auto flex items-center justify-between px-6 py-3">
-          <Link href="/wallet/history" className="text-sm text-indigo/60 hover:text-indigo">
-            ← Transactions
-          </Link>
-          <span className="font-heading font-bold text-indigo">Receipt</span>
+      <PageHeader
+        title="Receipt"
+        backHref="/wallet/history"
+        backLabel="Transactions"
+        right={
           <ShareReceiptButton
             title="Konek receipt"
             text={`${txnTypeLabel(txn.type)} · ${credit ? "+" : "−"}${formatMoney(txn.amount_minor, txn.currency)} · ${
               TXN_STATUS_LABEL[txn.status] ?? txn.status
             } · Konek`}
           />
-        </div>
-      </nav>
+        }
+      />
 
       <div className="max-w-lg mx-auto px-6 py-8">
         {/* Amount header */}

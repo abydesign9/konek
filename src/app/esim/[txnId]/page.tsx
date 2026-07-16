@@ -6,6 +6,7 @@ import { QrCode } from "@/components/QrCode";
 import { ShareReceiptButton } from "@/components/ShareReceiptButton";
 import { esimLpaString } from "@/lib/esim";
 import { formatDateTime } from "@/lib/format";
+import { PageHeader } from "@/components/PageHeader";
 
 interface EsimTxn {
   token: string | null;
@@ -53,15 +54,12 @@ export default async function EsimUsagePage({ params }: { params: { txnId: strin
 
   return (
     <main className="min-h-screen bg-background">
-      <nav className="sticky top-0 z-50 bg-background border-b border-indigo/10">
-        <div className="max-w-lg mx-auto flex items-center justify-between px-6 py-3">
-          <Link href="/esim" className="text-sm text-indigo/60 hover:text-indigo">
-            ← My eSIMs
-          </Link>
-          <span className="font-heading font-bold text-indigo">eSIM</span>
-          <ShareReceiptButton title="My Konek eSIM" text={`${place} eSIM · ${(totalMb / 1000).toFixed(0)}GB · Konek`} />
-        </div>
-      </nav>
+      <PageHeader
+        title="eSIM"
+        backHref="/esim"
+        backLabel="My eSIMs"
+        right={<ShareReceiptButton title="My Konek eSIM" text={`${place} eSIM · ${(totalMb / 1000).toFixed(0)}GB · Konek`} />}
+      />
 
       <div className="max-w-lg mx-auto px-6 py-6">
         <div className="flex items-center gap-3 mb-6">

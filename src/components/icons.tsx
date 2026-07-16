@@ -302,3 +302,15 @@ export function IconChevronRight(props: React.SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
+
+// Bold arrow-left — the page-header back button. Thicker stroke than the
+// chevron above on purpose: this is the single most-tapped control on
+// every screen below /home, so it needs to read as an obvious button, not
+// a decorative glyph.
+export function IconArrowLeft(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.75" strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <path d="M19 12H5M11 18l-6-6 6-6" />
+    </svg>
+  );
+}
