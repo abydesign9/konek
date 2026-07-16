@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { PageHeader } from "@/components/PageHeader";
+import { BusinessShell } from "@/components/BusinessShell";
 
 const VALID_NETWORKS = ["mtn", "glo", "airtel", "9mobile"];
 const INTERVALS = [
-  { days: 7, label: "Weekly" },
-  { days: 30, label: "Monthly" },
+  { days: 7, label: "Every Friday" },
+  { days: 30, label: "Every 1st" },
 ];
 
 interface Schedule {
@@ -29,23 +29,47 @@ const STATUS_LABEL: Record<string, string> = {
 };
 
 export function RecurringDistributionsClient() {
+  const [businessName, setBusinessName] = useState<string | undefined>();
   const [schedules, setSchedules] = useState<Schedule[] | null>(null);
   const [showForm, setShowForm] = useState(false);
-  const [purpose, setPurpose] = useState("");
+  const [benefitName, setBenefitName] = useState("");
   const [serviceType, setServiceType] = useState<"airtime" | "data">("airtime");
   const [amountMinor, setAmountMinor] = useState("");
   const [csv, setCsv] = useState("");
   const [intervalDays, setIntervalDays] = useState(30);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
-  const [cancelling, setCancelling] = useState<string | null>(null);
+  const [pausing, setPausing] = useState<string | null>(null);
 
   function load() {
+    fetch("/api/business/me")
+      .then((r) => r.json())
+      .then((d) => setBusinessName(d.business?.legal_name));
     fetch("/api/business/recurring-distributions")
       .then((r) => r.json())
       .then((d) => setSchedules(d.schedules ?? []));
   }
   useEffect(load, []);
+
+  function openNew() {
+    setBenefitName("");
+    setServiceType("airtime");
+    setAmountMinor("");
+    setCsv("");
+    setIntervalDays(30);
+    setError(null);
+    setShowForm(true);
+  }
+
+  function duplicate(s: Schedule) {
+    setBenefitName(`${s.purpose} (copy)`);
+    setServiceType(s.service_type === "data" ? "data" : "airtime");
+    setAmountMinor(String(Number(s.amount_minor_per_recipient) / 100));
+    setCsv(s.recipients.map((r) => `${r.network},${r.phone}`).join("\n"));
+    setIntervalDays(s.interval_days);
+    setError(null);
+    setShowForm(true);
+  }
 
   async function create() {
     const amount = Number(amountMinor) * 100;
@@ -58,7 +82,7 @@ export function RecurringDistributionsClient() {
         return { network, phone };
       });
 
-    if (!purpose.trim()) return setError("Purpose is required");
+    if (!benefitName.trim()) return setError("Benefit name is required");
     if (!Number.isInteger(amount) || amount <= 0) return setError("Enter a valid amount per recipient");
     if (recipients.length === 0) return setError("Add at least one recipient");
     for (const r of recipients) {
@@ -72,50 +96,48 @@ export function RecurringDistributionsClient() {
     const res = await fetch("/api/business/recurring-distributions", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ purpose, serviceType, amountMinorPerRecipient: amount, recipients, intervalDays }),
+      body: JSON.stringify({ purpose: benefitName, serviceType, amountMinorPerRecipient: amount, recipients, intervalDays }),
     });
     setSaving(false);
     if (!res.ok) {
       const d = await res.json().catch(() => ({}));
-      setError(d.error ?? "Could not create schedule");
+      setError(d.error ?? "Could not create benefit");
       return;
     }
     setShowForm(false);
-    setPurpose("");
-    setCsv("");
-    setAmountMinor("");
     load();
   }
 
-  async function cancel(id: string) {
-    setCancelling(id);
+  async function pause(id: string) {
+    setPausing(id);
     await fetch(`/api/business/recurring-distributions/${id}`, { method: "DELETE" });
-    setCancelling(null);
+    setPausing(null);
     load();
   }
 
   return (
-    <main className="min-h-screen bg-background pb-12">
-      <PageHeader
-        title="Recurring distributions"
-        backHref="/business"
-        right={
-          !showForm && (
-            <button onClick={() => setShowForm(true)} className="text-sm font-semibold text-indigo">
-              New
+    <BusinessShell businessName={businessName}>
+      <div className="mx-auto max-w-3xl">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="font-heading text-2xl font-bold text-indigo">Recurring Benefits</h1>
+            <p className="mt-1 text-sm text-text-secondary">Automatic weekly or monthly benefits — set once, runs itself.</p>
+          </div>
+          {!showForm && (
+            <button onClick={openNew} className="rounded-lg bg-indigo px-4 py-2 text-sm font-semibold text-white hover:bg-indigo/90">
+              New Recurring Benefit
             </button>
-          )
-        }
-      />
+          )}
+        </div>
 
-      <div className="mx-auto flex max-w-lg flex-col gap-4 px-5 py-6">
         {showForm && (
-          <div className="konek-card-shadow flex flex-col gap-3 rounded-2xl bg-white px-5 py-5">
+          <div className="konek-card-shadow mt-5 flex flex-col gap-3 rounded-2xl bg-white p-5">
+            <p className="mb-1 font-heading text-sm font-bold text-indigo">New recurring benefit</p>
             <input
-              value={purpose}
-              onChange={(e) => setPurpose(e.target.value)}
-              placeholder="Purpose (e.g. Monthly team data)"
-              className="w-full rounded-xl border border-indigo/20 px-4 py-2.5 text-sm"
+              value={benefitName}
+              onChange={(e) => setBenefitName(e.target.value)}
+              placeholder="Benefit name (e.g. Monthly Data)"
+              className="w-full rounded-xl border border-border-soft px-4 py-2.5 text-sm"
             />
             <div className="flex gap-2">
               {(["airtime", "data"] as const).map((t) => (
@@ -133,20 +155,18 @@ export function RecurringDistributionsClient() {
             <input
               value={amountMinor}
               onChange={(e) => setAmountMinor(e.target.value)}
-              placeholder="Amount per recipient (₦)"
+              placeholder="Amount per employee (₦)"
               type="number"
-              className="w-full rounded-xl border border-indigo/20 px-4 py-2.5 text-sm"
+              className="w-full rounded-xl border border-border-soft px-4 py-2.5 text-sm"
             />
             <div>
-              <label className="mb-1 block text-xs font-semibold text-indigo/50">
-                Recipients — one per line: network,phone
-              </label>
+              <label className="mb-1 block text-xs font-semibold text-text-secondary">Employees — one per line: network,phone</label>
               <textarea
                 value={csv}
                 onChange={(e) => setCsv(e.target.value)}
                 rows={4}
                 placeholder="mtn,08012345678"
-                className="w-full rounded-xl border border-indigo/20 px-4 py-2.5 text-sm font-mono"
+                className="w-full rounded-xl border border-border-soft px-4 py-2.5 text-sm font-mono"
               />
             </div>
             <div className="flex gap-2">
@@ -164,48 +184,51 @@ export function RecurringDistributionsClient() {
             </div>
             {error && <p className="text-xs text-red-600">{error}</p>}
             <div className="flex gap-2">
-              <button
-                onClick={create}
-                disabled={saving}
-                className="flex-1 rounded-xl bg-indigo px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
-              >
-                {saving ? "Saving…" : "Schedule distribution"}
+              <button onClick={create} disabled={saving} className="flex-1 rounded-xl bg-indigo px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50">
+                {saving ? "Saving…" : "Create Recurring Benefit"}
               </button>
-              <button onClick={() => setShowForm(false)} className="text-sm text-indigo/50">
+              <button onClick={() => setShowForm(false)} className="text-sm text-text-secondary">
                 Cancel
               </button>
             </div>
           </div>
         )}
 
-        {schedules === null && <p className="text-sm text-indigo/50">Loading…</p>}
-        {schedules?.length === 0 && !showForm && (
-          <p className="rounded-2xl border border-dashed border-indigo/20 px-4 py-8 text-center text-sm text-indigo/50">
-            No recurring distributions yet.
-          </p>
-        )}
-        {schedules?.map((s) => (
-          <div key={s.id} className="konek-card-shadow flex items-center gap-3 rounded-2xl bg-white px-4 py-3.5">
-            <div className="min-w-0 flex-1">
-              <p className="text-sm font-semibold text-indigo">
-                {s.purpose} · {s.recipients.length} recipient{s.recipients.length === 1 ? "" : "s"}
+        <div className="mt-6 flex flex-col gap-3">
+          {schedules === null && <p className="text-sm text-text-secondary">Loading…</p>}
+          {schedules?.length === 0 && !showForm && (
+            <p className="konek-card-shadow rounded-2xl bg-white px-5 py-10 text-center text-sm text-text-secondary">
+              No recurring benefits yet. Set one up and it runs on its own from here on.
+            </p>
+          )}
+          {schedules?.map((s) => (
+            <div key={s.id} className="konek-card-shadow rounded-2xl bg-white p-5">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="font-heading text-base font-bold text-indigo">{s.purpose}</p>
+                  <p className="mt-1 text-sm text-text-secondary">
+                    {s.interval_days === 7 ? "Every Friday" : "Every 1st"} · {s.recipients.length} Employees · ₦
+                    {(Number(s.amount_minor_per_recipient) / 100).toLocaleString()}
+                  </p>
+                </div>
+                <span className="shrink-0 rounded-full bg-konek-green/15 px-3 py-1 text-xs font-semibold text-konek-green">Running</span>
+              </div>
+              <p className="mt-2 text-xs text-text-secondary">
+                Next {new Date(s.next_run_at).toLocaleDateString()}
+                {s.last_status && ` · Last run: ${STATUS_LABEL[s.last_status] ?? s.last_status}`}
               </p>
-              <p className="truncate text-xs text-indigo/55">
-                ₦{(Number(s.amount_minor_per_recipient) / 100).toLocaleString()} each ·{" "}
-                {s.interval_days === 7 ? "Weekly" : "Monthly"} · Next {new Date(s.next_run_at).toLocaleDateString()}
-                {s.last_status && ` · Last: ${STATUS_LABEL[s.last_status] ?? s.last_status}`}
-              </p>
+              <div className="mt-4 flex items-center gap-4 border-t border-border-soft pt-3">
+                <button onClick={() => pause(s.id)} disabled={pausing === s.id} className="text-xs font-semibold text-indigo hover:underline disabled:opacity-50">
+                  {pausing === s.id ? "…" : "Pause"}
+                </button>
+                <button onClick={() => duplicate(s)} className="text-xs font-semibold text-indigo hover:underline">
+                  Duplicate
+                </button>
+              </div>
             </div>
-            <button
-              onClick={() => cancel(s.id)}
-              disabled={cancelling === s.id}
-              className="shrink-0 rounded-full bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-600 disabled:opacity-50"
-            >
-              {cancelling === s.id ? "…" : "Cancel"}
-            </button>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
-    </main>
+    </BusinessShell>
   );
 }
