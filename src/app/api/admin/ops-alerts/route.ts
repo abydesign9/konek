@@ -31,7 +31,9 @@ export async function GET() {
       `SELECT id, legal_name, created_at FROM business_accounts WHERE kyb_status = 'pending' ORDER BY created_at DESC LIMIT 5`
     ),
     query<{ id: string; priority: string; flag: string; created_at: string }>(
-      `SELECT id, priority, flag, created_at FROM fraud_queue WHERE status = 'open' ORDER BY created_at DESC LIMIT 5`
+      `SELECT fq.id, fq.priority, rf.flag, fq.created_at
+       FROM fraud_queue fq JOIN risk_flags rf ON rf.id = fq.risk_flag_id
+       WHERE fq.status = 'open' ORDER BY fq.created_at DESC LIMIT 5`
     ),
   ]);
 
