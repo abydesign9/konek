@@ -7,7 +7,7 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
   title: "Konek",
-  description: "Airtime, data, bills, eSIM & international top-up — for you and family back home.",
+  description: "A digital connectivity platform for Africans at home and abroad. Airtime, data, eSIM, bills and global payments in one place.",
   manifest: "/manifest.json",
 };
 
