@@ -23,36 +23,12 @@ const TELCOS = [
 // they're both "money" — the brief's point is that this reads as a
 // platform with breadth, not a wallet with a top-up button bolted on.
 const PLATFORM_PILLARS = [
-  {
-    title: "Stay Connected",
-    items: ["Airtime", "Data", "eSIM"],
-    blurb: "Every network, everywhere you go.",
-  },
-  {
-    title: "Pay Bills",
-    items: ["Electricity", "Cable", "Internet", "Utilities", "International bills (coming)"],
-    blurb: "Everyday essentials, handled in seconds.",
-  },
-  {
-    title: "Send Value",
-    items: ["Top up anyone", "Anywhere", "Instantly"],
-    blurb: "Not money — value, delivered directly.",
-  },
-  {
-    title: "Receive Globally",
-    items: ["USD", "GBP", "EUR"],
-    blurb: "Into your own virtual accounts.",
-  },
-  {
-    title: "Spend Online",
-    items: ["Netflix", "AWS", "Apple", "Google", "ChatGPT", "Shopping"],
-    blurb: "A virtual dollar card built for the internet.",
-  },
-  {
-    title: "Grow Your Business",
-    items: ["Bulk airtime", "Bulk data", "Rewards", "Employee benefits", "Corporate connectivity"],
-    blurb: "One platform for your whole team.",
-  },
+  { title: "Stay Connected", icon: "📶", items: ["Airtime", "Data", "eSIM"], blurb: "Every network, everywhere you go." },
+  { title: "Pay Bills", icon: "🧾", items: ["Electricity", "Cable", "Internet", "Utilities"], blurb: "Everyday essentials, handled in seconds." },
+  { title: "Send Value", icon: "⚡", items: ["Top up anyone", "Anywhere", "Instantly"], blurb: "Not money — value, delivered directly." },
+  { title: "Receive Globally", icon: "🌍", items: ["USD", "GBP", "EUR"], blurb: "Into your own virtual accounts." },
+  { title: "Spend Online", icon: "💳", items: ["Netflix", "AWS", "Apple", "Google", "ChatGPT"], blurb: "A virtual dollar card built for the internet." },
+  { title: "Grow Your Business", icon: "📈", items: ["Bulk airtime", "Bulk data", "Rewards", "Employee benefits"], blurb: "One platform for your whole team." },
 ];
 
 const PERSONAS = [
@@ -74,10 +50,10 @@ const PERSONAS = [
 ];
 
 const ECOSYSTEM = [
-  { label: "Connectivity", items: ["Airtime", "Data", "eSIM"] },
-  { label: "Payments", items: ["Bills", "Utilities", "Rewards"] },
-  { label: "Global", items: ["USD Account", "Virtual Cards"] },
-  { label: "Business", items: ["Bulk Distribution", "Payroll Benefits", "API"] },
+  { label: "Connectivity", icon: "📶", items: ["Airtime", "Data", "eSIM"] },
+  { label: "Payments", icon: "🧾", items: ["Bills", "Utilities", "Rewards"] },
+  { label: "Global", icon: "🌍", items: ["USD Account", "Virtual Cards"] },
+  { label: "Business", icon: "📈", items: ["Bulk Distribution", "Payroll Benefits", "API"] },
 ];
 
 const HOW_STEPS = [
@@ -88,12 +64,12 @@ const HOW_STEPS = [
 ];
 
 const LOVE_POINTS = [
-  { title: "One App", body: "Instead of five. Everything that keeps you connected, in one place." },
-  { title: "No Remittance Stress", body: "No money transfers. You pay directly, so there's no transfer risk." },
-  { title: "Built For Travel", body: "eSIM, cards, bills, connectivity — land and go." },
-  { title: "Built For Families", body: "Top up parents. Pay school bills. Send utilities." },
-  { title: "Built For Freelancers", body: "Receive USD. Spend globally. Convert to naira." },
-  { title: "Built For Businesses", body: "Bulk payments. Employee benefits. Corporate eSIM." },
+  { title: "One App", icon: "📱", body: "Instead of five. Everything that keeps you connected, in one place." },
+  { title: "No Remittance Stress", icon: "🛡️", body: "No money transfers. You pay directly, so there's no transfer risk." },
+  { title: "Built For Travel", icon: "✈️", body: "eSIM, cards, bills, connectivity — land and go." },
+  { title: "Built For Families", icon: "👨‍👩‍👧", body: "Top up parents. Pay school bills. Send utilities." },
+  { title: "Built For Freelancers", icon: "💰", body: "Receive USD. Spend globally. Convert to naira." },
+  { title: "Built For Businesses", icon: "🏢", body: "Bulk payments. Employee benefits. Corporate eSIM." },
 ];
 
 const BUSINESS_CAPS = [
@@ -152,6 +128,32 @@ function SectionLabel({ children, tone = "green" }: { children: React.ReactNode;
   );
 }
 
+// A small emoji badge that bobs gently — the recurring "floating icon"
+// motif the brief asked for, used instead of dense paragraphs wherever a
+// single glance can carry the idea (connectivity, family, money, travel).
+function FloatingBadge({
+  icon,
+  className,
+  delay = 0,
+  size = "md",
+}: {
+  icon: string;
+  className?: string;
+  delay?: number;
+  size?: "sm" | "md" | "lg";
+}) {
+  const dims = size === "lg" ? "h-16 w-16 text-2xl" : size === "sm" ? "h-9 w-9 text-sm" : "h-12 w-12 text-lg";
+  return (
+    <div
+      className={`konek-float absolute z-10 flex ${dims} items-center justify-center rounded-full bg-white konek-card-shadow ${className ?? ""}`}
+      style={{ animationDelay: `${delay}s` }}
+      aria-hidden
+    >
+      {icon}
+    </div>
+  );
+}
+
 export default function LandingPage() {
   return (
     <main className="min-h-screen bg-background">
@@ -180,44 +182,51 @@ export default function LandingPage() {
         </div>
       </nav>
 
-      {/* ---------- Section 1: Hero ---------- */}
-      <section className="relative overflow-hidden bg-[#0A0C10]">
+      {/* ---------- Section 1: Hero (light — the image supplies the drama) ---------- */}
+      <section className="relative overflow-hidden bg-background">
         <div aria-hidden className="absolute -top-32 right-0 h-96 w-96 rounded-full bg-gold/10 blur-3xl" />
         <div aria-hidden className="absolute bottom-0 -left-32 h-96 w-96 rounded-full bg-konek-green/10 blur-3xl" />
         <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-6 py-16 md:grid-cols-2 md:py-20">
           <div>
-            <h1 className="mb-6 font-heading text-4xl font-bold leading-[1.08] text-white sm:text-5xl lg:text-[3.2rem]">
+            <h1 className="mb-6 font-heading text-4xl font-bold leading-[1.08] text-indigo sm:text-5xl lg:text-[3.2rem]">
               Stay Connected. <span className="text-gold">Spend Globally.</span> Live Without Borders.
             </h1>
-            <p className="mb-8 max-w-lg text-lg text-white/70">
+            <p className="mb-8 max-w-lg text-lg text-indigo/70">
               KONEK brings together international top-ups, eSIMs, global bill payments, virtual dollar accounts,
               cards, and everyday digital services into one simple platform for Africans at home and abroad.
             </p>
             <div className="mb-5 flex flex-col gap-3 sm:flex-row">
               <Link
                 href="/signup"
-                className="rounded-xl bg-gold px-7 py-3.5 text-center font-semibold text-indigo transition-colors hover:bg-gold/90"
+                className="rounded-xl bg-indigo px-7 py-3.5 text-center font-semibold text-white transition-colors hover:bg-indigo/90"
               >
                 Create Free Account
               </Link>
               <a
                 href="#platform"
-                className="rounded-xl border border-white/20 px-7 py-3.5 text-center font-semibold text-white transition-colors hover:bg-white/10"
+                className="rounded-xl border border-indigo/20 bg-white/60 px-7 py-3.5 text-center font-semibold text-indigo transition-colors hover:bg-white"
               >
                 Explore Products
               </a>
             </div>
-            <p className="text-sm text-white/40">No money transfer. No hidden fees. Just the services you actually use.</p>
+            <p className="text-sm text-indigo/50">No money transfer. No hidden fees. Just the services you actually use.</p>
           </div>
-          <div className="relative aspect-[2000/1125] w-full overflow-hidden rounded-3xl shadow-2xl shadow-black/40">
-            <Image
-              src="/landing/konek_hero_image.jpg"
-              alt="The Konek app connecting a phone to family, money, travel, bills, eSIM and card — one world, one Konek"
-              fill
-              priority
-              sizes="(max-width: 768px) 100vw, 50vw"
-              className="object-cover"
-            />
+          <div className="relative">
+            <div className="relative aspect-[2000/1125] w-full overflow-hidden rounded-3xl shadow-2xl shadow-indigo/20">
+              <Image
+                src="/landing/konek_hero_image.jpg"
+                alt="The Konek app connecting a phone to family, money, travel, bills, eSIM and card — one world, one Konek"
+                fill
+                priority
+                sizes="(max-width: 768px) 100vw, 50vw"
+                className="object-cover"
+              />
+            </div>
+            <FloatingBadge icon="📶" className="-left-5 -top-5" size="md" />
+            <FloatingBadge icon="👨‍👩‍👧" className="-right-4 top-8" delay={0.6} size="lg" />
+            <FloatingBadge icon="💵" className="-right-6 bottom-16" delay={1.2} size="md" />
+            <FloatingBadge icon="✈️" className="-bottom-5 left-10" delay={1.8} size="md" />
+            <FloatingBadge icon="💳" className="bottom-1/3 -left-6" delay={2.4} size="sm" />
           </div>
         </div>
       </section>
@@ -247,15 +256,23 @@ export default function LandingPage() {
       <section id="platform" className="mx-auto max-w-6xl px-6 py-20">
         <SectionLabel>All the everyday digital services you need</SectionLabel>
         <h2 className="mb-4 text-center font-heading text-3xl font-bold text-indigo">Everything you need. One platform.</h2>
-        <p className="mx-auto mb-12 max-w-2xl text-center text-indigo/60">
+        <p className="mx-auto mb-8 max-w-2xl text-center text-indigo/60">
           Not four products bolted together — six ways Konek shows up in your everyday life.
         </p>
+
+        <div className="relative mb-10 overflow-hidden rounded-3xl shadow-xl shadow-indigo/10">
+          <div className="relative aspect-[2000/1125] w-full">
+            <Image src="/landing/konek_app_day.jpg" alt="The Konek app: send money, cards, exchange and trip planning screens" fill sizes="(max-width: 768px) 100vw, 1000px" className="object-cover" />
+          </div>
+        </div>
+
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {PLATFORM_PILLARS.map((p) => (
             <div
               key={p.title}
               className="rounded-2xl border border-indigo/10 bg-white p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
             >
+              <span className="mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-konek-green/10 text-xl">{p.icon}</span>
               <h3 className="mb-1.5 font-heading font-semibold text-indigo">{p.title}</h3>
               <p className="mb-4 text-sm text-indigo/60">{p.blurb}</p>
               <ul className="flex flex-wrap gap-1.5">
@@ -298,72 +315,78 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ---------- Section 4: Why KONEK exists ---------- */}
-      <section className="relative overflow-hidden bg-[#0A0C10]">
-        <div className="absolute inset-0 opacity-40">
-          <Image src="/landing/konek_world_map.jpg" alt="" fill sizes="100vw" className="object-cover" />
-        </div>
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0A0C10] via-[#0A0C10]/70 to-[#0A0C10]/30" />
-        <div className="relative mx-auto max-w-3xl px-6 py-24 text-center">
-          <p className="mb-6 text-xl text-white/90 sm:text-2xl">Millions of Africans live between two worlds.</p>
-          <p className="mx-auto mb-10 max-w-xl text-white/60">
-            You work in one country. Your family lives in another. You travel. You pay bills. You buy data. You
-            receive international payments. You stay connected across borders. Today, that means using five or six
-            different apps.
-          </p>
-          <p className="font-heading text-2xl font-bold text-gold sm:text-3xl">
-            KONEK brings everything together into one trusted platform.
-          </p>
+      {/* ---------- Section 4: Why KONEK exists (light — the map is a framed visual, not a backdrop) ---------- */}
+      <section className="mx-auto max-w-6xl px-6 py-20">
+        <div className="grid items-center gap-12 md:grid-cols-2">
+          <div className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl shadow-xl shadow-indigo/10">
+            <Image src="/landing/konek_world_map.jpg" alt="A world map showing Konek connecting Lagos, London, Dubai, New York and more" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
+            <FloatingBadge icon="🌍" className="-right-4 -top-4" size="lg" />
+            <FloatingBadge icon="📍" className="-bottom-4 -left-4" delay={0.8} />
+          </div>
+          <div>
+            <p className="mb-5 text-xl font-medium text-indigo sm:text-2xl">Millions of Africans live between two worlds.</p>
+            <p className="mb-6 text-indigo/60">
+              You work in one country. Your family lives in another. You travel, pay bills, buy data, and receive
+              international payments — all across borders. Today, that means five or six different apps.
+            </p>
+            <p className="font-heading text-2xl font-bold text-konek-green">
+              KONEK brings everything together into one trusted platform.
+            </p>
+          </div>
         </div>
       </section>
 
       {/* ---------- Section 5: Product ecosystem ---------- */}
-      <section className="mx-auto max-w-5xl px-6 py-20">
-        <SectionLabel>How it fits together</SectionLabel>
-        <h2 className="mb-14 text-center font-heading text-3xl font-bold text-indigo">One ecosystem, not four apps</h2>
-        <div className="flex flex-col items-center">
-          <div className="rounded-2xl bg-indigo px-8 py-4 font-heading text-xl font-bold text-white shadow-lg shadow-indigo/20">
-            KONEK
-          </div>
-          <div className="h-10 w-px bg-indigo/20" />
-          <div className="grid w-full gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {ECOSYSTEM.map((branch) => (
-              <div key={branch.label} className="flex flex-col items-center">
-                <div className="mb-4 h-6 w-px bg-indigo/20 sm:block" />
-                <div className="w-full rounded-2xl border border-indigo/10 bg-white p-5 text-center shadow-sm">
-                  <p className="mb-3 font-heading font-semibold text-konek-green">{branch.label}</p>
-                  <ul className="flex flex-col gap-1.5">
-                    {branch.items.map((item) => (
-                      <li key={item} className="text-sm text-indigo/70">
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
+      <section className="bg-white/60 border-y border-indigo/10">
+        <div className="mx-auto max-w-5xl px-6 py-20">
+          <SectionLabel>How it fits together</SectionLabel>
+          <h2 className="mb-14 text-center font-heading text-3xl font-bold text-indigo">One ecosystem, not four apps</h2>
+          <div className="flex flex-col items-center">
+            <div className="rounded-2xl bg-indigo px-8 py-4 font-heading text-xl font-bold text-white shadow-lg shadow-indigo/20">
+              KONEK
+            </div>
+            <div className="h-10 w-px bg-indigo/20" />
+            <div className="grid w-full gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {ECOSYSTEM.map((branch) => (
+                <div key={branch.label} className="flex flex-col items-center">
+                  <div className="mb-4 h-6 w-px bg-indigo/20 sm:block" />
+                  <div className="w-full rounded-2xl border border-indigo/10 bg-white p-5 text-center shadow-sm">
+                    <span className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-konek-green/10 text-lg">
+                      {branch.icon}
+                    </span>
+                    <p className="mb-3 font-heading font-semibold text-konek-green">{branch.label}</p>
+                    <ul className="flex flex-col gap-1.5">
+                      {branch.items.map((item) => (
+                        <li key={item} className="text-sm text-indigo/70">
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
       {/* ---------- Section 6: How KONEK works ---------- */}
-      <section className="bg-white/60 border-y border-indigo/10">
-        <div className="mx-auto max-w-6xl px-6 py-20">
-          <SectionLabel>Get started in minutes</SectionLabel>
-          <h2 className="mb-12 text-center font-heading text-3xl font-bold text-indigo">How KONEK works</h2>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {HOW_STEPS.map((step, i) => (
-              <div key={step.n} className="relative rounded-2xl border border-indigo/10 bg-white p-6 shadow-sm">
-                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-konek-green font-heading font-bold text-white">
+      <section className="mx-auto max-w-6xl px-6 py-20">
+        <SectionLabel>Get started in minutes</SectionLabel>
+        <h2 className="mb-12 text-center font-heading text-3xl font-bold text-indigo">How KONEK works</h2>
+        <div className="grid items-center gap-12 md:grid-cols-2">
+          <div className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl shadow-xl shadow-indigo/10">
+            <Image src="/landing/konek_dollar_account.jpg" alt="Konek dashboard open on a laptop showing a received USD payment" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
+            <FloatingBadge icon="✅" className="-right-4 -top-4" size="md" />
+          </div>
+          <div className="grid gap-5 sm:grid-cols-2">
+            {HOW_STEPS.map((step) => (
+              <div key={step.n} className="rounded-2xl border border-indigo/10 bg-white p-5 shadow-sm">
+                <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-full bg-konek-green font-heading font-bold text-white">
                   {step.n}
                 </div>
-                <h3 className="mb-2 font-heading font-semibold text-indigo">{step.title}</h3>
+                <h3 className="mb-1.5 font-heading font-semibold text-indigo">{step.title}</h3>
                 <p className="text-sm text-indigo/70">{step.body}</p>
-                {i < HOW_STEPS.length - 1 && (
-                  <span aria-hidden className="absolute -right-3 top-9 hidden text-indigo/20 lg:block">
-                    →
-                  </span>
-                )}
               </div>
             ))}
           </div>
@@ -371,16 +394,19 @@ export default function LandingPage() {
       </section>
 
       {/* ---------- Section 7: Why people love KONEK ---------- */}
-      <section className="mx-auto max-w-6xl px-6 py-20">
-        <SectionLabel tone="gold">Not fast. Not secure. Not reliable.</SectionLabel>
-        <h2 className="mb-12 text-center font-heading text-3xl font-bold text-indigo">Why people love KONEK</h2>
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {LOVE_POINTS.map((point) => (
-            <div key={point.title} className="rounded-2xl border border-indigo/10 bg-white p-6 shadow-sm">
-              <h3 className="mb-2 font-heading font-semibold text-indigo">{point.title}</h3>
-              <p className="text-sm leading-relaxed text-indigo/70">{point.body}</p>
-            </div>
-          ))}
+      <section className="bg-white/60 border-y border-indigo/10">
+        <div className="mx-auto max-w-6xl px-6 py-20">
+          <SectionLabel tone="gold">Not fast. Not secure. Not reliable.</SectionLabel>
+          <h2 className="mb-12 text-center font-heading text-3xl font-bold text-indigo">Why people love KONEK</h2>
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {LOVE_POINTS.map((point) => (
+              <div key={point.title} className="rounded-2xl border border-indigo/10 bg-white p-6 shadow-sm">
+                <span className="mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-gold/10 text-xl">{point.icon}</span>
+                <h3 className="mb-2 font-heading font-semibold text-indigo">{point.title}</h3>
+                <p className="text-sm leading-relaxed text-indigo/70">{point.body}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -405,8 +431,15 @@ export default function LandingPage() {
               Explore Konek for Business
             </Link>
           </div>
-          <div className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl shadow-2xl shadow-black/30">
-            <Image src="/landing/konek_dashboard_day.jpg" alt="A Konek business dashboard showing revenue, expenses and recent transactions" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
+          <div className="relative">
+            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl shadow-2xl shadow-black/30">
+              <Image src="/landing/konek_dashboard_day.jpg" alt="A Konek business dashboard showing revenue, expenses and recent transactions" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
+            </div>
+            <div className="konek-float absolute -bottom-6 -left-6 hidden w-48 overflow-hidden rounded-2xl shadow-2xl shadow-black/30 ring-4 ring-indigo sm:block">
+              <div className="relative aspect-[4/3] w-full">
+                <Image src="/landing/konek_business_day.jpg" alt="A business owner sending bulk airtime to employees" fill sizes="192px" className="object-cover" />
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -416,6 +449,8 @@ export default function LandingPage() {
         <div className="grid items-center gap-12 md:grid-cols-2">
           <div className="relative order-2 aspect-square w-full max-w-sm justify-self-center md:order-1 md:justify-self-start">
             <Image src="/landing/konek_security_day.jpg" alt="A shield with a checkmark, representing Konek's security" fill sizes="(max-width: 768px) 90vw, 40vw" className="rounded-3xl object-cover" />
+            <FloatingBadge icon="🔒" className="-right-3 -top-3" size="md" />
+            <FloatingBadge icon="✅" className="-bottom-3 -left-3" delay={0.9} size="md" />
           </div>
           <div className="order-1 md:order-2">
             <SectionLabel>Built to be trusted</SectionLabel>

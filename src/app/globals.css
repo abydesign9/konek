@@ -51,3 +51,13 @@ body {
 
 .konek-scrollbar-none::-webkit-scrollbar { display: none; }
 .konek-scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Floating decorative badges on the landing page — each instance offsets
+   its own animation-delay so a cluster doesn't bob in lockstep. */
+@keyframes konek-float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+.konek-float {
+  animation: konek-float 4.5s ease-in-out infinite;
+}
