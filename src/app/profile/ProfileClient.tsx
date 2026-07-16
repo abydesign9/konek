@@ -160,7 +160,7 @@ export function ProfileClient() {
       {/* ---------- Nav rows ---------- */}
       <section className="mt-6 flex flex-col gap-2.5 px-5">
         <NavRow label="Verification" sub={KYC_LABEL[profile.kyc_status] ?? profile.kyc_status} Icon={IconShield} href="/kyc" />
-        <NavRow label="Security" sub="Transaction PIN" Icon={IconBolt} href="/settings/pin" />
+        <NavRow label="Security" sub="Transaction PIN & account settings" Icon={IconBolt} href="/settings" />
         <NavRow label="Notifications" sub="Push, SMS & WhatsApp preferences" Icon={IconBell} href="/notifications" />
         <NavRow label="Payment Methods" sub="Virtual cards" Icon={IconWallet} href="/cards" />
         <NavRow label="Support" sub="FAQs & help center" Icon={IconShield} href="/support" />

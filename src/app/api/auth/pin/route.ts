@@ -1,6 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionUserId } from "@/lib/auth/session";
-import { hasPinSet, InvalidPinFormatError, PinAlreadySetError, setPin } from "@/lib/auth/pin";
+import {
+  changePin,
+  hasPinSet,
+  IncorrectPinError,
+  InvalidPinFormatError,
+  PinAlreadySetError,
+  PinNotSetError,
+  setPin,
+} from "@/lib/auth/pin";
 
 export async function GET() {
   const userId = await getSessionUserId();
@@ -28,6 +36,37 @@ export async function POST(req: NextRequest) {
     }
     if (err instanceof PinAlreadySetError) {
       return NextResponse.json({ error: err.message }, { status: 409 });
+    }
+    throw err;
+  }
+}
+
+// Self-service change — requires the current PIN. Distinct from POST
+// above (first-time set only) and from the admin reset flow (clears it
+// outright, no current-PIN check, for a customer who's locked out).
+export async function PATCH(req: NextRequest) {
+  const userId = await getSessionUserId();
+  if (!userId) return NextResponse.json({ error: "unauthenticated" }, { status: 401 });
+
+  const body = await req.json().catch(() => null);
+  const currentPin = body?.currentPin;
+  const newPin = body?.newPin;
+  if (typeof currentPin !== "string" || typeof newPin !== "string") {
+    return NextResponse.json({ error: "currentPin and newPin are required" }, { status: 400 });
+  }
+
+  try {
+    await changePin(userId, currentPin, newPin);
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    if (err instanceof InvalidPinFormatError) {
+      return NextResponse.json({ error: err.message }, { status: 400 });
+    }
+    if (err instanceof PinNotSetError) {
+      return NextResponse.json({ error: err.message }, { status: 409 });
+    }
+    if (err instanceof IncorrectPinError) {
+      return NextResponse.json({ error: err.message }, { status: 401 });
     }
     throw err;
   }

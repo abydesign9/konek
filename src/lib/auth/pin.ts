@@ -68,6 +68,18 @@ export async function verifyPin(userId: string, pin: string): Promise<void> {
   if (!ok) throw new IncorrectPinError();
 }
 
+// Self-service PIN change — requires the current PIN, unlike resetPin()
+// below which is an admin/support action that clears it outright. This is
+// the "I know my PIN and want a new one" path; that one is "I forgot it."
+export async function changePin(userId: string, currentPin: string, newPin: string): Promise<void> {
+  await verifyPin(userId, currentPin); // throws PinNotSetError / IncorrectPinError / InvalidPinFormatError
+  if (!PIN_PATTERN.test(newPin)) throw new InvalidPinFormatError();
+
+  const hash = await bcrypt.hash(newPin, 10);
+  await query(`UPDATE users SET pin_hash = $2, updated_at = now() WHERE id = $1`, [userId, hash]);
+  await logAudit(userId, "pin_changed", "user", userId);
+}
+
 // Admin/support action: clears a customer's transaction PIN (e.g. they
 // forgot it, or it may be compromised). The user is prompted to set a new
 // one the next time they try to authorize a purchase — the same flow a
