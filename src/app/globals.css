@@ -11,3 +11,43 @@ body {
   color: var(--foreground);
   background: var(--background);
 }
+/* Hero balance card texture — subtle geometric pattern, not literal flags */
+.konek-hero {
+  background: linear-gradient(135deg, #22315C 0%, #2E4079 55%, #1A2647 100%);
+  position: relative;
+  overflow: hidden;
+}
+.konek-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 85% 10%, rgba(255,255,255,0.10) 0%, transparent 45%),
+    radial-gradient(circle at 100% 100%, rgba(0,196,140,0.18) 0%, transparent 50%);
+  pointer-events: none;
+}
+.konek-hero::after {
+  content: "";
+  position: absolute;
+  right: -30px;
+  top: -30px;
+  width: 160px;
+  height: 160px;
+  border-radius: 9999px;
+  border: 1.5px solid rgba(255,255,255,0.08);
+  pointer-events: none;
+}
+
+.konek-card-shadow {
+  box-shadow: 0 8px 24px -8px rgba(34, 49, 92, 0.18), 0 2px 6px -2px rgba(34, 49, 92, 0.10);
+}
+
+.konek-tile {
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.konek-tile:active {
+  transform: scale(0.94);
+}
+
+.konek-scrollbar-none::-webkit-scrollbar { display: none; }
+.konek-scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
