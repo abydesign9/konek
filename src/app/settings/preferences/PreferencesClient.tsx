@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/PageHeader";
 import { IconChevronRight } from "@/components/icons";
 
@@ -19,7 +18,6 @@ const LANGUAGES = [
 ];
 
 export function PreferencesClient() {
-  const router = useRouter();
   const [theme, setTheme] = useState<string | null>(null);
   const [language, setLanguage] = useState<string | null>(null);
   const [saving, setSaving] = useState<"theme" | "language" | null>(null);
@@ -42,9 +40,6 @@ export function PreferencesClient() {
       body: JSON.stringify({ theme: next }),
     });
     setSaving(null);
-    // Server layout sets data-theme from the DB on render — refresh so the
-    // change is visible immediately instead of on the next navigation.
-    router.refresh();
   }
 
   async function updateLanguage(next: string) {
@@ -96,7 +91,8 @@ export function PreferencesClient() {
               ))}
             </div>
             <p className="mt-2 text-xs text-indigo/45">
-              Applies to backgrounds now; full dark styling for every screen is still rolling out.
+              Your choice is saved, but dark and match-device don&apos;t change how the app looks yet — we
+              tried this and it made text unreadable in places, so it&apos;s off while we do it properly.
             </p>
           </div>
         </section>

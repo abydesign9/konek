@@ -7,20 +7,16 @@
   --foreground: #22315c;
 }
 
-/* Dark theme: swaps the base page surface/text. Card surfaces
-   (bg-white), the indigo brand color, etc. are not yet re-themed per
-   component — this covers the page canvas, which is what most screens
-   are mostly made of, while full per-screen dark coverage is finished. */
-[data-theme="dark"] {
-  --background: #14182b;
-  --foreground: #f3eee7;
-}
-@media (prefers-color-scheme: dark) {
-  [data-theme="system"] {
-    --background: #14182b;
-    --foreground: #f3eee7;
-  }
-}
+/* Dark mode is intentionally NOT implemented yet. An earlier version of
+   this file swapped --background/--foreground for dark/system, but every
+   screen in the app hardcodes light-mode colors on top of those vars
+   (text-indigo headings, bg-white cards, the public landing page) — so
+   flipping just the two base variables produced dark-navy-text-on-
+   dark-navy-background in most places: unreadable, not "dark mode."
+   Doing this properly means auditing every screen's color usage, which
+   is real, separate work. Until then the theme preference is still saved
+   (see /settings/preferences) but has no visual effect — see that page's
+   copy for why. */
 
 body {
   color: var(--foreground);
