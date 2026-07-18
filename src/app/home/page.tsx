@@ -252,7 +252,7 @@ export default async function HomeDashboard() {
           })}
         </div>
 
-        <p className="mb-3 mt-6 text-xs font-semibold uppercase tracking-wide text-indigo/45">Local essentials</p>
+        <p className="mb-3 mt-6 text-xs font-semibold uppercase tracking-wide text-indigo/45">Bills &amp; top-ups</p>
         <div className="grid grid-cols-4 gap-x-2 gap-y-2">
           {LOCAL_ACTIONS.map(({ key, label, Icon, href }) => {
             const c = SERVICE_COLORS[key] ?? SERVICE_COLORS.more;

@@ -80,15 +80,28 @@ export function ProfileClient() {
           href="/profile/account"
           className="konek-card-shadow konek-tile flex items-center gap-3 rounded-2xl bg-white px-5 py-5"
         >
-          <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-indigo/10 font-heading text-lg font-bold text-indigo">
-            {(profile?.full_name || profile?.phone || "?").charAt(0).toUpperCase()}
-          </span>
-          <div className="min-w-0 flex-1">
-            <p className="truncate font-heading text-base font-bold text-indigo">
-              {profile?.full_name || "Add your name"}
-            </p>
-            <p className="truncate text-sm text-indigo/55">{profile?.email || profile?.phone || "Complete your profile"}</p>
-          </div>
+          {profile ? (
+            <>
+              <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-indigo/10 font-heading text-lg font-bold text-indigo">
+                {(profile.full_name || profile.email || profile.phone || "K").charAt(0).toUpperCase()}
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="truncate font-heading text-base font-bold text-indigo">
+                  {profile.full_name || "Add your name"}
+                </p>
+                <p className="truncate text-sm text-indigo/55">{profile.email || profile.phone || "Complete your profile"}</p>
+              </div>
+            </>
+          ) : (
+            // Loading skeleton — avoids the "?" avatar / placeholder text flash.
+            <>
+              <span className="h-14 w-14 shrink-0 animate-pulse rounded-full bg-indigo/10" />
+              <div className="min-w-0 flex-1 space-y-2">
+                <div className="h-4 w-32 animate-pulse rounded bg-indigo/10" />
+                <div className="h-3 w-44 animate-pulse rounded bg-indigo/5" />
+              </div>
+            </>
+          )}
           <IconChevronRight className="h-4 w-4 shrink-0 text-indigo/30" />
         </Link>
       </section>

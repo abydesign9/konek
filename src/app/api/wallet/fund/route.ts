@@ -60,7 +60,10 @@ export async function POST(req: NextRequest) {
       );
       const txnId = txn.rows[0].id;
 
-      const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+      // Derive the callback origin from the incoming request so it works on any
+      // deployment without relying on NEXT_PUBLIC_APP_URL being set (which is
+      // why funding was bouncing users to localhost in production).
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? req.nextUrl.origin;
       const { authorizationUrl, reference } = await paymentGateway.initialize({
         email: gatewayEmail,
         amountMinor,

@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
   const secret = process.env.PAYSTACK_SECRET_KEY ?? "sk_test_...";
   const signature = crypto.createHmac("sha512", secret).update(payload).digest("hex");
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? req.nextUrl.origin;
   const webhookRes = await fetch(`${appUrl}/api/webhooks/paystack`, {
     method: "POST",
     headers: { "Content-Type": "application/json", "x-paystack-signature": signature },
