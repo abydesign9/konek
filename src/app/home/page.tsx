@@ -41,7 +41,7 @@ const GLOBAL_ACTIONS = [
   { key: "intl", label: "Int'l Top-Up", Icon: IconGlobe, href: "/buy/intl-topup" },
   { key: "dollar", label: "USD Account", Icon: IconDollar, href: "/wallet/dollar-account" },
   { key: "card", label: "Card", Icon: IconCard, href: "/cards" },
-  { key: "global-data", label: "Data Top-Up", Icon: IconData, href: "/buy/intl-topup" },
+  { key: "global-data", label: "Data Top-Up", Icon: IconData, href: "/buy/data-topup" },
 ];
 
 const LOCAL_ACTIONS = [

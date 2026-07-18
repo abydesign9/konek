@@ -7,6 +7,7 @@ export type VendorServiceType =
   | "betting"
   | "gift_card"
   | "intl_topup"
+  | "intl_data"
   | "esim";
 
 export interface PurchaseParams {
