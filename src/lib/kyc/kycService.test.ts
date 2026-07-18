@@ -1,5 +1,9 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
 
+// KYC payloads are envelope-encrypted before storage (see src/lib/crypto/pii.ts),
+// which needs a master key. Provide a deterministic test key.
+process.env.PII_MASTER_KEY = Buffer.alloc(32, 7).toString("base64");
+
 interface MockUser {
   kyc_tier: number;
   kyc_status: string;

@@ -12,7 +12,10 @@ export type AlertEvent =
   | "provider_outage"
   | "large_transaction"
   | "kyc_pending"
-  | "chargeback";
+  | "chargeback"
+  | "side_effect_failed"
+  | "margin_breach"
+  | "catalog_sync_failed";
 
 // Discord embed side-bar colors (decimal), roughly by severity.
 const EVENT_COLOR: Record<AlertEvent, number> = {
@@ -25,6 +28,9 @@ const EVENT_COLOR: Record<AlertEvent, number> = {
   large_transaction: 0xe2932f,
   kyc_pending: 0x2e9e6b, // green — routine review item, not an incident
   chargeback: 0xc0392b,
+  side_effect_failed: 0xe2932f, // amber — purchase succeeded, a follow-on hook did not
+  margin_breach: 0xc0392b, // red — a plan would sell below the min margin; held back
+  catalog_sync_failed: 0xe2932f, // amber — a catalog sync run failed
 };
 
 async function postToDiscord(event: AlertEvent, message: string, meta?: Record<string, unknown>): Promise<void> {

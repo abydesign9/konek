@@ -181,36 +181,59 @@ export async function previewAudienceSize(audience: Audience, phones?: string[])
 // Sends a campaign right now, regardless of its schedule_type — the
 // "Send Immediately" action, and also how an admin manually fires a
 // scheduled/recurring campaign since no worker exists yet to do it for them.
-export async function sendCampaignNow(campaignId: string, actorId: string): Promise<{ recipients: number }> {
-  const campaign = await getCampaign(campaignId);
-  const audiencePhones = campaign.audience_meta?.phones;
-  const userIds = await resolveAudience(campaign.audience, audiencePhones);
-
-  const channels = campaign.channels.filter((c): c is NotificationChannel =>
-    ["push", "sms", "email", "whatsapp"].includes(c)
-  );
-  // in_app campaigns don't go through sendNotification (that's the
-  // notifications feed) — they're picked up by the in-app-message CMS
-  // instead, so only real notification channels are dispatched here.
-  const realChannels = channels.length > 0 ? channels : (["push"] as NotificationChannel[]);
-
-  let queued = 0;
-  for (const userId of userIds) {
-    for (const channel of realChannels) {
-      const sent = await sendNotification(userId, channel, "price_alert", campaign.subject, campaign.body, campaignId);
-      if (sent) queued += 1;
-    }
-  }
-
-  await query(
-    `UPDATE notification_campaigns SET status = 'sent', last_sent_at = now(), updated_at = now() WHERE id = $1`,
+export async function sendCampaignNow(campaignId: string, actorId: string): Promise<{ recipients: number; skipped?: boolean }> {
+  // Claim the campaign atomically. 'sending' is a lock: a concurrent manual send
+  // or an overlapping cron tick (the status only flips off 'sending' when this
+  // send finishes) can't resolve the audience and blast everyone a second time —
+  // which for SMS is real duplicated cost.
+  const claim = await query<{ schedule_type: string }>(
+    `UPDATE notification_campaigns SET status = 'sending', updated_at = now()
+      WHERE id = $1 AND status <> 'sending' RETURNING schedule_type`,
     [campaignId]
   );
-  await logAudit(actorId, "notification_campaign_sent", "notification_campaign", campaignId, {
-    audienceSize: userIds.length,
-    queued,
-  });
-  return { recipients: queued };
+  if (claim.rowCount === 0) {
+    const { rows } = await query<{ id: string }>(`SELECT id FROM notification_campaigns WHERE id = $1`, [campaignId]);
+    if (!rows[0]) throw new NotFoundError();
+    return { recipients: 0, skipped: true }; // a send is already in flight
+  }
+  const scheduleType = claim.rows[0].schedule_type;
+
+  try {
+    const campaign = await getCampaign(campaignId);
+    const audiencePhones = campaign.audience_meta?.phones;
+    const userIds = await resolveAudience(campaign.audience, audiencePhones);
+
+    const channels = campaign.channels.filter((c): c is NotificationChannel =>
+      ["push", "sms", "email", "whatsapp"].includes(c)
+    );
+    // in_app campaigns don't go through sendNotification (that's the
+    // notifications feed) — they're picked up by the in-app-message CMS
+    // instead, so only real notification channels are dispatched here.
+    const realChannels = channels.length > 0 ? channels : (["push"] as NotificationChannel[]);
+
+    let queued = 0;
+    for (const userId of userIds) {
+      for (const channel of realChannels) {
+        const sent = await sendNotification(userId, channel, "price_alert", campaign.subject, campaign.body, campaignId);
+        if (sent) queued += 1;
+      }
+    }
+
+    await logAudit(actorId, "notification_campaign_sent", "notification_campaign", campaignId, {
+      audienceSize: userIds.length,
+      queued,
+    });
+    return { recipients: queued };
+  } finally {
+    // Release the lock: recurring campaigns return to 'active' (so the next
+    // interval can fire), one-offs become 'sent'. last_sent_at drives the
+    // recurring due-check.
+    const finalStatus = scheduleType === "recurring" ? "active" : "sent";
+    await query(
+      `UPDATE notification_campaigns SET status = $2, last_sent_at = now(), updated_at = now() WHERE id = $1`,
+      [campaignId, finalStatus]
+    );
+  }
 }
 
 // Called by the cron worker (see /api/cron/tick). Fires any one-off
@@ -234,11 +257,11 @@ export async function dispatchDueCampaigns(): Promise<{ dispatched: number }> {
      AND (expiry_at IS NULL OR expiry_at > now())`
   );
 
+  // sendCampaignNow claims the campaign ('sending') and, on completion, returns
+  // recurring campaigns to 'active' / one-offs to 'sent' — so this loop neither
+  // double-fires nor needs a separate status flip.
   for (const c of due) {
     await sendCampaignNow(c.id, "system:cron");
-    if (c.schedule_type === "recurring") {
-      await setCampaignStatus(c.id, "active", "system:cron");
-    }
   }
   return { dispatched: due.length };
 }

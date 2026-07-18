@@ -9,7 +9,7 @@ export async function POST(_req: Request, { params }: { params: { id: string } }
   if (!userId) return NextResponse.json({ error: "unauthenticated" }, { status: 401 });
 
   try {
-    checkRateLimit(`card_reveal:${userId}`, 10, 10 * 60 * 1000);
+    await checkRateLimit(`card_reveal:${userId}`, 10, 10 * 60 * 1000);
   } catch (err) {
     if (err instanceof RateLimitExceededError) {
       return NextResponse.json({ error: "Too many attempts — try again shortly" }, { status: 429 });

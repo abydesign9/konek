@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminSession } from "@/lib/admin/session";
+import { assertPermission, ForbiddenError } from "@/lib/admin/permissions";
 import { query } from "@/lib/db";
 import { createPartnerAccount } from "@/lib/partners/partnerService";
 
@@ -26,6 +27,14 @@ export async function POST(req: NextRequest) {
   }
   const pct = typeof revenueSharePct === "number" ? revenueSharePct : 0.2;
   const services = Array.isArray(allowedServices) && allowedServices.length > 0 ? allowedServices : ["airtime", "data"];
+
+  try {
+    // Creating a white-label partner grants API access + revenue share — gate it.
+    await assertPermission(admin.role, "business.approve");
+  } catch (err) {
+    if (err instanceof ForbiddenError) return NextResponse.json({ error: err.message }, { status: 403 });
+    throw err;
+  }
 
   const result = await createPartnerAccount(businessAccountId, partnerName, pct, services, admin.email);
   return NextResponse.json(result);

@@ -14,8 +14,8 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    checkRateLimit(`otp_request:phone:${phone}`, 5, 10 * 60 * 1000); // 5 per 10 min per number
-    checkRateLimit(`otp_request:ip:${clientIp(req)}`, 20, 10 * 60 * 1000); // 20 per 10 min per IP
+    await checkRateLimit(`otp_request:phone:${phone}`, 5, 10 * 60 * 1000); // 5 per 10 min per number
+    await checkRateLimit(`otp_request:ip:${clientIp(req)}`, 20, 10 * 60 * 1000); // 20 per 10 min per IP
   } catch (err) {
     if (err instanceof RateLimitExceededError) {
       return NextResponse.json({ error: "Too many requests — try again shortly" }, { status: 429 });

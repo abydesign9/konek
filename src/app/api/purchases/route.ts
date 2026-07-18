@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionUserId } from "@/lib/auth/session";
-import { IncorrectPinError, PinNotSetError, verifyPin } from "@/lib/auth/pin";
+import { IncorrectPinError, PinLockedError, PinNotSetError, verifyPin } from "@/lib/auth/pin";
+import { IdempotencyInProgressError } from "@/lib/idempotency";
 import { query } from "@/lib/db";
 import { usdMinorToNgnMinor } from "@/lib/fx";
 import { assertKycTier, KYC_TIER, KycGateError } from "@/lib/kyc/tiers";
@@ -20,7 +21,7 @@ export async function POST(req: NextRequest) {
   if (!userId) return NextResponse.json({ error: "unauthenticated" }, { status: 401 });
 
   try {
-    checkRateLimit(`purchase:${userId}`, 10, 60 * 1000); // 10 purchase attempts per minute per user
+    await checkRateLimit(`purchase:${userId}`, 10, 60 * 1000); // 10 purchase attempts per minute per user
   } catch (err) {
     if (err instanceof RateLimitExceededError) {
       return NextResponse.json({ error: "Too many purchase attempts — slow down" }, { status: 429 });
@@ -111,6 +112,12 @@ export async function POST(req: NextRequest) {
     if (err instanceof IncorrectPinError) {
       return NextResponse.json({ error: err.message }, { status: 401 });
     }
+    if (err instanceof PinLockedError) {
+      return NextResponse.json(
+        { error: err.message, code: "pin_locked", lockedUntil: err.until.toISOString() },
+        { status: 423 }
+      );
+    }
     throw err;
   }
 
@@ -135,6 +142,13 @@ export async function POST(req: NextRequest) {
     }
     if (err instanceof LimitExceededError) {
       return NextResponse.json({ error: err.message }, { status: 429 });
+    }
+    if (err instanceof IdempotencyInProgressError) {
+      // A retry landed while the first request with this key is still running.
+      return NextResponse.json(
+        { error: "This purchase is already being processed — please wait", code: "in_progress" },
+        { status: 409 }
+      );
     }
     throw err;
   }

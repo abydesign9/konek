@@ -14,7 +14,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   }
 
   try {
-    checkRateLimit(`support_reply:${userId}`, 20, 60 * 60 * 1000);
+    await checkRateLimit(`support_reply:${userId}`, 20, 60 * 60 * 1000);
   } catch (err) {
     if (err instanceof RateLimitExceededError) {
       return NextResponse.json({ error: "Too many replies — try again later" }, { status: 429 });

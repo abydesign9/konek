@@ -14,7 +14,7 @@ export async function POST() {
   if (!userId) return NextResponse.json({ error: "unauthenticated" }, { status: 401 });
 
   try {
-    checkRateLimit(`spin:${userId}`, 3, 60 * 1000);
+    await checkRateLimit(`spin:${userId}`, 3, 60 * 1000);
   } catch (err) {
     if (err instanceof RateLimitExceededError) {
       return NextResponse.json({ error: "Too many attempts — try again shortly" }, { status: 429 });

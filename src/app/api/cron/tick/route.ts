@@ -3,6 +3,11 @@ import { refreshVendorHealth } from "@/vendors/registry";
 import { dispatchDueCampaigns } from "@/lib/notifications/campaigns";
 import { dispatchDueRecurringTopups } from "@/lib/recurring/recurringTopups";
 import { dispatchDueRecurringDistributions } from "@/lib/recurring/recurringDistributions";
+import { recoverStaleReservations } from "@/lib/ledger/reservationRecovery";
+import { runCatalogSyncIfDue } from "@/lib/catalog/catalogSync";
+import { replayFailedWebhooks } from "@/lib/webhooks/webhookFramework";
+import { getCatalogAdapters } from "@/vendors/registry";
+import "@/lib/webhooks/registerHandlers"; // side-effect: register webhook handlers for replay
 
 // The one worker this app has: a single endpoint a scheduler calls on an
 // interval (Vercel Cron in prod — see vercel.json; scripts/cron_dev.mjs
@@ -13,10 +18,20 @@ import { dispatchDueRecurringDistributions } from "@/lib/recurring/recurringDist
 // /api/admin/catalog-sync.
 async function runTick() {
   await refreshVendorHealth();
+  const reservationRecovery = await recoverStaleReservations();
+  const webhookReplay = await replayFailedWebhooks();
+  const catalogSync = await runCatalogSyncIfDue(getCatalogAdapters());
   const { dispatched: campaignsDispatched } = await dispatchDueCampaigns();
   const { dispatched: recurringTopupsDispatched } = await dispatchDueRecurringTopups();
   const { dispatched: recurringDistributionsDispatched } = await dispatchDueRecurringDistributions();
-  return { campaignsDispatched, recurringTopupsDispatched, recurringDistributionsDispatched };
+  return {
+    reservationRecovery,
+    webhookReplay,
+    catalogSync: { ran: catalogSync.ran, results: catalogSync.results },
+    campaignsDispatched,
+    recurringTopupsDispatched,
+    recurringDistributionsDispatched,
+  };
 }
 
 export async function POST(req: NextRequest) {

@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
 import bcrypt from "bcryptjs";
-import { query } from "@/lib/db";
+import { query, withTransaction } from "@/lib/db";
 import { resolveReferrerId } from "@/lib/auth/users";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -54,18 +54,30 @@ export async function signUpWithPassword(
   const id = crypto.randomUUID();
   const newReferralCode = id.replace(/-/g, "").slice(0, 8).toUpperCase();
 
-  await query(
-    `INSERT INTO users (id, email, full_name, password_hash, referral_code, referred_by)
-     VALUES ($1, $2, $3, $4, $5, $6)`,
-    [id, normalizedEmail, fullName.trim(), passwordHash, newReferralCode, referredBy]
-  );
-
-  await query(`INSERT INTO referral_codes (code, user_id) VALUES ($1, $2)`, [newReferralCode, id]);
-  if (referredBy && referralCode) {
-    await query(
-      `INSERT INTO referral_conversions (referral_code, referred_user_id) VALUES ($1, $2)`,
-      [referralCode.toUpperCase(), id]
-    );
+  // One transaction so a mid-way failure never leaves an account without its
+  // referral_codes row. The pre-check above is a friendly fast path; the real
+  // guard against a concurrent duplicate-email signup is the users.email UNIQUE
+  // constraint — a 23505 race is translated back into EmailAlreadyInUseError.
+  try {
+    await withTransaction(async (client) => {
+      await client.query(
+        `INSERT INTO users (id, email, full_name, password_hash, referral_code, referred_by)
+         VALUES ($1, $2, $3, $4, $5, $6)`,
+        [id, normalizedEmail, fullName.trim(), passwordHash, newReferralCode, referredBy]
+      );
+      await client.query(`INSERT INTO referral_codes (code, user_id) VALUES ($1, $2)`, [newReferralCode, id]);
+      if (referredBy && referralCode) {
+        await client.query(
+          `INSERT INTO referral_conversions (referral_code, referred_user_id) VALUES ($1, $2)`,
+          [referralCode.toUpperCase(), id]
+        );
+      }
+    });
+  } catch (err) {
+    if (err instanceof Error && (err as { code?: string }).code === "23505") {
+      throw new EmailAlreadyInUseError();
+    }
+    throw err;
   }
 
   return { userId: id };

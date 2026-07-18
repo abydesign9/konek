@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    checkRateLimit(`signup:ip:${clientIp(req)}`, 10, 15 * 60 * 1000);
+    await checkRateLimit(`signup:ip:${clientIp(req)}`, 10, 15 * 60 * 1000);
   } catch (err) {
     if (err instanceof RateLimitExceededError) {
       return NextResponse.json({ error: "Too many attempts — try again shortly" }, { status: 429 });

@@ -5,10 +5,21 @@ export interface LedgerEntryInput {
   currency: string;
 }
 
+export type JournalType =
+  | "reservation"
+  | "settlement"
+  | "release"
+  | "refund"
+  | "funding"
+  | "reward"
+  | "adjustment"
+  | "purchase";
+
 export interface PostJournalInput {
   txnId?: string;
   description: string;
   entries: LedgerEntryInput[];
+  journalType?: JournalType;
 }
 
 export class LedgerImbalanceError extends Error {

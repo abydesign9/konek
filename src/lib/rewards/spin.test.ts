@@ -24,27 +24,39 @@ vi.mock("@/lib/ledger/postJournal", () => ({
   }),
 }));
 
+const mockQuery = async (text: string, params: unknown[] = []) => {
+  if (text.includes("FROM reward_events") && text.includes("kind = 'spin'") && text.includes("ORDER BY created_at DESC LIMIT 1")) {
+    return { rows: lastSpinRow ? [lastSpinRow] : [] };
+  }
+  if (text.includes("SUM(coins_earn_credit.credit_minor)")) {
+    return { rows: [{ spent: String(spentTodayMinor) }] };
+  }
+  if (text.startsWith("INSERT INTO reward_events")) {
+    // SQL hardcodes kind='spin'; params are [userId, coins, creditMinor, meta]
+    inserted.push({ kind: "spin", coins: Number(params[1]), creditMinor: Number(params[2]) });
+    return { rows: [] };
+  }
+  if (text.startsWith("INSERT INTO transactions")) {
+    return { rows: [{ id: "txn1" }] };
+  }
+  if (text.startsWith("UPDATE transactions") || text.startsWith("INSERT INTO transaction_events")) {
+    return { rows: [] };
+  }
+  throw new Error(`unexpected query: ${text}`);
+};
+
 vi.mock("@/lib/db", () => ({
-  query: vi.fn(async (text: string, params: unknown[]) => {
-    if (text.includes("FROM reward_events") && text.includes("kind = 'spin'") && text.includes("ORDER BY created_at DESC LIMIT 1")) {
-      return { rows: lastSpinRow ? [lastSpinRow] : [] };
-    }
-    if (text.includes("SUM(coins_earn_credit.credit_minor)")) {
-      return { rows: [{ spent: String(spentTodayMinor) }] };
-    }
-    if (text.startsWith("INSERT INTO reward_events")) {
-      // SQL hardcodes kind='spin'; params are [userId, coins, creditMinor, meta]
-      inserted.push({ kind: "spin", coins: Number(params[1]), creditMinor: Number(params[2]) });
-      return { rows: [] };
-    }
-    if (text.startsWith("INSERT INTO transactions")) {
-      return { rows: [{ id: "txn1" }] };
-    }
-    if (text.startsWith("UPDATE transactions") || text.startsWith("INSERT INTO transaction_events")) {
-      return { rows: [] };
-    }
-    throw new Error(`unexpected query: ${text}`);
-  }),
+  query: vi.fn(mockQuery),
+  // Run the callback with a client whose query routes to the same dispatch.
+  withTransaction: async (fn: (c: unknown) => unknown) => fn({ query: mockQuery }),
+}));
+
+// Idempotency wrapper runs the body directly (the once-per-day guarantee itself
+// is covered by the real idempotency_keys unique constraint in an integration
+// test; here we exercise the spin logic).
+vi.mock("@/lib/idempotency", () => ({
+  withIdempotency: (_k: string, _p: unknown, fn: () => Promise<unknown>) => fn(),
+  IdempotencyInProgressError: class extends Error {},
 }));
 
 const { spin, getSpinStatus, AlreadySpunTodayError } = await import("./spin");

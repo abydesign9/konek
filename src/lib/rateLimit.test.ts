@@ -1,44 +1,34 @@
-import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
+import { describe, expect, it, vi, beforeEach } from "vitest";
+
+// The limiter is now backed by Postgres (rl_hit); mock the db layer so these
+// stay unit tests. Behaviour under real concurrency is enforced by rl_hit's
+// INSERT .. ON CONFLICT DO UPDATE (migration 0023), not by this module.
+const queryMock = vi.fn();
+vi.mock("@/lib/db", () => ({ query: (...args: unknown[]) => queryMock(...args) }));
+
 import { checkRateLimit, RateLimitExceededError } from "./rateLimit";
 
 describe("checkRateLimit", () => {
-  beforeEach(() => {
-    vi.useFakeTimers();
-    vi.setSystemTime(0);
+  beforeEach(() => queryMock.mockReset());
+
+  it("resolves when rl_hit reports the caller is within budget", async () => {
+    queryMock.mockResolvedValue({ rows: [{ allowed: true }] });
+    await expect(checkRateLimit("k", 3, 1000)).resolves.toBeUndefined();
   });
 
-  afterEach(() => {
-    vi.useRealTimers();
+  it("throws RateLimitExceededError when rl_hit reports over budget", async () => {
+    queryMock.mockResolvedValue({ rows: [{ allowed: false }] });
+    await expect(checkRateLimit("k", 3, 1000)).rejects.toBeInstanceOf(RateLimitExceededError);
   });
 
-  it("allows requests up to the limit", () => {
-    const key = `test-${Math.random()}`;
-    expect(() => checkRateLimit(key, 3, 1000)).not.toThrow();
-    expect(() => checkRateLimit(key, 3, 1000)).not.toThrow();
-    expect(() => checkRateLimit(key, 3, 1000)).not.toThrow();
-  });
-
-  it("rejects the request that exceeds the limit", () => {
-    const key = `test-${Math.random()}`;
-    checkRateLimit(key, 2, 1000);
-    checkRateLimit(key, 2, 1000);
-    expect(() => checkRateLimit(key, 2, 1000)).toThrow(RateLimitExceededError);
-  });
-
-  it("allows requests again once the window has passed", () => {
-    const key = `test-${Math.random()}`;
-    checkRateLimit(key, 1, 1000);
-    expect(() => checkRateLimit(key, 1, 1000)).toThrow(RateLimitExceededError);
-
-    vi.setSystemTime(1001);
-    expect(() => checkRateLimit(key, 1, 1000)).not.toThrow();
-  });
-
-  it("tracks separate keys independently", () => {
-    const keyA = `a-${Math.random()}`;
-    const keyB = `b-${Math.random()}`;
-    checkRateLimit(keyA, 1, 1000);
-    expect(() => checkRateLimit(keyA, 1, 1000)).toThrow(RateLimitExceededError);
-    expect(() => checkRateLimit(keyB, 1, 1000)).not.toThrow();
+  it("passes a fixed-window bucket and the limit to rl_hit", async () => {
+    queryMock.mockResolvedValue({ rows: [{ allowed: true }] });
+    await checkRateLimit("mykey", 5, 1000);
+    const [sql, params] = queryMock.mock.calls[0] as [string, unknown[]];
+    expect(sql).toContain("rl_hit");
+    expect(params[0]).toBe("mykey");
+    expect(params[2]).toBe(5);
+    expect(Number.isInteger(params[1] as number)).toBe(true);
+    expect((params[1] as number) % 1000).toBe(0); // aligned to the window
   });
 });

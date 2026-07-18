@@ -1,6 +1,9 @@
-// Real eSIM activation strings use the LPA format the phone's camera expects.
-// Kept in a plain (non-"use client") module so both server and client
-// components can call it.
+// Backwards-compatible LPA helper. The activation logic now lives in the
+// provider-agnostic eSIM framework (src/vendors/esim/lpa.ts); this keeps the
+// original single-argument signature working for existing callers by treating
+// the token as the matching id against the default SM-DP+ address.
+import { defaultSmdpAddress, lpaString } from "@/vendors/esim/lpa";
+
 export function esimLpaString(token: string): string {
-  return `LPA:1$smdp.konek.app$${token}`;
+  return lpaString(defaultSmdpAddress(), token);
 }

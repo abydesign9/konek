@@ -94,6 +94,18 @@ export async function dispatchDueRecurringDistributions(): Promise<{ dispatched:
   let dispatched = 0;
   for (const schedule of due) {
     const nextRunAt = new Date(Date.now() + schedule.interval_days * 24 * 60 * 60 * 1000);
+
+    // Claim the schedule by advancing next_run_at BEFORE processing. Each
+    // dispatch creates a fresh bulk batch (new idempotency keys), so an
+    // overlapping cron tick that re-picked this schedule would double-charge the
+    // business. The guarded UPDATE lets only one tick win the claim.
+    const claim = await query(
+      `UPDATE recurring_distributions SET next_run_at = $2, updated_at = now()
+       WHERE id = $1 AND active = true AND next_run_at <= now() RETURNING id`,
+      [schedule.id, nextRunAt]
+    );
+    if (claim.rowCount === 0) continue; // already claimed by a concurrent tick
+
     let status = "delivered";
     try {
       const items = schedule.recipients.map((r) => ({

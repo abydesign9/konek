@@ -1,10 +1,15 @@
 import { query } from "@/lib/db";
 import { logAudit } from "@/lib/audit";
+import { encryptJson } from "@/lib/crypto/pii";
 import { mockDojahAdapter } from "@/vendors/kyc/mockDojah";
 import { IdentityType, KycAdapter } from "@/vendors/kyc/types";
 import { KYC_TIER } from "./tiers";
 
 const adapter: KycAdapter = mockDojahAdapter;
+
+// Binds each encrypted payload to its owner so a blob can't be lifted between
+// records; the same aad is required to decrypt (see src/lib/crypto/pii.ts).
+const kycAad = (userId: string) => `kyc_checks:${userId}`;
 
 export class VerificationFailedError extends Error {
   constructor(reason: string) {
@@ -69,12 +74,40 @@ export async function submitIdentity(
   type: IdentityType,
   value: string
 ): Promise<KycStatus> {
+  // Both BVN and NIN are 11 digits. Reject malformed input before spending on a
+  // vendor lookup — a typo storm shouldn't rack up KYC cost (also see the
+  // per-user rate limit on the route). We still record the failed attempt so
+  // every KYC attempt leaves an audit trail, just without a paid lookup.
+  if (!/^\d{11}$/.test(value)) {
+    await query(
+      `INSERT INTO kyc_checks (user_id, check_type, vendor, vendor_ref, result, raw_response, raw_response_encrypted)
+       VALUES ($1, $2, $3, $4, $5, NULL, $6)`,
+      [
+        userId,
+        type,
+        adapter.id,
+        null,
+        "fail",
+        JSON.stringify(encryptJson({ reason: "malformed", length: value.length }, kycAad(userId))),
+      ]
+    );
+    await logAudit(userId, "kyc_identity_failed", "user", userId, { type, reason: "malformed" });
+    throw new VerificationFailedError(`${type.toUpperCase()} must be 11 digits`);
+  }
+
   const check = await adapter.verifyIdentity({ type, value, userId });
 
   await query(
-    `INSERT INTO kyc_checks (user_id, check_type, vendor, vendor_ref, result, raw_response)
-     VALUES ($1, $2, $3, $4, $5, $6)`,
-    [userId, type, adapter.id, check.vendorRef, check.result === "pass" ? "pass" : "fail", JSON.stringify(check.raw)]
+    `INSERT INTO kyc_checks (user_id, check_type, vendor, vendor_ref, result, raw_response, raw_response_encrypted)
+     VALUES ($1, $2, $3, $4, $5, NULL, $6)`,
+    [
+      userId,
+      type,
+      adapter.id,
+      check.vendorRef,
+      check.result === "pass" ? "pass" : "fail",
+      JSON.stringify(encryptJson(check.raw, kycAad(userId))),
+    ]
   );
 
   if (check.result !== "pass") {
@@ -108,9 +141,15 @@ export async function submitLiveness(userId: string, imageRef?: string): Promise
   const check = await adapter.verifyLiveness({ userId, imageRef });
 
   await query(
-    `INSERT INTO kyc_checks (user_id, check_type, vendor, vendor_ref, result, raw_response)
-     VALUES ($1, 'liveness', $2, $3, $4, $5)`,
-    [userId, adapter.id, check.vendorRef, check.result === "pass" ? "pass" : "fail", JSON.stringify(check.raw)]
+    `INSERT INTO kyc_checks (user_id, check_type, vendor, vendor_ref, result, raw_response, raw_response_encrypted)
+     VALUES ($1, 'liveness', $2, $3, $4, NULL, $5)`,
+    [
+      userId,
+      adapter.id,
+      check.vendorRef,
+      check.result === "pass" ? "pass" : "fail",
+      JSON.stringify(encryptJson(check.raw, kycAad(userId))),
+    ]
   );
 
   if (check.duplicate) {

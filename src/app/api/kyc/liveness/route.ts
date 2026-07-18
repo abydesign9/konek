@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
   const imageRef = typeof body?.imageRef === "string" ? body.imageRef : undefined;
 
   try {
-    checkRateLimit(`kyc_liveness:${userId}`, 5, 10 * 60 * 1000);
+    await checkRateLimit(`kyc_liveness:${userId}`, 5, 10 * 60 * 1000);
   } catch (err) {
     if (err instanceof RateLimitExceededError) {
       return NextResponse.json({ error: "Too many attempts — try again shortly" }, { status: 429 });

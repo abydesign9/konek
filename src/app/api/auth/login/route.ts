@@ -15,8 +15,8 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    checkRateLimit(`login:email:${email.toLowerCase()}`, 8, 15 * 60 * 1000);
-    checkRateLimit(`login:ip:${clientIp(req)}`, 30, 15 * 60 * 1000);
+    await checkRateLimit(`login:email:${email.toLowerCase()}`, 8, 15 * 60 * 1000);
+    await checkRateLimit(`login:ip:${clientIp(req)}`, 30, 15 * 60 * 1000);
   } catch (err) {
     if (err instanceof RateLimitExceededError) {
       return NextResponse.json({ error: "Too many attempts — try again shortly" }, { status: 429 });

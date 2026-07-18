@@ -1,4 +1,5 @@
-import { query } from "@/lib/db";
+import { query, withTransaction } from "@/lib/db";
+import { withIdempotency } from "@/lib/idempotency";
 import { postJournal } from "@/lib/ledger/postJournal";
 import { getOrCreateAccount, getUserWalletAccount } from "@/lib/ledger/accounts";
 import { logAudit } from "@/lib/audit";
@@ -49,66 +50,88 @@ export async function createDollarAccount(userId: string): Promise<{ virtualAcco
 // webhook payload — then credits the user's USD wallet exactly once per
 // inflowRef, same idempotent-credit pattern as Paystack wallet funding.
 export async function creditDollarInflow(inflowRef: string): Promise<void> {
-  const { rows: existingInflow } = await query<{ id: string }>(
-    `SELECT id FROM virtual_account_inflows WHERE provider_ref = $1`,
-    [inflowRef]
-  );
-  if (existingInflow[0]) return; // already processed — replay-safe no-op
+  // Idempotent by the inflow reference: duplicate webhook deliveries (or a
+  // replay racing a live delivery) credit at most once. The DB backstops this
+  // with a UNIQUE index on virtual_account_inflows.provider_ref (migration 0029)
+  // and the transactions (user_id, idempotency_key) constraint.
+  await withIdempotency(`dollar_inflow:${inflowRef}`, { inflowRef }, async () => {
+    const { rows: existingInflow } = await query<{ id: string }>(
+      `SELECT id FROM virtual_account_inflows WHERE provider_ref = $1`,
+      [inflowRef]
+    );
+    if (existingInflow[0]) return { alreadyCredited: true };
 
-  const verified = await adapter.verifyInflow(inflowRef);
-  if (verified.status !== "received") return;
+    // Never trust the webhook payload — re-fetch the authoritative inflow.
+    const verified = await adapter.verifyInflow(inflowRef);
+    if (verified.status !== "received") return { skipped: verified.status };
 
-  const { rows: vaRows } = await query<{ id: string; user_id: string }>(
-    `SELECT id, user_id FROM virtual_accounts WHERE provider_ref = $1`,
-    [verified.accountProviderRef]
-  );
-  const virtualAccount = vaRows[0];
-  if (!virtualAccount) return;
+    const { rows: vaRows } = await query<{ id: string; user_id: string }>(
+      `SELECT id, user_id FROM virtual_accounts WHERE provider_ref = $1`,
+      [verified.accountProviderRef]
+    );
+    const virtualAccount = vaRows[0];
+    if (!virtualAccount) return { unknownAccount: true };
 
-  const walletAccountId = await getUserWalletAccount(virtualAccount.user_id, "USD");
-  const gatewayAccountId = await getOrCreateAccount("platform", null, "USD", "gateway");
+    const walletAccountId = await getUserWalletAccount(virtualAccount.user_id, "USD");
+    const gatewayAccountId = await getOrCreateAccount("platform", null, "USD", "gateway");
 
-  const { rows: txnRows } = await query<{ id: string }>(
-    `INSERT INTO transactions (user_id, idempotency_key, type, status, currency, amount_minor, recipient)
-     VALUES ($1, $2, 'dollar_inflow', 'delivered', 'USD', $3, $4) RETURNING id`,
-    [
-      virtualAccount.user_id,
-      `dollar_inflow:${inflowRef}`,
-      verified.amountMinor,
-      JSON.stringify({ senderName: verified.senderName, senderBank: verified.senderBank }),
-    ]
-  );
-  const txnId = txnRows[0].id;
+    // The credit (transaction + journal + inflow record) is one atomic unit, so
+    // a mid-way crash can never leave the wallet credited without an inflow row.
+    const { journalId, inflowId } = await withTransaction(async (client) => {
+      const txnRes = await client.query(
+        `INSERT INTO transactions (user_id, idempotency_key, type, status, currency, amount_minor, recipient)
+         VALUES ($1, $2, 'dollar_inflow', 'delivered', 'USD', $3, $4) RETURNING id`,
+        [
+          virtualAccount.user_id,
+          `dollar_inflow:${inflowRef}`,
+          verified.amountMinor,
+          JSON.stringify({ senderName: verified.senderName, senderBank: verified.senderBank }),
+        ]
+      );
+      const txnId = (txnRes.rows[0] as { id: string }).id;
 
-  const { journalId } = await postJournal({
-    txnId,
-    description: "USD virtual account inflow",
-    entries: [
-      { accountId: gatewayAccountId, amountMinor: -verified.amountMinor, currency: "USD" },
-      { accountId: walletAccountId, amountMinor: verified.amountMinor, currency: "USD" },
-    ],
+      const posted = await postJournal(
+        {
+          txnId,
+          journalType: "funding",
+          description: "USD virtual account inflow",
+          entries: [
+            { accountId: gatewayAccountId, amountMinor: -verified.amountMinor, currency: "USD" },
+            { accountId: walletAccountId, amountMinor: verified.amountMinor, currency: "USD" },
+          ],
+        },
+        client as never
+      );
+      await client.query(`UPDATE transactions SET journal_id = $2 WHERE id = $1`, [txnId, posted.journalId]);
+      await client.query(
+        `INSERT INTO transaction_events (txn_id, from_status, to_status, detail) VALUES ($1, NULL, 'delivered', $2)`,
+        [txnId, JSON.stringify({ journalId: posted.journalId, inflowRef })]
+      );
+      const inflowRes = await client.query(
+        `INSERT INTO virtual_account_inflows (virtual_account_id, txn_id, sender_name, sender_bank, amount_minor, currency, provider_ref, status)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, 'credited') RETURNING id`,
+        [virtualAccount.id, txnId, verified.senderName, verified.senderBank, verified.amountMinor, verified.currency, inflowRef]
+      );
+      return { journalId: posted.journalId, inflowId: (inflowRes.rows[0] as { id: string }).id };
+    });
+
+    // Best-effort side effects — never fail (or re-fail) a committed credit.
+    try {
+      await logAudit(virtualAccount.user_id, "dollar_inflow_credited", "virtual_account_inflow", inflowId, {
+        amountMinor: verified.amountMinor,
+        journalId,
+      });
+      await sendNotification(
+        virtualAccount.user_id,
+        "push",
+        "txn_receipt",
+        "Dollar account credited",
+        `$${(verified.amountMinor / 100).toLocaleString()} received from ${verified.senderName}.`
+      );
+    } catch {
+      // credit is committed; notification/audit hiccups must not mark the webhook failed
+    }
+
+    return { credited: true, journalId };
   });
-  await query(`UPDATE transactions SET journal_id = $2 WHERE id = $1`, [txnId, journalId]);
-  await query(
-    `INSERT INTO transaction_events (txn_id, from_status, to_status, detail) VALUES ($1, NULL, 'delivered', $2)`,
-    [txnId, JSON.stringify({ journalId, inflowRef })]
-  );
-
-  const { rows: inflowRows } = await query<{ id: string }>(
-    `INSERT INTO virtual_account_inflows (virtual_account_id, txn_id, sender_name, sender_bank, amount_minor, currency, provider_ref, status)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, 'credited') RETURNING id`,
-    [virtualAccount.id, txnId, verified.senderName, verified.senderBank, verified.amountMinor, verified.currency, inflowRef]
-  );
-
-  await logAudit(virtualAccount.user_id, "dollar_inflow_credited", "virtual_account_inflow", inflowRows[0].id, {
-    amountMinor: verified.amountMinor,
-    journalId,
-  });
-  await sendNotification(
-    virtualAccount.user_id,
-    "push",
-    "txn_receipt",
-    "Dollar account credited",
-    `$${(verified.amountMinor / 100).toLocaleString()} received from ${verified.senderName}.`
-  );
 }

@@ -46,6 +46,7 @@ export async function creditFromPayment(reference: string): Promise<void> {
 
     const { journalId } = await postJournal({
       txnId: txn.id,
+      journalType: "funding",
       description: "Wallet funding via Paystack",
       entries: [
         { accountId: gatewayAccountId, amountMinor: -verified.amountMinor, currency: verified.currency },

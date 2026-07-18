@@ -103,13 +103,31 @@ function buildMockAdapter(id: string): VendorAdapter {
   return {
     id,
 
+    // Reference capability declaration: this mock stands in for a full-featured
+    // VTU aggregator (all local service types, requery + balance + catalog).
+    capabilities: {
+      services: ["airtime", "data", "cable", "electricity", "exam_pin", "betting", "gift_card", "intl_topup", "esim"],
+      supportsRequery: true,
+      supportsWebhooks: false,
+      supportsBalance: true,
+      supportsCatalog: true,
+      deliveryMode: "mixed", // delivered/failed synchronously; 'pending' when a phone ends in 9999
+    },
+
     async purchase(params: PurchaseParams): Promise<PurchaseResult> {
       const vendorRef = `${id}_${params.reference}`;
       const willFail = params.phone?.endsWith("0000") ?? false;
+      // Simulates an async aggregator that acknowledges but hasn't confirmed
+      // delivery yet — the reservation must stay held until verify() resolves it.
+      const willPend = params.phone?.endsWith("9999") ?? false;
 
       if (willFail) {
         failedRefs.add(vendorRef);
         return { vendorRef, status: "failed", raw: { reason: "simulated vendor decline" } };
+      }
+
+      if (willPend) {
+        return { vendorRef, status: "pending", raw: { reason: "awaiting vendor confirmation" } };
       }
 
       let token: string | undefined;

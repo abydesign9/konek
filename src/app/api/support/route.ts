@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    checkRateLimit(`support_create:${userId}`, 5, 60 * 60 * 1000);
+    await checkRateLimit(`support_create:${userId}`, 5, 60 * 60 * 1000);
   } catch (err) {
     if (err instanceof RateLimitExceededError) {
       return NextResponse.json({ error: "Too many requests — try again later" }, { status: 429 });

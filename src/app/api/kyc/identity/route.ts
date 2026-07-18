@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
   try {
     // KYC calls cost money per lookup — cap attempts so a typo storm can't
     // rack up vendor spend.
-    checkRateLimit(`kyc_identity:${userId}`, 5, 10 * 60 * 1000);
+    await checkRateLimit(`kyc_identity:${userId}`, 5, 10 * 60 * 1000);
   } catch (err) {
     if (err instanceof RateLimitExceededError) {
       return NextResponse.json({ error: "Too many attempts — try again shortly" }, { status: 429 });

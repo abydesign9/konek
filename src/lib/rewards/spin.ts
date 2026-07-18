@@ -1,4 +1,5 @@
-import { query } from "@/lib/db";
+import { query, withTransaction } from "@/lib/db";
+import { withIdempotency, IdempotencyInProgressError } from "@/lib/idempotency";
 import { bumpCoinBalance } from "@/lib/gamification/coinBalance";
 import { postJournal } from "@/lib/ledger/postJournal";
 import { getOrCreateAccount, getUserWalletAccount } from "@/lib/ledger/accounts";
@@ -77,6 +78,23 @@ export async function spin(userId: string): Promise<SpinResult> {
   const { canSpin } = await getSpinStatus(userId);
   if (!canSpin) throw new AlreadySpunTodayError();
 
+  // Atomic once-per-day guard. getSpinStatus above is a friendly pre-check;
+  // this is what actually stops a concurrent double-spin from paying out real
+  // wallet credit twice. The first request claims the day key; a racing second
+  // request is rejected (in-flight) or returns the first result — never a second
+  // payout.
+  const today = new Date().toISOString().slice(0, 10);
+  try {
+    return await withIdempotency(`spin:${userId}:${today}`, { userId, today }, () =>
+      runSpin(userId, today)
+    );
+  } catch (err) {
+    if (err instanceof IdempotencyInProgressError) throw new AlreadySpunTodayError();
+    throw err;
+  }
+}
+
+async function runSpin(userId: string, today: string): Promise<SpinResult> {
   const outcome = pickOutcome();
   let creditMinor = outcome.creditMinor;
   let budgetLimited = false;
@@ -109,26 +127,34 @@ export async function spin(userId: string): Promise<SpinResult> {
     const walletAccountId = await getUserWalletAccount(userId, "NGN");
     const expenseAccountId = await getOrCreateAccount("platform", null, "NGN", "expense");
 
-    const { rows: txnRows } = await query<{ id: string }>(
-      `INSERT INTO transactions (user_id, idempotency_key, type, status, currency, amount_minor)
-       VALUES ($1, $2, 'reward_credit', 'delivered', 'NGN', $3) RETURNING id`,
-      [userId, `spin_credit:${userId}:${Date.now()}`, creditMinor]
-    );
-    const txnId = txnRows[0].id;
-
-    const { journalId } = await postJournal({
-      txnId,
-      description: `Spin reward: ${outcome.label}`,
-      entries: [
-        { accountId: expenseAccountId, amountMinor: -creditMinor, currency: "NGN" },
-        { accountId: walletAccountId, amountMinor: creditMinor, currency: "NGN" },
-      ],
+    // Atomic: the reward transaction + its journal are one unit. A stable
+    // per-day idempotency key (not Date.now()) keeps a same-day retry from
+    // creating a duplicate transaction.
+    await withTransaction(async (client) => {
+      const txnRes = await client.query(
+        `INSERT INTO transactions (user_id, idempotency_key, type, status, currency, amount_minor)
+         VALUES ($1, $2, 'reward_credit', 'delivered', 'NGN', $3) RETURNING id`,
+        [userId, `spin_credit:${userId}:${today}`, creditMinor]
+      );
+      const txnId = (txnRes.rows[0] as { id: string }).id;
+      const posted = await postJournal(
+        {
+          txnId,
+          journalType: "reward",
+          description: `Spin reward: ${outcome.label}`,
+          entries: [
+            { accountId: expenseAccountId, amountMinor: -creditMinor, currency: "NGN" },
+            { accountId: walletAccountId, amountMinor: creditMinor, currency: "NGN" },
+          ],
+        },
+        client as never
+      );
+      await client.query(`UPDATE transactions SET journal_id = $2 WHERE id = $1`, [txnId, posted.journalId]);
+      await client.query(
+        `INSERT INTO transaction_events (txn_id, from_status, to_status) VALUES ($1, NULL, 'delivered')`,
+        [txnId]
+      );
     });
-    await query(`UPDATE transactions SET journal_id = $2 WHERE id = $1`, [txnId, journalId]);
-    await query(
-      `INSERT INTO transaction_events (txn_id, from_status, to_status) VALUES ($1, NULL, 'delivered')`,
-      [txnId]
-    );
   }
 
   await logAudit(userId, "spin_reward", "user", userId, { label: outcome.label, coins: outcome.coins, creditMinor });

@@ -1,54 +1,33 @@
-import crypto from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
-import { query } from "@/lib/db";
-import { creditDollarInflow } from "@/lib/dollarAccount/dollarAccountService";
+import { receiveWebhook } from "@/lib/webhooks/webhookFramework";
+import { fincraHandler } from "@/lib/webhooks/registerHandlers";
 
-function isValidSignature(rawBody: string, signature: string | null): boolean {
-  const secret = process.env.FINCRA_WEBHOOK_SECRET;
-  if (!secret || !signature) return false;
-  const expected = crypto.createHmac("sha512", secret).update(rawBody).digest("hex");
-  const a = Buffer.from(expected);
-  const b = Buffer.from(signature);
-  return a.length === b.length && crypto.timingSafeEqual(a, b);
-}
-
+// Thin transport adapter over the generic webhook framework (constant-time
+// signature check, persist-before-process, reject-before-parse, idempotent
+// processing + replay). Only the Fincra transport specifics live here.
 export async function POST(req: NextRequest) {
   const rawBody = await req.text();
   const signature = req.headers.get("x-fincra-signature");
-  const signatureValid = isValidSignature(rawBody, signature);
 
-  let parsed: { event?: string; data?: { inflowRef?: string } } = {};
-  try {
-    parsed = JSON.parse(rawBody);
-  } catch {
-    // stored as-received below
-  }
+  const { status } = await receiveWebhook({
+    vendor: "mock_fincra",
+    rawBody,
+    signature,
+    secret: process.env.FINCRA_WEBHOOK_SECRET,
+    algo: "sha512",
+    headers: signature ? { "x-fincra-signature": signature } : undefined,
+    extract: (p) => ({
+      eventType: typeof p.event === "string" ? p.event : null,
+      reference:
+        typeof (p.data as { inflowRef?: unknown } | undefined)?.inflowRef === "string"
+          ? (p.data as { inflowRef: string }).inflowRef
+          : null,
+    }),
+    handler: fincraHandler,
+  });
 
-  const eventRow = await query<{ id: string }>(
-    `INSERT INTO webhook_events (vendor, signature_valid, raw) VALUES ('mock_fincra', $1, $2) RETURNING id`,
-    [signatureValid, rawBody ? JSON.parse(rawBody || "{}") : {}]
-  );
-  const eventId = eventRow.rows[0].id;
-
-  if (!signatureValid) {
-    await query(
-      `UPDATE webhook_events SET processed = true, processed_at = now(), error = 'invalid signature' WHERE id = $1`,
-      [eventId]
-    );
+  if (status === "rejected") {
     return NextResponse.json({ error: "invalid signature" }, { status: 401 });
   }
-
-  try {
-    if (parsed.event === "inflow.received" && parsed.data?.inflowRef) {
-      await creditDollarInflow(parsed.data.inflowRef);
-    }
-    await query(`UPDATE webhook_events SET processed = true, processed_at = now() WHERE id = $1`, [eventId]);
-  } catch (err) {
-    await query(`UPDATE webhook_events SET error = $2 WHERE id = $1`, [
-      eventId,
-      err instanceof Error ? err.message : "unknown error",
-    ]);
-  }
-
   return NextResponse.json({ received: true });
 }

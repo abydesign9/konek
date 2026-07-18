@@ -3,6 +3,8 @@ import { query } from "@/lib/db";
 import { logAudit } from "@/lib/audit";
 
 const PIN_PATTERN = /^\d{4,6}$/;
+const MAX_PIN_ATTEMPTS = 5;
+const PIN_LOCK_MINUTES = 15;
 
 export class InvalidPinFormatError extends Error {
   constructor() {
@@ -32,6 +34,13 @@ export class IncorrectPinError extends Error {
   }
 }
 
+export class PinLockedError extends Error {
+  constructor(readonly until: Date) {
+    super("Too many incorrect PIN attempts — try again later");
+    this.name = "PinLockedError";
+  }
+}
+
 export async function setPin(userId: string, pin: string): Promise<void> {
   if (!PIN_PATTERN.test(pin)) throw new InvalidPinFormatError();
 
@@ -57,15 +66,51 @@ export async function hasPinSet(userId: string): Promise<boolean> {
 export async function verifyPin(userId: string, pin: string): Promise<void> {
   if (!PIN_PATTERN.test(pin)) throw new InvalidPinFormatError();
 
-  const { rows } = await query<{ pin_hash: string | null }>(
-    `SELECT pin_hash FROM users WHERE id = $1`,
+  const { rows } = await query<{
+    pin_hash: string | null;
+    pin_locked_until: string | null;
+  }>(
+    `SELECT pin_hash, pin_locked_until FROM users WHERE id = $1`,
     [userId]
   );
-  const hash = rows[0]?.pin_hash;
-  if (!hash) throw new PinNotSetError();
+  const u = rows[0];
+  if (!u?.pin_hash) throw new PinNotSetError();
 
-  const ok = await bcrypt.compare(pin, hash);
-  if (!ok) throw new IncorrectPinError();
+  // Refuse while locked. A 4-digit PIN is only a 10k space, so an active
+  // session must not be able to grind it — the lock is DB-backed so it holds
+  // across instances even when the app-level rate limiter's window rolls.
+  if (u.pin_locked_until && new Date(u.pin_locked_until) > new Date()) {
+    throw new PinLockedError(new Date(u.pin_locked_until));
+  }
+
+  const ok = await bcrypt.compare(pin, u.pin_hash);
+
+  if (!ok) {
+    // Atomic increment so parallel wrong-PIN attempts can't each read the same
+    // stale counter and stop the lock from ever tripping.
+    const { rows: incr } = await query<{ attempts: number }>(
+      `UPDATE users SET pin_failed_attempts = pin_failed_attempts + 1, updated_at = now()
+       WHERE id = $1 RETURNING pin_failed_attempts AS attempts`,
+      [userId]
+    );
+    if ((incr[0]?.attempts ?? 0) >= MAX_PIN_ATTEMPTS) {
+      const until = new Date(Date.now() + PIN_LOCK_MINUTES * 60 * 1000);
+      await query(
+        `UPDATE users SET pin_failed_attempts = 0, pin_locked_until = $2, updated_at = now() WHERE id = $1`,
+        [userId, until]
+      );
+      await logAudit(userId, "pin_locked", "user", userId, { minutes: PIN_LOCK_MINUTES });
+      throw new PinLockedError(until);
+    }
+    throw new IncorrectPinError();
+  }
+
+  // Success clears any accumulated failures / stale lock.
+  await query(
+    `UPDATE users SET pin_failed_attempts = 0, pin_locked_until = NULL, updated_at = now()
+     WHERE id = $1 AND (pin_failed_attempts <> 0 OR pin_locked_until IS NOT NULL)`,
+    [userId]
+  );
 }
 
 // Self-service PIN change — requires the current PIN, unlike resetPin()
