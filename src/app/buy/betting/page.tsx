@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { ChipPicker, MonogramBadge } from "@/components/ChipPicker";
 import { PageHeader } from "@/components/PageHeader";
 import { PinPad } from "@/components/PinPad";
+import { CustomAmountField } from "@/components/CustomAmountField";
 
 const BOOKMAKERS = [
   { id: "sportybet", label: "SportyBet", icon: <MonogramBadge text="SB" className="bg-red-500" /> },
@@ -181,6 +182,9 @@ function BuyBetting() {
             {formatNaira(minor)}
           </button>
         ))}
+      </div>
+      <div className="mb-8 -mt-4">
+        <CustomAmountField value={amountMinor} onChange={setAmountMinor} presets={PRESETS_MINOR} />
       </div>
 
       <button

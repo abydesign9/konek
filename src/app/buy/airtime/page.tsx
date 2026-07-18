@@ -6,6 +6,7 @@ import { NetworkPicker } from "@/components/NetworkPicker";
 import { PageHeader } from "@/components/PageHeader";
 import { PinPad } from "@/components/PinPad";
 import { IconAirtime, SERVICE_COLORS, NETWORK_COLORS } from "@/components/icons";
+import { CustomAmountField } from "@/components/CustomAmountField";
 
 const PRESETS_MINOR = [50000, 100000, 200000, 500000]; // ₦500 / ₦1,000 / ₦2,000 / ₦5,000
 
@@ -228,6 +229,7 @@ function BuyAirtime() {
             );
           })}
         </div>
+        <CustomAmountField value={amountMinor} onChange={setAmountMinor} presets={PRESETS_MINOR} />
       </section>
 
       {/* ---------- CTA ---------- */}
