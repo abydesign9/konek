@@ -8,6 +8,7 @@ import { getStreak } from "@/lib/rewards/getStreak";
 import { listActiveInAppMessages } from "@/lib/notifications/inAppMessages";
 import { NetworkLogo } from "@/components/NetworkLogo";
 import { BottomNav } from "@/components/BottomNav";
+import PromoCarousel from "@/components/PromoCarousel";
 import { OnboardingTour } from "@/components/OnboardingTour";
 import {
   IconAirtime,
@@ -40,6 +41,7 @@ const GLOBAL_ACTIONS = [
   { key: "intl", label: "Int'l Top-Up", Icon: IconGlobe, href: "/buy/intl-topup" },
   { key: "dollar", label: "USD Account", Icon: IconDollar, href: "/wallet/dollar-account" },
   { key: "card", label: "Card", Icon: IconCard, href: "/cards" },
+  { key: "global-data", label: "Data Top-Up", Icon: IconData, href: "/buy/intl-topup" },
 ];
 
 const LOCAL_ACTIONS = [
@@ -234,6 +236,9 @@ export default async function HomeDashboard() {
           })}
         </section>
       )}
+
+      {/* ---------- Section 2b: Evergreen product promos ---------- */}
+      <PromoCarousel />
 
       {/* ---------- Section 3: Quick actions (global first, local underneath) ---------- */}
       <section className="mt-7 px-5">
