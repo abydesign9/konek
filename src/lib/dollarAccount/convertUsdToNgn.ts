@@ -47,9 +47,8 @@ export async function convertUsdToNgn(
       // rolls back rather than leaving an orphan 'delivered' transaction with no
       // journal. The trigger error is mapped back to a clean insufficient-balance.
       let txnId: string;
-      let journalId: string;
       try {
-        ({ txnId, journalId } = await withTransaction(async (client) => {
+        ({ txnId } = await withTransaction(async (client) => {
           const res = await client.query(
             `INSERT INTO transactions (user_id, idempotency_key, type, status, currency, amount_minor, recipient)
              VALUES ($1, $2, 'fx_convert', 'delivered', 'USD', $3, $4) RETURNING id`,
