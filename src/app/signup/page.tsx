@@ -21,10 +21,13 @@ function Signup() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  async function signUp(e: React.FormEvent) {
+  const [step, setStep] = useState<"details" | "verify">("details");
+  const [code, setCode] = useState("");
+
+  // Step 1: validate details, then email a verification code before creating anything.
+  async function sendCode(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-
     if (!agreed) {
       setError("Please agree to the Terms and Privacy Policy to continue.");
       return;
@@ -33,12 +36,36 @@ function Signup() {
       setError(`Password must be at least ${MIN_PASSWORD_LENGTH} characters.`);
       return;
     }
+    setLoading(true);
+    const res = await fetch("/api/auth/email-otp/request", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+    setLoading(false);
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      setError(data.error ?? "Couldn't send the code — try again");
+      return;
+    }
+    const data = await res.json().catch(() => ({}));
+    if (data.demoOtp) setCode(String(data.demoOtp)); // dev mode: no real email configured yet
+    setStep("verify");
+  }
 
+  // Step 2: verify the code + create the account.
+  async function createAccount(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+    if (!/^\d{6}$/.test(code)) {
+      setError("Enter the 6-digit code from your email.");
+      return;
+    }
     setLoading(true);
     const res = await fetch("/api/auth/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ fullName, email, password, referralCode }),
+      body: JSON.stringify({ fullName, email, password, code, referralCode }),
     });
     setLoading(false);
     if (!res.ok) {
@@ -117,7 +144,9 @@ function Signup() {
             </p>
           )}
 
-          <form onSubmit={signUp} className="flex flex-col gap-3">
+          <form onSubmit={step === "details" ? sendCode : createAccount} className="flex flex-col gap-3">
+            {step === "details" && (
+            <>
             <label className="text-sm font-medium text-indigo/70" htmlFor="fullName">
               Full name
             </label>
@@ -199,13 +228,49 @@ function Signup() {
                 .
               </span>
             </label>
+            </>
+            )}
+
+            {step === "verify" && (
+              <>
+                <p className="text-sm text-indigo/70">
+                  We sent a 6-digit code to <span className="font-semibold text-indigo">{email}</span>. Enter it to
+                  finish creating your account.
+                </p>
+                <input
+                  id="code"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  maxLength={6}
+                  placeholder="123456"
+                  value={code}
+                  onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                  required
+                  className="w-full rounded-xl border border-indigo/20 bg-white px-4 py-3.5 text-center text-2xl font-bold tracking-[0.4em] focus:outline-none focus:ring-2 focus:ring-konek-green"
+                />
+                <div className="flex items-center justify-between text-xs">
+                  <button type="button" onClick={() => { setStep("details"); setCode(""); setError(null); }} className="text-indigo underline">
+                    Change email
+                  </button>
+                  <button type="button" onClick={(e) => sendCode(e as unknown as React.FormEvent)} disabled={loading} className="text-indigo underline disabled:opacity-50">
+                    Resend code
+                  </button>
+                </div>
+              </>
+            )}
 
             <button
               type="submit"
               disabled={loading}
               className="mt-2 w-full rounded-xl bg-indigo py-3.5 font-semibold text-white transition-colors hover:bg-indigo/90 disabled:opacity-50"
             >
-              {loading ? "Creating account…" : "Create Free Account"}
+              {loading
+                ? step === "details"
+                  ? "Sending code…"
+                  : "Creating account…"
+                : step === "details"
+                  ? "Continue"
+                  : "Create account"}
             </button>
           </form>
 
