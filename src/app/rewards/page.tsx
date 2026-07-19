@@ -158,11 +158,31 @@ export default function RewardsPage() {
       </div>
 
       <div className="rounded-2xl border border-indigo/10 bg-white p-5 mb-8">
-        <p className="text-sm font-semibold text-indigo mb-1">Invite friends</p>
+        <p className="text-sm font-semibold text-indigo mb-1">Invite friends — earn $10 each</p>
         <p className="text-xs text-indigo/60 mb-4">
-          You and your friend both earn 50 coins when they make their first purchase.
+          Earn <span className="font-semibold text-konek-green">$10</span> for every friend who joins
+          with your link and transacts $100 or more. They get a 50-coin welcome too.
           {data.referralCount > 0 && ` ${data.referralCount} referred so far.`}
         </p>
+
+        <div className="mb-4 flex flex-col gap-2">
+          {[
+            { n: "1", t: "Share your link", d: "Send your invite link to friends and family." },
+            { n: "2", t: "They join & transact", d: "They sign up and spend $100 or more on Konek." },
+            { n: "3", t: "You earn $10", d: "Paid as wallet credit at today's rate — spend it on any Konek service." },
+          ].map((s) => (
+            <div key={s.n} className="flex items-start gap-3">
+              <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-konek-green/15 text-xs font-bold text-konek-green">
+                {s.n}
+              </span>
+              <div>
+                <p className="text-xs font-semibold text-indigo">{s.t}</p>
+                <p className="text-xs text-indigo/55">{s.d}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
         <div className="flex items-center gap-2">
           <input
             readOnly
