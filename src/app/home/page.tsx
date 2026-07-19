@@ -91,12 +91,6 @@ export default async function HomeDashboard() {
   const balanceMinor = await getBalance(walletAccountId);
   const streak = await getStreak(userId);
 
-  const { rows: coinRows } = await query<{ coins: number }>(
-    `SELECT coins FROM user_coin_balances WHERE user_id = $1`,
-    [userId]
-  );
-  const coins = coinRows[0] ? Number(coinRows[0].coins) : 0;
-
   const { rows: bizRows } = await query<{ id: string; legal_name: string }>(
     `SELECT id, legal_name FROM business_accounts WHERE owner_user_id = $1`,
     [userId]
@@ -237,9 +231,6 @@ export default async function HomeDashboard() {
         </section>
       )}
 
-      {/* ---------- Section 2b: Evergreen product promos ---------- */}
-      <PromoCarousel />
-
       {/* ---------- Section 3: Quick actions (global first, local underneath) ---------- */}
       <section className="mt-7 px-5">
         <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-indigo/45">Go global</p>
@@ -278,6 +269,11 @@ export default async function HomeDashboard() {
           </Link>
         </div>
       </section>
+
+      {/* ---------- Section 3b: Evergreen product promos ---------- */}
+      <div className="mt-6">
+        <PromoCarousel />
+      </div>
 
       {/* ---------- Section 4: Recent transactions ---------- */}
       {recent.length > 0 && (
@@ -332,23 +328,6 @@ export default async function HomeDashboard() {
         </section>
       )}
 
-      {/* ---------- Section 6: Rewards ---------- */}
-      <section className="mt-7 px-5">
-        <Link
-          href="/rewards"
-          className="konek-card-shadow konek-tile block rounded-2xl bg-gradient-to-r from-gold to-[#F5C15C] px-5 py-4 text-indigo"
-        >
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-heading text-sm font-bold">{coins.toLocaleString()} coins</p>
-              <p className="mt-0.5 text-xs text-indigo/70">
-                {streak > 0 ? `${streak}-day streak · earn more by transacting daily` : "Start a streak — earn coins every day you transact"}
-              </p>
-            </div>
-            <span className="shrink-0 rounded-full bg-white/50 px-3 py-1.5 text-xs font-semibold">View →</span>
-          </div>
-        </Link>
-      </section>
 
       {/* ---------- Section 7: Businesses (only if the user has one) ---------- */}
       {business && (
