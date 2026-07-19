@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { PageHeader } from "@/components/PageHeader";
 import { PinPad } from "@/components/PinPad";
@@ -435,6 +436,58 @@ function BiometricsCard() {
   );
 }
 
+function CloseAccountCard() {
+  const router = useRouter();
+  const [confirming, setConfirming] = useState(false);
+  const [pin, setPin] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [closing, setClosing] = useState(false);
+
+  async function submit(finalPin: string) {
+    setClosing(true);
+    setError(null);
+    const res = await fetch("/api/account/close", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ pin: finalPin }),
+    });
+    setClosing(false);
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      setError(body.error ?? "Failed to close account");
+      setPin("");
+      return;
+    }
+    router.push("/login");
+  }
+
+  if (!confirming) {
+    return (
+      <button
+        onClick={() => setConfirming(true)}
+        className="w-full rounded-2xl border border-red-200 bg-red-50 px-4 py-3.5 text-center text-sm font-semibold text-red-600"
+      >
+        Close account
+      </button>
+    );
+  }
+
+  return (
+    <div className="rounded-2xl border border-red-200 bg-red-50 px-5 py-6">
+      <p className="mb-1 text-center text-sm font-semibold text-red-700">This closes your account for good</p>
+      <p className="mb-4 text-center text-xs text-red-600/80">
+        Your wallet must be at ₦0 / $0 first. Enter your PIN to confirm.
+      </p>
+      <PinPad value={pin} onChange={setPin} onComplete={submit} />
+      {error && <p className="mt-3 text-center text-xs text-red-600">{error}</p>}
+      {closing && <p className="mt-3 text-center text-xs text-red-600/70">Closing…</p>}
+      <button onClick={() => setConfirming(false)} className="mt-4 w-full text-center text-xs text-indigo/50">
+        Cancel
+      </button>
+    </div>
+  );
+}
+
 export function SettingsClient() {
   return (
     <main className="min-h-screen bg-background pb-12">
@@ -488,6 +541,11 @@ export function SettingsClient() {
               <IconChevronRight className="h-4 w-4 text-indigo/30" />
             </Link>
           </div>
+        </section>
+
+        <section>
+          <p className="mb-3 text-xs font-bold uppercase tracking-wide text-red-600/60">Danger zone</p>
+          <CloseAccountCard />
         </section>
       </div>
     </main>

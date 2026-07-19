@@ -1,82 +1,33 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { PinPad } from "@/components/PinPad";
-import { IconShield, IconChevronRight } from "@/components/icons";
 
 interface ProfileData {
   phone: string | null;
   full_name: string | null;
   email: string | null;
+  username: string | null;
+  avatar_url: string | null;
+  date_of_birth: string | null;
+  address: string | null;
   kyc_tier: number;
   kyc_status: string;
 }
 
-const KYC_LABEL: Record<string, string> = {
-  none: "Not started",
-  pending: "Pending review",
-  verified: "Verified",
-  rejected: "Needs attention",
-};
-
-function CloseAccountCard() {
-  const router = useRouter();
-  const [confirming, setConfirming] = useState(false);
-  const [pin, setPin] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [closing, setClosing] = useState(false);
-
-  async function submit(finalPin: string) {
-    setClosing(true);
-    setError(null);
-    const res = await fetch("/api/account/close", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ pin: finalPin }),
-    });
-    setClosing(false);
-    const body = await res.json().catch(() => ({}));
-    if (!res.ok) {
-      setError(body.error ?? "Failed to close account");
-      setPin("");
-      return;
-    }
-    router.push("/login");
-  }
-
-  if (!confirming) {
-    return (
-      <button
-        onClick={() => setConfirming(true)}
-        className="w-full rounded-2xl border border-red-200 bg-red-50 px-4 py-3.5 text-center text-sm font-semibold text-red-600"
-      >
-        Close account
-      </button>
-    );
-  }
-
-  return (
-    <div className="rounded-2xl border border-red-200 bg-red-50 px-5 py-6">
-      <p className="mb-1 text-center text-sm font-semibold text-red-700">This closes your account for good</p>
-      <p className="mb-4 text-center text-xs text-red-600/80">
-        Your wallet must be at ₦0 / $0 first. Enter your PIN to confirm.
-      </p>
-      <PinPad value={pin} onChange={setPin} onComplete={submit} />
-      {error && <p className="mt-3 text-center text-xs text-red-600">{error}</p>}
-      {closing && <p className="mt-3 text-center text-xs text-red-600/70">Closing…</p>}
-      <button onClick={() => setConfirming(false)} className="mt-4 w-full text-center text-xs text-indigo/50">
-        Cancel
-      </button>
-    </div>
-  );
+// Preset avatars sourced online (DiceBear, single self-contained SVG per seed).
+const AVATAR_SEEDS = ["Koala", "Nala", "Milo", "Zara", "Bandit", "Sasha", "Leo", "Pepper"];
+function avatarUrlFor(seed: string): string {
+  return `https://api.dicebear.com/9.x/thumbs/svg?seed=${encodeURIComponent(seed)}`;
 }
 
 export function AccountClient() {
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [dob, setDob] = useState("");
+  const [address, setAddress] = useState("");
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
@@ -88,6 +39,10 @@ export function AccountClient() {
         setProfile(d);
         setFullName(d.full_name ?? "");
         setEmail(d.email ?? "");
+        setUsername(d.username ?? "");
+        setAvatarUrl(d.avatar_url ?? null);
+        setDob(d.date_of_birth ? d.date_of_birth.slice(0, 10) : "");
+        setAddress(d.address ?? "");
       });
   }
   useEffect(load, []);
@@ -99,7 +54,14 @@ export function AccountClient() {
     const res = await fetch("/api/profile", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ fullName: fullName.trim(), email: email.trim() || null }),
+      body: JSON.stringify({
+        fullName: fullName.trim(),
+        email: email.trim() || null,
+        username: username.trim() || null,
+        avatarUrl,
+        dob: dob || null,
+        address: address.trim() || null,
+      }),
     });
     setSaving(false);
     const body = await res.json().catch(() => ({}));
@@ -115,8 +77,44 @@ export function AccountClient() {
     return <p className="px-5 pt-8 text-sm text-indigo/50">Loading…</p>;
   }
 
+  const currentAvatar = avatarUrl ?? avatarUrlFor(username || fullName || "Konek");
+
   return (
     <div className="mx-auto flex max-w-lg flex-col gap-6 px-5 py-6">
+      <section>
+        <p className="mb-3 text-xs font-bold uppercase tracking-wide text-indigo/40">Avatar</p>
+        <div className="konek-card-shadow rounded-2xl bg-white px-5 py-5">
+          <div className="mb-4 flex items-center gap-4">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={currentAvatar}
+              alt="Your avatar"
+              width={56}
+              height={56}
+              className="h-14 w-14 rounded-full bg-indigo/5"
+            />
+            <p className="text-xs text-indigo/55">Pick an avatar for your profile.</p>
+          </div>
+          <div className="flex flex-wrap gap-2.5">
+            {AVATAR_SEEDS.map((seed) => {
+              const url = avatarUrlFor(seed);
+              const active = avatarUrl === url;
+              return (
+                <button
+                  key={seed}
+                  type="button"
+                  onClick={() => setAvatarUrl(url)}
+                  className={`rounded-full p-0.5 transition ${active ? "ring-2 ring-konek-green" : "ring-1 ring-indigo/10"}`}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={url} alt={seed} width={40} height={40} className="h-10 w-10 rounded-full" />
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
       <section>
         <p className="mb-3 text-xs font-bold uppercase tracking-wide text-indigo/40">Personal details</p>
         <div className="konek-card-shadow flex flex-col gap-2.5 rounded-2xl bg-white px-5 py-5">
@@ -130,12 +128,41 @@ export function AccountClient() {
             />
           </div>
           <div>
+            <label className="mb-1 block text-xs font-semibold text-indigo/50">Username</label>
+            <input
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="username"
+              className="w-full rounded-xl border border-indigo/20 px-4 py-2.5 text-sm"
+            />
+          </div>
+          <div>
             <label className="mb-1 block text-xs font-semibold text-indigo/50">Email address</label>
             <input
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Email address"
               type="email"
+              className="w-full rounded-xl border border-indigo/20 px-4 py-2.5 text-sm"
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-xs font-semibold text-indigo/50">Date of birth</label>
+            <input
+              value={dob}
+              onChange={(e) => setDob(e.target.value)}
+              type="date"
+              max={new Date().toISOString().slice(0, 10)}
+              className="w-full rounded-xl border border-indigo/20 px-4 py-2.5 text-sm text-indigo"
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-xs font-semibold text-indigo/50">Address</label>
+            <textarea
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              placeholder="Home address"
+              rows={2}
               className="w-full rounded-xl border border-indigo/20 px-4 py-2.5 text-sm"
             />
           </div>
@@ -155,28 +182,9 @@ export function AccountClient() {
             {saving ? "Saving…" : "Save changes"}
           </button>
         </div>
-      </section>
-
-      <section>
-        <p className="mb-3 text-xs font-bold uppercase tracking-wide text-indigo/40">Verification</p>
-        <Link
-          href="/kyc"
-          className="konek-card-shadow konek-tile flex items-center gap-3 rounded-2xl bg-white px-4 py-3.5"
-        >
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo/10">
-            <IconShield className="h-5 w-5 text-indigo" />
-          </span>
-          <span className="min-w-0 flex-1">
-            <span className="block text-sm font-semibold text-indigo">Identity verification</span>
-            <span className="block text-xs text-indigo/55">{KYC_LABEL[profile.kyc_status] ?? profile.kyc_status}</span>
-          </span>
-          <IconChevronRight className="h-4 w-4 shrink-0 text-indigo/30" />
-        </Link>
-      </section>
-
-      <section>
-        <p className="mb-3 text-xs font-bold uppercase tracking-wide text-red-600/60">Danger zone</p>
-        <CloseAccountCard />
+        <p className="mt-2 px-1 text-[11px] text-indigo/40">
+          Your date of birth and address are encrypted and used only for verification and compliance.
+        </p>
       </section>
     </div>
   );

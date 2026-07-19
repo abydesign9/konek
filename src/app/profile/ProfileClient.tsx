@@ -30,9 +30,15 @@ const CATEGORIES = [
   { label: "Get help", sub: "Contact support and resolve your issues", Icon: IconHelp, href: "/support" },
   {
     label: "Account information",
-    sub: "Update your personal details or securely close your account",
+    sub: "Update your details, username, avatar and address",
     Icon: IconProfile,
     href: "/profile/account",
+  },
+  {
+    label: "Verification",
+    sub: "Verify your identity to unlock funding, accounts and cards",
+    Icon: IconShield,
+    href: "/profile/verification",
   },
   {
     label: "Privacy and security",
