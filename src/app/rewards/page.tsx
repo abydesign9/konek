@@ -91,7 +91,7 @@ export default function RewardsPage() {
   }
 
   const referralLink =
-    typeof window !== "undefined" ? `${window.location.origin}/login?ref=${data.referralCode}` : "";
+    typeof window !== "undefined" ? `${window.location.origin}/signup?ref=${data.referralCode}` : "";
 
   return (
     <main className="min-h-screen bg-background">
@@ -200,6 +200,9 @@ export default function RewardsPage() {
             {copied ? "Copied!" : "Copy"}
           </button>
         </div>
+        <Link href="/invite" className="mt-3 inline-block text-xs font-semibold text-konek-green">
+          Share & track your invites →
+        </Link>
       </div>
 
       <p className="text-sm text-indigo/60 mb-3">Missions</p>

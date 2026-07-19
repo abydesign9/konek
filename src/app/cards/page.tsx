@@ -233,6 +233,11 @@ export default function CardsPage() {
 
       {cards.length === 0 && (
         <div className="rounded-2xl border border-indigo/10 bg-white p-5 mb-8">
+          <p className="font-heading text-base font-bold text-indigo mb-1">Pay bills & shop online</p>
+          <p className="text-sm text-indigo/60 mb-4">
+            Create a virtual dollar card for Netflix, Spotify, Amazon, ads and any site that takes
+            cards — funded straight from your USD wallet, freeze or delete it anytime.
+          </p>
           <button
             onClick={issue}
             disabled={issuing}

@@ -18,7 +18,7 @@ interface Slide {
 
 const SLIDES: Slide[] = [
   {
-    href: "/rewards",
+    href: "/invite",
     gradient: "from-konek-green to-indigo",
     eyebrow: "Rewards",
     title: "You have $10 waiting",

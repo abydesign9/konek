@@ -140,7 +140,7 @@ function Signup() {
 
           {referralCode && (
             <p className="mb-6 rounded-xl border border-konek-green/20 bg-konek-green/10 px-4 py-3 text-sm font-semibold text-konek-green">
-              Invited with code {referralCode} — you both earn coins on your first purchase.
+              Invited with code {referralCode} — enjoy a 50-coin welcome on your first purchase.
             </p>
           )}
 
