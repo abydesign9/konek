@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Sora, Inter } from "next/font/google";
+import { InstallPrompt } from "@/components/InstallPrompt";
 import "./globals.css";
 
 const sora = Sora({ subsets: ["latin"], variable: "--font-sora" });
@@ -9,6 +10,24 @@ export const metadata: Metadata = {
   title: "Konek",
   description: "A digital connectivity platform for Africans at home and abroad. Airtime, data, eSIM, bills and global payments in one place.",
   manifest: "/manifest.json",
+  icons: {
+    icon: [
+      { url: "/favicon.png", sizes: "32x32", type: "image/png" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    // iOS Safari ignores manifest icons and only reads this for the home
+    // screen icon, so it needs its own tag rather than relying on manifest.json.
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+  },
+  appleWebApp: {
+    // Lets "Add to Home Screen" launch standalone (no Safari chrome) on iOS,
+    // mirroring display: "standalone" in manifest.json, which iOS Safari
+    // doesn't reliably honor on its own.
+    capable: true,
+    statusBarStyle: "default",
+    title: "Konek",
+  },
 };
 
 export const viewport: Viewport = {
@@ -32,6 +51,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${sora.variable} ${inter.variable} font-body antialiased`}>
         {children}
+        <InstallPrompt />
       </body>
     </html>
   );
