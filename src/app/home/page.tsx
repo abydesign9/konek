@@ -79,42 +79,42 @@ export default async function HomeDashboard() {
   const userId = await getSessionUserId();
   if (!userId) redirect("/login");
 
-  const { rows } = await query<{ phone: string; full_name: string | null; kyc_tier: number }>(
-    `SELECT phone, full_name, kyc_tier FROM users WHERE id = $1`,
-    [userId]
-  );
+  // All of the home dashboard's data depends only on userId, so fetch it in a
+  // single parallel batch instead of seven serial round-trips. The only chain is
+  // wallet account -> balance, kept together in one branch.
+  const [rows, balanceMinor, streak, bizRows, carousel, recent, beneficiaries] = await Promise.all([
+    query<{ phone: string; full_name: string | null; kyc_tier: number }>(
+      `SELECT phone, full_name, kyc_tier FROM users WHERE id = $1`,
+      [userId]
+    ).then((r) => r.rows),
+    getUserWalletAccount(userId, "NGN").then((acc) => getBalance(acc)),
+    getStreak(userId),
+    query<{ id: string; legal_name: string }>(
+      `SELECT id, legal_name FROM business_accounts WHERE owner_user_id = $1`,
+      [userId]
+    ).then((r) => r.rows),
+    listActiveInAppMessages(),
+    query<RecentPurchase>(
+      `SELECT DISTINCT ON (recipient->>'phone', type) type, amount_minor, recipient
+       FROM transactions
+       WHERE user_id = $1
+         AND type IN ('airtime', 'data', 'cable', 'electricity', 'exam_pin', 'betting', 'intl_topup')
+         AND status = 'delivered'
+       ORDER BY recipient->>'phone', type, created_at DESC
+       LIMIT 4`,
+      [userId]
+    ).then((r) => r.rows),
+    query<Beneficiary>(
+      `SELECT id, label, service_type, details FROM beneficiaries
+       WHERE user_id = $1 ORDER BY pinned DESC, created_at DESC LIMIT 6`,
+      [userId]
+    ).then((r) => r.rows),
+  ]);
+
   const phone = rows[0]?.phone;
   const kycTier = rows[0]?.kyc_tier ?? 0;
   const firstName = rows[0]?.full_name?.split(" ")[0] || phone?.slice(-4) || "there";
-
-  const walletAccountId = await getUserWalletAccount(userId, "NGN");
-  const balanceMinor = await getBalance(walletAccountId);
-  const streak = await getStreak(userId);
-
-  const { rows: bizRows } = await query<{ id: string; legal_name: string }>(
-    `SELECT id, legal_name FROM business_accounts WHERE owner_user_id = $1`,
-    [userId]
-  );
   const business = bizRows[0] ?? null;
-
-  const carousel = await listActiveInAppMessages();
-
-  const { rows: recent } = await query<RecentPurchase>(
-    `SELECT DISTINCT ON (recipient->>'phone', type) type, amount_minor, recipient
-     FROM transactions
-     WHERE user_id = $1
-       AND type IN ('airtime', 'data', 'cable', 'electricity', 'exam_pin', 'betting', 'intl_topup')
-       AND status = 'delivered'
-     ORDER BY recipient->>'phone', type, created_at DESC
-     LIMIT 4`,
-    [userId]
-  );
-
-  const { rows: beneficiaries } = await query<Beneficiary>(
-    `SELECT id, label, service_type, details FROM beneficiaries
-     WHERE user_id = $1 ORDER BY pinned DESC, created_at DESC LIMIT 6`,
-    [userId]
-  );
 
   const BUY_PATH: Record<RecentPurchase["type"], string> = {
     airtime: "/buy/airtime",
