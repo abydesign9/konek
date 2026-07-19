@@ -62,6 +62,25 @@ export default async function WalletPage() {
         </Link>
       </section>
 
+      {kycTier >= 1 && (
+        <section className="mt-4 px-5">
+          <div className="grid grid-cols-2 gap-3">
+            <Link
+              href="/wallet/fund"
+              className="rounded-2xl bg-indigo px-4 py-3 text-center text-sm font-semibold text-white konek-card-shadow konek-tile"
+            >
+              Add money
+            </Link>
+            <Link
+              href="/wallet/withdraw"
+              className="rounded-2xl border border-indigo/15 bg-white px-4 py-3 text-center text-sm font-semibold text-indigo konek-card-shadow konek-tile"
+            >
+              Withdraw
+            </Link>
+          </div>
+        </section>
+      )}
+
       <section className="mt-4 px-5">
         <div className="grid grid-cols-2 gap-3">
           <Link href="/wallet/dollar-account" className="rounded-2xl bg-white konek-card-shadow px-4 py-3.5 konek-tile">
