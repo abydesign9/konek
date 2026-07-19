@@ -9,13 +9,103 @@ const RESEND_URL = "https://api.resend.com/emails";
 const DEFAULT_FROM = "Konek <onboarding@resend.dev>"; // Resend's shared test sender
 
 function otpHtml(code: string): string {
-  return `
-  <div style="font-family:Inter,Arial,sans-serif;max-width:480px;margin:0 auto;padding:24px">
-    <h2 style="color:#1F3864;margin:0 0 8px">Your Konek verification code</h2>
-    <p style="color:#555;margin:0 0 20px">Enter this code to continue. It expires in 10 minutes.</p>
-    <div style="font-size:32px;font-weight:800;letter-spacing:8px;color:#1F3864;background:#F7F8FA;border-radius:12px;padding:16px 0;text-align:center">${code}</div>
-    <p style="color:#999;font-size:12px;margin:20px 0 0">If you didn't request this, you can ignore this email.</p>
-  </div>`;
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Your Konek verification code</title>
+</head>
+<body style="margin:0; padding:0; background-color:#F0F2F7; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#F0F2F7; padding:32px 16px;">
+    <tr>
+      <td align="center">
+
+        <table role="presentation" width="480" cellpadding="0" cellspacing="0" style="max-width:480px; width:100%; background-color:#FFFFFF; border-radius:16px; overflow:hidden;">
+
+          <!-- Header band -->
+          <tr>
+            <td style="background-color:#22315C; padding:28px 32px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td>
+                    <span style="font-size:20px; font-weight:700; color:#FFFFFF; letter-spacing:0.2px;">Konek</span>
+                  </td>
+                  <td align="right">
+                    <span style="font-size:12px; color:#AEB8D6; letter-spacing:0.4px; text-transform:uppercase;">One&nbsp;connected&nbsp;platform</span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding:40px 32px 8px 32px;">
+              <div style="width:44px; height:44px; background-color:#EDF1FF; border-radius:12px; text-align:center; line-height:44px; font-size:20px;">🔑</div>
+              <h1 style="margin:20px 0 12px 0; font-size:22px; line-height:28px; color:#161B2E; font-weight:700;">
+                Your verification code
+              </h1>
+              <p style="margin:0 0 28px 0; font-size:15px; line-height:23px; color:#555F7A;">
+                Use this code to verify your identity and continue. It expires in 10 minutes, so enter it right away.
+              </p>
+
+              <!-- Code block -->
+              <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                  <td style="background-color:#F5F7FC; border:1px solid #E4E9F5; border-radius:12px; padding:20px 0; text-align:center;">
+                    <span style="font-size:32px; font-weight:700; letter-spacing:8px; color:#22315C; font-family:'SFMono-Regular', Consolas, Menlo, monospace;">
+                      ${code}
+                    </span>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin:28px 0 0 0; font-size:13px; line-height:20px; color:#8891AA;">
+                Didn't request this code? You can safely ignore this email — no changes will be made to your account.
+              </p>
+            </td>
+          </tr>
+
+          <!-- Divider -->
+          <tr>
+            <td style="padding:24px 32px 0 32px;">
+              <div style="border-top:1px solid #EEF0F5;"></div>
+            </td>
+          </tr>
+
+          <!-- Security note -->
+          <tr>
+            <td style="padding:20px 32px 32px 32px;">
+              <p style="margin:0; font-size:12px; color:#9AA2B8;">
+                For your security, never share this code with anyone — Konek will never ask for it.
+              </p>
+            </td>
+          </tr>
+
+        </table>
+
+        <!-- Footer -->
+        <table role="presentation" width="480" cellpadding="0" cellspacing="0" style="max-width:480px; width:100%; margin-top:20px;">
+          <tr>
+            <td align="center" style="padding:0 32px;">
+              <p style="margin:0 0 6px 0; font-size:12px; color:#9AA2B8;">
+                Konek · Digital access without borders
+              </p>
+              <p style="margin:0; font-size:12px; color:#9AA2B8;">
+                <a href="mailto:support@konek.app" style="color:#9AA2B8; text-decoration:underline;">support@konek.app</a>
+              </p>
+            </td>
+          </tr>
+        </table>
+
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>`;
 }
 
 export const resendEmailSender: EmailSender = {

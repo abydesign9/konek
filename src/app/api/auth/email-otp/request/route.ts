@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isValidEmail, requestEmailOtp } from "@/lib/auth/emailOtp";
 import { isEmailDeliveryConfigured } from "@/lib/email";
+import { ProviderHttpError, ProviderNetworkError, ProviderTimeoutError, CircuitOpenError } from "@/lib/http/resilientHttp";
 import { checkRateLimit, clientIp, RateLimitExceededError } from "@/lib/rateLimit";
 import { getSessionUserId } from "@/lib/auth/session";
 import { query } from "@/lib/db";
@@ -51,6 +52,26 @@ export async function POST(req: NextRequest) {
     if (err instanceof RateLimitExceededError) {
       return NextResponse.json({ error: "Too many requests — try again shortly" }, { status: 429 });
     }
-    throw err;
+    // Email provider failed (misconfigured sender domain, bad key, provider
+    // outage, etc). Log the real cause for debugging but don't leak provider
+    // internals to the client — just surface a clear, actionable message.
+    if (
+      err instanceof ProviderHttpError ||
+      err instanceof ProviderNetworkError ||
+      err instanceof ProviderTimeoutError ||
+      err instanceof CircuitOpenError
+    ) {
+      console.error("[email-otp/request] email delivery failed:", err);
+      return NextResponse.json(
+        { error: "We couldn't send the email right now. Please try again in a moment." },
+        { status: 502 }
+      );
+    }
+    if (err instanceof Error && err.message === "Missing DATABASE_URL env var") {
+      console.error("[email-otp/request] database not configured:", err);
+      return NextResponse.json({ error: "Service is temporarily unavailable. Please try again shortly." }, { status: 503 });
+    }
+    console.error("[email-otp/request] unexpected error:", err);
+    return NextResponse.json({ error: "Couldn't send the code — try again" }, { status: 500 });
   }
 }
