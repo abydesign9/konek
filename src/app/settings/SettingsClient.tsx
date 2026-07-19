@@ -6,7 +6,20 @@ import { PageHeader } from "@/components/PageHeader";
 import { PinPad } from "@/components/PinPad";
 import { IconChevronRight } from "@/components/icons";
 
-type PinStep = "closed" | "current" | "new" | "confirm";
+type PinStep = "closed" | "current" | "new" | "confirm" | "otp";
+
+// Requests an email OTP for a sensitive change. Returns the demo code when real
+// email delivery isn't configured (dev), so the flow stays testable.
+async function requestChangeOtp(purpose: "change_pin" | "change_password"): Promise<string | null> {
+  const res = await fetch("/api/auth/email-otp/request", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ purpose }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error ?? "Could not send a verification code");
+  return typeof data.demoOtp === "string" ? data.demoOtp : null;
+}
 
 function ChangePinCard() {
   const [hasPin, setHasPin] = useState<boolean | null>(null);
@@ -14,6 +27,8 @@ function ChangePinCard() {
   const [current, setCurrent] = useState("");
   const [next, setNext] = useState("");
   const [confirm, setConfirm] = useState("");
+  const [otp, setOtp] = useState("");
+  const [demoOtp, setDemoOtp] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -23,10 +38,13 @@ function ChangePinCard() {
     setCurrent("");
     setNext("");
     setConfirm("");
+    setOtp("");
+    setDemoOtp(null);
     setError(null);
   }
 
-  async function submit(finalConfirm: string) {
+  // After the new PIN is confirmed, email a code and move to the OTP step.
+  async function confirmed(finalConfirm: string) {
     if (finalConfirm !== next) {
       setError("New PINs didn't match — start again");
       setCurrent("");
@@ -37,19 +55,29 @@ function ChangePinCard() {
     }
     setSaving(true);
     setError(null);
+    try {
+      setDemoOtp(await requestChangeOtp("change_pin"));
+      setStep("otp");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not send a verification code");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function submit() {
+    setSaving(true);
+    setError(null);
     const res = await fetch("/api/auth/pin", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ currentPin: current, newPin: next }),
+      body: JSON.stringify({ currentPin: current, newPin: next, otp }),
     });
     setSaving(false);
     const body = await res.json().catch(() => ({}));
     if (!res.ok) {
       setError(body.error ?? "Failed to change PIN");
-      setStep("current");
-      setCurrent("");
-      setNext("");
-      setConfirm("");
+      setOtp("");
       return;
     }
     setSuccess(true);
@@ -97,6 +125,7 @@ function ChangePinCard() {
             {step === "current" && "Enter your current PIN"}
             {step === "new" && "Choose a new PIN"}
             {step === "confirm" && "Confirm your new PIN"}
+            {step === "otp" && "Enter the code we emailed you"}
           </p>
           {step === "current" && (
             <PinPad value={current} onChange={setCurrent} onComplete={() => setStep("new")} />
@@ -104,9 +133,176 @@ function ChangePinCard() {
           {step === "new" && (
             <PinPad value={next} onChange={setNext} onComplete={() => setStep("confirm")} />
           )}
-          {step === "confirm" && <PinPad value={confirm} onChange={setConfirm} onComplete={submit} />}
+          {step === "confirm" && <PinPad value={confirm} onChange={setConfirm} onComplete={confirmed} />}
+          {step === "otp" && (
+            <OtpEntry
+              value={otp}
+              onChange={setOtp}
+              onSubmit={submit}
+              demoOtp={demoOtp}
+              submitting={saving}
+            />
+          )}
           {error && <p className="mt-3 text-center text-xs text-red-600">{error}</p>}
-          {saving && <p className="mt-3 text-center text-xs text-indigo/50">Saving…</p>}
+          {saving && step !== "otp" && <p className="mt-3 text-center text-xs text-indigo/50">Saving…</p>}
+          <button onClick={reset} className="mt-4 w-full text-center text-xs text-indigo/50">
+            Cancel
+          </button>
+        </>
+      )}
+    </div>
+  );
+}
+
+// Shared 6-digit code entry for OTP-gated changes. Surfaces the demo code
+// inline when real email delivery isn't configured yet (dev).
+function OtpEntry({
+  value,
+  onChange,
+  onSubmit,
+  demoOtp,
+  submitting,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  onSubmit: () => void;
+  demoOtp: string | null;
+  submitting: boolean;
+}) {
+  return (
+    <div className="flex flex-col gap-3">
+      <input
+        inputMode="numeric"
+        autoFocus
+        maxLength={6}
+        value={value}
+        onChange={(e) => onChange(e.target.value.replace(/[^\d]/g, ""))}
+        placeholder="6-digit code"
+        className="w-full rounded-xl border border-indigo/20 px-4 py-3 text-center font-heading text-lg font-bold tracking-[0.3em] text-indigo focus:outline-none focus:ring-2 focus:ring-konek-green"
+      />
+      {demoOtp && (
+        <p className="text-center text-[11px] text-indigo/45">
+          Dev mode — email delivery not configured. Code: <span className="font-semibold">{demoOtp}</span>
+        </p>
+      )}
+      <button
+        onClick={onSubmit}
+        disabled={submitting || value.length < 6}
+        className="w-full rounded-xl bg-indigo px-6 py-3 text-sm font-semibold text-white disabled:opacity-40"
+      >
+        {submitting ? "Saving…" : "Confirm change"}
+      </button>
+    </div>
+  );
+}
+
+type PwStep = "closed" | "form" | "otp";
+
+function ChangePasswordCard() {
+  const [step, setStep] = useState<PwStep>("closed");
+  const [current, setCurrent] = useState("");
+  const [next, setNext] = useState("");
+  const [otp, setOtp] = useState("");
+  const [demoOtp, setDemoOtp] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  function reset() {
+    setStep("closed");
+    setCurrent("");
+    setNext("");
+    setOtp("");
+    setDemoOtp(null);
+    setError(null);
+  }
+
+  async function sendCode() {
+    if (!current || next.length < 8) {
+      setError("Enter your current password and a new one (8+ characters)");
+      return;
+    }
+    setSaving(true);
+    setError(null);
+    try {
+      setDemoOtp(await requestChangeOtp("change_password"));
+      setStep("otp");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not send a verification code");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function submit() {
+    setSaving(true);
+    setError(null);
+    const res = await fetch("/api/auth/password", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ currentPassword: current, newPassword: next, otp }),
+    });
+    setSaving(false);
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      setError(body.error ?? "Failed to change password");
+      setOtp("");
+      return;
+    }
+    setSuccess(true);
+    setTimeout(reset, 1500);
+  }
+
+  if (step === "closed") {
+    return (
+      <button
+        onClick={() => setStep("form")}
+        className="flex w-full items-center justify-between rounded-2xl bg-white px-4 py-3.5 konek-card-shadow konek-tile"
+      >
+        <span className="text-sm font-semibold text-indigo">Change password</span>
+        <IconChevronRight className="h-4 w-4 text-indigo/30" />
+      </button>
+    );
+  }
+
+  return (
+    <div className="rounded-2xl bg-white px-5 py-6 konek-card-shadow">
+      {success ? (
+        <p className="text-center text-sm font-semibold text-konek-green">Password updated ✓</p>
+      ) : step === "form" ? (
+        <div className="flex flex-col gap-3">
+          <p className="mb-1 text-center text-sm font-semibold text-indigo">Change your password</p>
+          <input
+            type="password"
+            value={current}
+            onChange={(e) => setCurrent(e.target.value)}
+            placeholder="Current password"
+            className="w-full rounded-xl border border-indigo/20 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-konek-green"
+          />
+          <input
+            type="password"
+            value={next}
+            onChange={(e) => setNext(e.target.value)}
+            placeholder="New password (8+ characters)"
+            className="w-full rounded-xl border border-indigo/20 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-konek-green"
+          />
+          {error && <p className="text-center text-xs text-red-600">{error}</p>}
+          <button
+            onClick={sendCode}
+            disabled={saving}
+            className="w-full rounded-xl bg-indigo px-6 py-3 text-sm font-semibold text-white disabled:opacity-40"
+          >
+            {saving ? "Sending code…" : "Continue"}
+          </button>
+          <button onClick={reset} className="w-full text-center text-xs text-indigo/50">
+            Cancel
+          </button>
+        </div>
+      ) : (
+        <>
+          <p className="mb-4 text-center text-sm font-semibold text-indigo">Enter the code we emailed you</p>
+          <OtpEntry value={otp} onChange={setOtp} onSubmit={submit} demoOtp={demoOtp} submitting={saving} />
+          {error && <p className="mt-3 text-center text-xs text-red-600">{error}</p>}
           <button onClick={reset} className="mt-4 w-full text-center text-xs text-indigo/50">
             Cancel
           </button>
@@ -249,6 +445,13 @@ export function SettingsClient() {
           <p className="mb-3 text-xs font-bold uppercase tracking-wide text-indigo/40">Transaction PIN</p>
           <div className="flex flex-col gap-2.5">
             <ChangePinCard />
+          </div>
+        </section>
+
+        <section>
+          <p className="mb-3 text-xs font-bold uppercase tracking-wide text-indigo/40">Password</p>
+          <div className="flex flex-col gap-2.5">
+            <ChangePasswordCard />
           </div>
         </section>
 

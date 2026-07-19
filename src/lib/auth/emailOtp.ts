@@ -37,13 +37,21 @@ export async function requestEmailOtp(
   return { code };
 }
 
-export async function verifyEmailOtp(email: string, code: string): Promise<boolean> {
+export type EmailOtpPurpose = "signup" | "change_pin" | "change_password";
+
+export async function verifyEmailOtp(
+  email: string,
+  code: string,
+  purpose: EmailOtpPurpose = "signup"
+): Promise<boolean> {
   const normalized = email.trim().toLowerCase();
+  // Scope to the purpose so a code emailed for one action (e.g. signup) can't be
+  // replayed to authorize another (e.g. changing a PIN).
   const { rows } = await query<{ id: string; code_hash: string; attempt_count: number }>(
     `SELECT id, code_hash, attempt_count FROM otp_codes
-     WHERE email = $1 AND consumed_at IS NULL AND expires_at > now()
+     WHERE email = $1 AND purpose = $2 AND consumed_at IS NULL AND expires_at > now()
      ORDER BY created_at DESC LIMIT 1`,
-    [normalized]
+    [normalized, purpose]
   );
   const otp = rows[0];
   if (!otp || otp.attempt_count >= MAX_ATTEMPTS) return false;

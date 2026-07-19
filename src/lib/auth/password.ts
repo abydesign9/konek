@@ -99,3 +99,26 @@ export async function verifyPasswordLogin(email: string, password: string): Prom
 
   return { userId: user.id };
 }
+
+// Self-service password change. Requires the current password (verified with a
+// constant "incorrect credentials" error) and enforces the same length rule as
+// signup. OTP is verified by the route before this is called.
+export async function changePassword(
+  userId: string,
+  currentPassword: string,
+  newPassword: string
+): Promise<void> {
+  if (newPassword.length < MIN_PASSWORD_LENGTH) throw new WeakPasswordError();
+
+  const { rows } = await query<{ password_hash: string | null }>(
+    `SELECT password_hash FROM users WHERE id = $1`,
+    [userId]
+  );
+  const hash = rows[0]?.password_hash;
+  if (!hash || !(await bcrypt.compare(currentPassword, hash))) {
+    throw new InvalidCredentialsError();
+  }
+
+  const newHash = await bcrypt.hash(newPassword, 10);
+  await query(`UPDATE users SET password_hash = $2 WHERE id = $1`, [userId, newHash]);
+}
