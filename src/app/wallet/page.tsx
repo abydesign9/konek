@@ -7,6 +7,10 @@ import { getBalance } from "@/lib/ledger/balance";
 import { BottomNav } from "@/components/BottomNav";
 import { IconWallet, IconGlobe, IconChevronRight } from "@/components/icons";
 import { getKycStatus } from "@/lib/kyc/kycService";
+import WalletBalanceCard from "@/components/WalletBalanceCard";
+import WalletInsights from "@/components/WalletInsights";
+import WalletActions from "@/components/WalletActions";
+import BalanceVisibility from "@/components/BalanceVisibility";
 
 interface RecentTxn {
   id: string;
@@ -98,7 +102,9 @@ export default async function WalletPage() {
 
 
 
-        <BottomNav />
+        <WalletInsights />
+
+      <BottomNav />
 
       </main>
 
@@ -167,82 +173,13 @@ export default async function WalletPage() {
 
 
 
-      <section className="px-5">
-
-        <Link
-
-          href="/wallet/fund"
-
-          className="konek-hero konek-card-shadow konek-tile block rounded-3xl px-6 py-6 text-white"
-
-        >
-
-          <p className="mb-1 text-xs uppercase tracking-wide text-white/60">
-            Naira Wallet
-          </p>
-
-
-          <p className="font-heading text-[2rem] font-bold leading-none">
-
-            ₦{(ngnBalanceMinor / 100).toLocaleString()}
-
-          </p>
-
-
-          <span className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-white/12 px-3 py-1.5 text-xs font-semibold">
-
-            Fund wallet →
-
-          </span>
-
-
-        </Link>
-
-
-      </section>
+      <WalletBalanceCard balanceMinor={ngnBalanceMinor} />
 
 
 
 
 
-      <section className="mt-4 px-5">
-
-
-        <div className="grid grid-cols-2 gap-3">
-
-
-          <Link
-
-            href="/wallet/fund"
-
-            className="rounded-2xl bg-indigo px-4 py-3 text-center text-sm font-semibold text-white konek-card-shadow konek-tile"
-
-          >
-
-            Add money
-
-          </Link>
-
-
-
-
-          <Link
-
-            href="/wallet/withdraw"
-
-            className="rounded-2xl border border-indigo/15 bg-white px-4 py-3 text-center text-sm font-semibold text-indigo konek-card-shadow konek-tile"
-
-          >
-
-            Withdraw
-
-          </Link>
-
-
-        </div>
-
-
-      </section>
+      <WalletActions />
 
 
 
@@ -277,7 +214,7 @@ export default async function WalletPage() {
             <p className="text-xs text-indigo/55">
 
               {usdBalanceMinor !== null
-                ? `$${(usdBalanceMinor / 100).toLocaleString()}`
+                ? <BalanceVisibility amount={`$${(usdBalanceMinor / 100).toLocaleString()}`} />
                 : "Set up →"}
 
             </p>
@@ -426,6 +363,8 @@ export default async function WalletPage() {
       </section>
 
 
+
+      <WalletInsights />
 
       <BottomNav />
 

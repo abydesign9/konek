@@ -1,209 +1,414 @@
 "use client";
 
-import { Suspense, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { ChipPicker, MonogramBadge } from "@/components/ChipPicker";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/PageHeader";
 import { PinPad } from "@/components/PinPad";
-import { CustomAmountField } from "@/components/CustomAmountField";
 
-const BOOKMAKERS = [
-  { id: "sportybet", label: "SportyBet", icon: <MonogramBadge text="SB" className="bg-red-500" /> },
-  { id: "bet9ja", label: "Bet9ja", icon: <MonogramBadge text="B9" className="bg-konek-green" /> },
-  { id: "betking", label: "BetKing", icon: <MonogramBadge text="BK" className="bg-indigo" /> },
-  { id: "1xbet", label: "1xBet", icon: <MonogramBadge text="1x" className="bg-blue-600" /> },
+
+const PROVIDERS = [
+  "Bet9ja",
+  "SportyBet",
+  "1xBet",
+  "BetKing"
 ];
-const PRESETS_MINOR = [100000, 200000, 500000, 1000000]; // ₦1,000 / ₦2,000 / ₦5,000 / ₦10,000
 
-function formatNaira(minor: number) {
-  return `₦${(minor / 100).toLocaleString()}`;
+
+const AMOUNTS = [
+  50000,
+  100000,
+  200000,
+  500000
+];
+
+
+function money(minor:number){
+
+return `₦${(minor/100).toLocaleString()}`;
+
 }
 
-function BuyBetting() {
-  const router = useRouter();
-  const params = useSearchParams();
 
-  const [bookmaker, setBookmaker] = useState<string | null>(params.get("network"));
-  const [accountId, setAccountId] = useState(params.get("phone") ?? "");
-  const [amountMinor, setAmountMinor] = useState<number | null>(
-    params.get("amountMinor") ? Number(params.get("amountMinor")) : null
-  );
-  const [showPin, setShowPin] = useState(false);
-  const [pin, setPin] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [done, setDone] = useState(false);
 
-  const bookmakerLabel = BOOKMAKERS.find((b) => b.id === bookmaker)?.label ?? bookmaker;
+export default function BettingPage(){
 
-  function proceedToPin() {
-    if (!bookmaker || accountId.length < 4 || !amountMinor) {
-      setError("Choose a bookmaker, enter your account ID, and pick an amount");
-      return;
-    }
-    setError(null);
-    setShowPin(true);
-  }
+const router = useRouter();
 
-  async function submit(finalPin: string) {
-    setLoading(true);
-    setError(null);
 
-    const res = await fetch("/api/purchases", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        serviceType: "betting",
-        network: bookmaker,
-        phone: accountId,
-        amountMinor,
-        pin: finalPin,
-        idempotencyKey: crypto.randomUUID(),
-      }),
-    });
+const [provider,setProvider] =
+useState("");
 
-    const data = await res.json().catch(() => ({}));
-    setLoading(false);
+const [account,setAccount] =
+useState("");
 
-    if (res.status === 428) {
-      router.push(`/settings/pin?next=${encodeURIComponent(window.location.pathname + window.location.search)}`);
-      return;
-    }
-    if (!res.ok) {
-      setError(data.error ?? "Something went wrong");
-      setPin("");
-      setShowPin(false);
-      return;
-    }
-    if (data.status === "failed") {
-      setError("The bookmaker declined this top-up. No funds were charged.");
-      setPin("");
-      setShowPin(false);
-      return;
-    }
+const [amount,setAmount] =
+useState<number|null>(null);
 
-    await fetch("/api/beneficiaries", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        label: `${bookmakerLabel} •••• ${accountId.slice(-4)}`,
-        serviceType: "betting",
-        details: { phone: accountId, network: bookmaker },
-      }),
-    });
+const [pin,setPin] =
+useState("");
 
-    setDone(true);
-  }
+const [showPin,setShowPin] =
+useState(false);
 
-  if (done) {
-    return (
-      <main className="min-h-screen bg-background px-6 py-8 flex flex-col items-center justify-center text-center">
-        <div className="w-16 h-16 rounded-full bg-konek-green/15 flex items-center justify-center mb-5">
-          <span className="text-konek-green text-3xl">✓</span>
-        </div>
-        <h1 className="font-heading text-xl font-bold text-indigo mb-2">Wallet funded</h1>
-        <p className="text-indigo/60 mb-8">
-          {formatNaira(amountMinor ?? 0)} sent to your {bookmakerLabel} account {accountId}.
-        </p>
-        <div className="flex gap-3">
-          <button
-            onClick={() => router.push("/home")}
-            className="rounded-xl bg-indigo text-white font-semibold px-6 py-3"
-          >
-            Back to home
-          </button>
-          <button
-            onClick={() => router.push("/wallet/history")}
-            className="rounded-xl border border-indigo/20 bg-white text-indigo font-semibold px-6 py-3"
-          >
-            View receipt
-          </button>
-        </div>
-      </main>
-    );
-  }
+const [loading,setLoading] =
+useState(false);
 
-  if (showPin) {
-    return (
-      <main className="min-h-screen bg-background px-6 py-8 flex flex-col items-center justify-center">
-        <div className="w-full max-w-xs">
-          <h1 className="font-heading text-lg font-bold text-indigo mb-1 text-center">
-            Confirm {formatNaira(amountMinor ?? 0)} to {bookmakerLabel}
-          </h1>
-          <p className="text-sm text-indigo/60 mb-8 text-center">Enter your PIN to authorize.</p>
-          <PinPad value={pin} onChange={setPin} onComplete={submit} />
-          {loading && <p className="mt-4 text-sm text-indigo/60 text-center">Processing…</p>}
-          {error && <p className="mt-4 text-sm text-red-600 text-center">{error}</p>}
-          <button
-            onClick={() => {
-              setShowPin(false);
-              setPin("");
-            }}
-            className="mt-6 text-sm text-indigo/60 underline block mx-auto"
-          >
-            Cancel
-          </button>
-        </div>
-      </main>
-    );
-  }
+const [error,setError] =
+useState("");
 
-  return (
-    <main className="min-h-screen bg-background">
-      <PageHeader title="Betting" backHref="/home" />
-      <div className="max-w-lg mx-auto px-4 sm:px-6 py-6">
-      <p className="text-sm text-indigo/60 mb-6">Top up your bookmaker wallet in seconds.</p>
+const [success,setSuccess] =
+useState(false);
 
-      <ChipPicker options={BOOKMAKERS} value={bookmaker} onChange={setBookmaker} />
 
-      <label className="block text-sm text-indigo/60 mb-2">Account / customer ID</label>
-      <input
-        type="text"
-        inputMode="numeric"
-        value={accountId}
-        onChange={(e) => setAccountId(e.target.value)}
-        placeholder="e.g. 1234567"
-        className="w-full rounded-xl border border-indigo/20 px-4 py-3 text-base mb-6 focus:outline-none focus:ring-2 focus:ring-konek-green"
-      />
 
-      <label className="block text-sm text-indigo/60 mb-2">Amount</label>
-      <div className="grid grid-cols-2 gap-3 mb-8">
-        {PRESETS_MINOR.map((minor) => (
-          <button
-            key={minor}
-            type="button"
-            onClick={() => setAmountMinor(minor)}
-            className={`rounded-xl border py-4 font-semibold transition-colors ${
-              amountMinor === minor
-                ? "border-konek-green bg-konek-green/10 text-indigo"
-                : "border-indigo/20 text-indigo hover:bg-indigo/5"
-            }`}
-          >
-            {formatNaira(minor)}
-          </button>
-        ))}
-      </div>
-      <div className="mb-8 -mt-4">
-        <CustomAmountField value={amountMinor} onChange={setAmountMinor} presets={PRESETS_MINOR} />
-      </div>
+function proceed(){
 
-      <button
-        onClick={proceedToPin}
-        className="w-full rounded-xl bg-indigo text-white py-3.5 font-semibold"
-      >
-        Fund account
-      </button>
+if(!provider){
 
-      {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
-      </div>
-    </main>
-  );
+setError("Select betting provider");
+
+return;
+
 }
 
-export default function BuyBettingPage() {
-  return (
-    <Suspense>
-      <BuyBetting />
-    </Suspense>
-  );
+
+if(!account){
+
+setError("Enter betting account ID");
+
+return;
+
+}
+
+
+if(!amount){
+
+setError("Select amount");
+
+return;
+
+}
+
+
+setError("");
+
+setShowPin(true);
+
+}
+
+
+
+
+async function submit(finalPin:string){
+
+setLoading(true);
+
+
+const res =
+await fetch("/api/purchases",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+serviceType:"betting",
+
+network:provider,
+
+phone:account,
+
+amountMinor:amount,
+
+pin:finalPin,
+
+idempotencyKey:crypto.randomUUID()
+
+})
+
+});
+
+
+
+const data =
+await res.json().catch(()=>({}));
+
+
+setLoading(false);
+
+
+
+if(!res.ok){
+
+setError(data.error ?? "Purchase failed");
+
+setShowPin(false);
+
+return;
+
+}
+
+
+setSuccess(true);
+
+}
+
+
+
+
+
+if(success){
+
+return (
+
+<main className="min-h-screen bg-background flex items-center justify-center px-6">
+
+
+<div className="rounded-3xl bg-white border p-8 text-center">
+
+
+<div className="text-5xl mb-4">
+✅
+</div>
+
+
+<h1 className="text-xl font-bold text-indigo">
+Wallet Funding Successful
+</h1>
+
+
+<p className="text-sm text-indigo/60 mt-3">
+{provider} account funded successfully.
+</p>
+
+
+<button
+
+onClick={()=>router.push("/wallet")}
+
+className="mt-6 rounded-xl bg-indigo text-white px-8 py-3 font-semibold"
+
+>
+
+Done
+
+</button>
+
+
+</div>
+
+
+</main>
+
+);
+
+}
+
+
+
+
+
+if(showPin){
+
+return (
+
+<main className="min-h-screen bg-background flex items-center justify-center px-6">
+
+
+<div className="max-w-xs w-full">
+
+
+<h1 className="text-center font-bold text-indigo mb-5">
+Confirm Betting Funding
+</h1>
+
+
+<PinPad
+
+value={pin}
+
+onChange={setPin}
+
+onComplete={submit}
+
+/>
+
+
+
+{loading && (
+
+<p className="text-center text-sm mt-4">
+Processing...
+</p>
+
+)}
+
+
+{error && (
+
+<p className="text-center text-red-600 text-sm mt-4">
+{error}
+</p>
+
+)}
+
+
+</div>
+
+
+</main>
+
+);
+
+}
+
+
+
+
+
+return (
+
+<main className="min-h-screen bg-background">
+
+
+<PageHeader
+
+title="Betting"
+
+backHref="/home"
+
+/>
+
+
+
+
+<div className="max-w-lg mx-auto px-5 py-6">
+
+
+<p className="text-sm text-indigo/60 mb-6">
+Fund your betting wallet instantly.
+</p>
+
+
+
+
+<div className="grid grid-cols-2 gap-3 mb-5">
+
+
+{PROVIDERS.map(item=>(
+
+<button
+
+key={item}
+
+onClick={()=>setProvider(item)}
+
+className={`rounded-xl py-3 font-semibold ${
+provider===item
+?
+"bg-indigo text-white"
+:
+"bg-white border text-indigo"
+}`}
+
+>
+
+{item}
+
+</button>
+
+))}
+
+
+</div>
+
+
+
+
+
+<input
+
+value={account}
+
+onChange={(e)=>setAccount(e.target.value)}
+
+placeholder="Betting account ID"
+
+className="w-full rounded-xl border px-4 py-3 mb-5"
+
+/>
+
+
+
+
+
+<div className="grid grid-cols-2 gap-3">
+
+
+{AMOUNTS.map(item=>(
+
+<button
+
+key={item}
+
+onClick={()=>setAmount(item)}
+
+className={`rounded-xl border py-3 font-semibold ${
+amount===item
+?
+"border-konek-green bg-konek-green/10"
+:
+"bg-white"
+}`}
+
+>
+
+{money(item)}
+
+</button>
+
+
+))}
+
+
+</div>
+
+
+
+
+
+<button
+
+onClick={proceed}
+
+className="mt-6 w-full rounded-xl bg-indigo text-white py-3.5 font-semibold"
+
+>
+
+Continue
+
+</button>
+
+
+
+{error && (
+
+<p className="mt-3 text-sm text-red-600">
+{error}
+</p>
+
+)}
+
+
+
+</div>
+
+
+</main>
+
+);
+
 }

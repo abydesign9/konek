@@ -1,239 +1,467 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { NetworkPicker } from "@/components/NetworkPicker";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/PageHeader";
 import { PinPad } from "@/components/PinPad";
 
+
 interface Plan {
-  id: string;
-  external_id: string;
-  name: string;
-  network: string;
-  price_minor: string;
-  currency: string;
+  id:string;
+  external_id:string;
+  name:string;
+  price_minor:string;
+  network:string;
+  meta?:{
+    dataMb?:number;
+    validityDays?:number;
+  };
 }
 
-interface Beneficiary {
-  id: string;
-  label: string;
-  details: { phone: string; network: string; planExternalId?: string; planName?: string };
+
+const NETWORKS = [
+"MTN",
+"Airtel",
+"Glo",
+"9mobile"
+];
+
+
+function naira(minor:number){
+
+return `₦${(minor/100).toLocaleString()}`;
+
 }
 
-function BuyData() {
-  const router = useRouter();
-  const params = useSearchParams();
 
-  const [network, setNetwork] = useState<string | null>(params.get("network"));
-  const [phone, setPhone] = useState(params.get("phone") ?? "");
-  const [plans, setPlans] = useState<Plan[]>([]);
-  const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
-  const [beneficiaries, setBeneficiaries] = useState<Beneficiary[]>([]);
-  const [showPin, setShowPin] = useState(false);
-  const [pin, setPin] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetch("/api/beneficiaries?serviceType=data")
-      .then((res) => res.json())
-      .then((data) => setBeneficiaries(data.beneficiaries ?? []));
-  }, []);
+export default function DataPage(){
 
-  useEffect(() => {
-    if (!network) {
-      setPlans([]);
-      return;
-    }
-    fetch(`/api/catalog?serviceType=data&network=${network}`)
-      .then((res) => res.json())
-      .then((data) => {
-        const list: Plan[] = data.plans ?? [];
-        setPlans(list);
-        const prefillPlanId = params.get("planExternalId");
-        if (prefillPlanId) {
-          const match = list.find((p) => p.external_id === prefillPlanId);
-          if (match) setSelectedPlan(match);
-        }
-      });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [network]);
+const router = useRouter();
 
-  function pickBeneficiary(b: Beneficiary) {
-    setNetwork(b.details.network);
-    setPhone(b.details.phone);
-    setSelectedPlan(null); // plan resolves once that network's catalog loads
-  }
 
-  function proceedToPin() {
-    if (!network || phone.length < 10 || !selectedPlan) {
-      setError("Choose a network, enter a phone number, and pick a plan");
-      return;
-    }
-    setError(null);
-    setShowPin(true);
-  }
+const [plans,setPlans] =
+useState<Plan[]>([]);
 
-  async function submit(finalPin: string) {
-    setLoading(true);
-    setError(null);
+const [network,setNetwork] =
+useState("");
 
-    const res = await fetch("/api/purchases", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        serviceType: "data",
-        network,
-        phone,
-        amountMinor: Number(selectedPlan!.price_minor),
-        planExternalId: selectedPlan!.external_id,
-        pin: finalPin,
-        idempotencyKey: crypto.randomUUID(),
-      }),
-    });
+const [phone,setPhone] =
+useState("");
 
-    const data = await res.json().catch(() => ({}));
-    setLoading(false);
+const [selected,setSelected] =
+useState<Plan|null>(null);
 
-    if (res.status === 428) {
-      router.push(`/settings/pin?next=${encodeURIComponent(window.location.pathname + window.location.search)}`);
-      return;
-    }
-    if (!res.ok) {
-      setError(data.error ?? "Something went wrong");
-      setPin("");
-      setShowPin(false);
-      return;
-    }
-    if (data.status === "failed") {
-      setError("The vendor declined this purchase. No funds were charged.");
-      setPin("");
-      setShowPin(false);
-      return;
-    }
+const [pin,setPin] =
+useState("");
 
-    await fetch("/api/beneficiaries", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        label: `${network} •••• ${phone.slice(-4)}`,
-        serviceType: "data",
-        details: { phone, network, planExternalId: selectedPlan!.external_id, planName: selectedPlan!.name },
-      }),
-    });
+const [showPin,setShowPin] =
+useState(false);
 
-    setSuccess(`${selectedPlan!.name} delivered to ${phone}`);
-    setTimeout(() => router.push("/home"), 1200);
-  }
+const [loading,setLoading] =
+useState(false);
 
-  if (showPin) {
-    return (
-      <main className="min-h-screen bg-background px-6 py-8 flex flex-col items-center justify-center">
-        <div className="w-full max-w-xs">
-          <h1 className="font-heading text-lg font-bold text-indigo mb-1 text-center">
-            Confirm {selectedPlan?.name} to {phone}
-          </h1>
-          <p className="text-sm text-indigo/60 mb-8 text-center">Enter your PIN to authorize.</p>
-          <PinPad value={pin} onChange={setPin} onComplete={submit} />
-          {loading && <p className="mt-4 text-sm text-indigo/60 text-center">Processing…</p>}
-          {error && <p className="mt-4 text-sm text-red-600 text-center">{error}</p>}
-          <button
-            onClick={() => {
-              setShowPin(false);
-              setPin("");
-            }}
-            className="mt-6 text-sm text-indigo/60 underline block mx-auto"
-          >
-            Cancel
-          </button>
-        </div>
-      </main>
-    );
-  }
+const [error,setError] =
+useState("");
 
-  return (
-    <main className="min-h-screen bg-background">
-      <PageHeader title="Buy data" backHref="/home" />
-      <div className="max-w-lg mx-auto px-4 sm:px-6 py-6">
-      <p className="text-sm text-indigo/60 mb-6">Data bundles for any Nigerian network.</p>
+const [success,setSuccess] =
+useState(false);
 
-      {beneficiaries.length > 0 && (
-        <div className="mb-6">
-          <p className="text-sm text-indigo/60 mb-2">Buy again</p>
-          <div className="flex gap-2 overflow-x-auto pb-1">
-            {beneficiaries.map((b) => (
-              <button
-                key={b.id}
-                type="button"
-                onClick={() => pickBeneficiary(b)}
-                className="whitespace-nowrap rounded-full border border-indigo/20 px-4 py-2 text-sm font-medium text-indigo hover:bg-indigo/5"
-              >
-                {b.label}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
 
-      <NetworkPicker value={network} onChange={setNetwork} />
 
-      <label className="block text-sm text-indigo/60 mb-2">Phone number</label>
-      <input
-        type="tel"
-        value={phone}
-        onChange={(e) => setPhone(e.target.value)}
-        placeholder="080..."
-        className="w-full rounded-xl border border-indigo/20 px-4 py-3 text-base mb-6 focus:outline-none focus:ring-2 focus:ring-konek-green"
-      />
+useEffect(()=>{
 
-      {network && (
-        <>
-          <label className="block text-sm text-indigo/60 mb-2">Plan</label>
-          <div className="flex flex-col gap-2 mb-8">
-            {plans.length === 0 && (
-              <p className="text-sm text-indigo/50">No plans synced yet for {network}.</p>
-            )}
-            {plans.map((plan) => (
-              <button
-                key={plan.id}
-                type="button"
-                onClick={() => setSelectedPlan(plan)}
-                className={`flex items-center justify-between rounded-xl border px-4 py-3 text-left transition-colors ${
-                  selectedPlan?.id === plan.id
-                    ? "border-konek-green bg-konek-green/10"
-                    : "border-indigo/20 hover:bg-indigo/5"
-                }`}
-              >
-                <span className="text-sm font-medium text-indigo">{plan.name}</span>
-                <span className="text-sm font-semibold text-indigo">
-                  ₦{(Number(plan.price_minor) / 100).toLocaleString()}
-                </span>
-              </button>
-            ))}
-          </div>
-        </>
-      )}
+fetch("/api/catalog?serviceType=data")
+.then(res=>res.json())
+.then(data=>setPlans(data.plans ?? []));
 
-      <button
-        onClick={proceedToPin}
-        className="w-full rounded-xl bg-indigo text-white py-3.5 font-semibold"
-      >
-        Buy data
-      </button>
+},[]);
 
-      {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
-      {success && <p className="mt-4 text-sm text-konek-green font-semibold">{success}</p>}
-      </div>
-    </main>
-  );
+
+
+
+const visiblePlans =
+plans.filter(
+(plan)=>
+!network ||
+plan.network.toUpperCase()===network
+);
+
+
+
+
+function proceed(){
+
+if(!network){
+
+setError("Select a network");
+return;
+
 }
 
-export default function BuyDataPage() {
-  return (
-    <Suspense>
-      <BuyData />
-    </Suspense>
-  );
+
+if(!phone){
+
+setError("Enter phone number");
+return;
+
+}
+
+
+if(!selected){
+
+setError("Choose a data plan");
+return;
+
+}
+
+
+setError("");
+setShowPin(true);
+
+}
+
+
+
+
+
+async function submit(finalPin:string){
+
+setLoading(true);
+
+const res =
+await fetch("/api/purchases",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+serviceType:"data",
+
+network:selected!.network,
+
+phone,
+
+planExternalId:selected!.external_id,
+
+pin:finalPin,
+
+idempotencyKey:crypto.randomUUID()
+
+})
+
+});
+
+
+const data =
+await res.json().catch(()=>({}));
+
+setLoading(false);
+
+
+
+if(!res.ok){
+
+setError(data.error ?? "Purchase failed");
+
+setShowPin(false);
+
+return;
+
+}
+
+
+setSuccess(true);
+
+}
+
+
+
+
+
+if(success){
+
+return (
+
+<main className="min-h-screen bg-background flex items-center justify-center px-6">
+
+
+<div className="rounded-3xl bg-white border p-8 text-center max-w-sm">
+
+
+<div className="text-5xl mb-4">
+✅
+</div>
+
+
+<h1 className="text-xl font-bold text-indigo">
+Data Purchase Successful
+</h1>
+
+
+<p className="text-sm text-indigo/60 mt-3">
+{selected?.name} sent to {phone}
+</p>
+
+
+<button
+
+onClick={()=>router.push("/wallet")}
+
+className="mt-6 w-full rounded-xl bg-indigo text-white py-3 font-semibold"
+
+>
+Done
+</button>
+
+
+</div>
+
+
+</main>
+
+);
+
+}
+
+
+
+
+
+if(showPin){
+
+return (
+
+<main className="min-h-screen bg-background flex items-center justify-center px-6">
+
+
+<div className="max-w-xs w-full">
+
+
+<h1 className="text-lg font-bold text-indigo text-center mb-2">
+Confirm Data Purchase
+</h1>
+
+
+<p className="text-center text-sm text-indigo/60 mb-6">
+{selected?.name}
+</p>
+
+
+<PinPad
+
+value={pin}
+
+onChange={setPin}
+
+onComplete={submit}
+
+/>
+
+
+{loading && (
+
+<p className="text-center text-sm text-indigo/50 mt-4">
+Processing...
+</p>
+
+)}
+
+
+{error && (
+
+<p className="text-center text-sm text-red-600 mt-4">
+{error}
+</p>
+
+)}
+
+
+</div>
+
+
+</main>
+
+);
+
+}
+
+
+
+
+
+return (
+
+<main className="min-h-screen bg-background">
+
+
+<PageHeader
+title="Buy Data"
+backHref="/home"
+/>
+
+
+
+<div className="max-w-lg mx-auto px-5 py-6">
+
+
+<p className="text-sm text-indigo/60 mb-6">
+Choose a bundle and stay connected.
+</p>
+
+
+
+<div className="grid grid-cols-4 gap-2 mb-6">
+
+{NETWORKS.map(item=>(
+
+<button
+
+key={item}
+
+onClick={()=>{
+
+setNetwork(item);
+setSelected(null);
+
+}}
+
+className={`rounded-xl py-3 font-semibold text-sm ${
+network===item
+?
+"bg-indigo text-white"
+:
+"bg-white border text-indigo"
+}`}
+
+>
+
+{item}
+
+</button>
+
+))}
+
+</div>
+
+
+
+
+<input
+
+value={phone}
+
+onChange={(e)=>setPhone(e.target.value)}
+
+placeholder="Phone number"
+
+className="w-full rounded-xl border px-4 py-3 mb-5"
+
+/>
+
+
+
+
+
+<div className="flex flex-col gap-3">
+
+
+{visiblePlans.map(plan=>(
+
+<button
+
+key={plan.id}
+
+onClick={()=>setSelected(plan)}
+
+className={`rounded-2xl border p-4 text-left ${
+selected?.id===plan.id
+?
+"border-konek-green bg-konek-green/10"
+:
+"border-indigo/10 bg-white"
+}`}
+
+>
+
+
+<div className="flex justify-between">
+
+<span className="font-semibold text-indigo">
+{plan.name}
+</span>
+
+
+<span className="font-bold text-indigo">
+{naira(Number(plan.price_minor))}
+</span>
+
+
+</div>
+
+
+<p className="text-xs text-indigo/50 mt-2">
+
+{plan.meta?.dataMb
+?
+`${plan.meta.dataMb / 1000}GB`
+:
+""}
+
+{plan.meta?.validityDays
+?
+` · ${plan.meta.validityDays} days`
+:
+""}
+
+</p>
+
+
+</button>
+
+))}
+
+
+</div>
+
+
+
+
+
+<button
+
+onClick={proceed}
+
+className="mt-6 w-full rounded-xl bg-indigo text-white py-3.5 font-semibold"
+
+>
+
+Continue
+
+</button>
+
+
+
+{error && (
+
+<p className="mt-4 text-sm text-red-600">
+{error}
+</p>
+
+)}
+
+
+
+</div>
+
+
+</main>
+
+);
+
+
 }

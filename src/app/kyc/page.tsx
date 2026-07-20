@@ -1,238 +1,255 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
 
-interface KycData {
-  tier: number;
-  status: string;
+
+interface KycStatus {
+  tier:number;
+  status:string;
+  bvnVerified:boolean;
+  ninVerified:boolean;
 }
 
-export default function KycPage() {
-  const [kyc, setKyc] = useState<KycData | null>(null);
 
-  useEffect(() => {
-    fetch("/api/kyc/status")
-      .then((res) => res.json())
-      .then((data) => {
-        setKyc({
-          tier: data.tier ?? data.kycTier ?? 1,
-          status: data.status ?? "incomplete",
-        });
-      })
-      .catch(() => {
-        setKyc({
-          tier: 1,
-          status: "incomplete",
-        });
-      });
-  }, []);
 
+export default function KycPage(){
 
-  if (!kyc) {
-    return (
-      <main className="min-h-screen bg-background" />
-    );
-  }
+const [status,setStatus] =
+useState<KycStatus|null>(null);
 
 
-  const progress =
-    kyc.tier >= 2
-      ? 100
-      : 70;
 
+useEffect(()=>{
 
-  return (
-    <main className="min-h-screen bg-background">
+fetch("/api/verification/status")
+.then(res=>res.json())
+.then(setStatus);
 
-      <PageHeader
-        title="KYC Verification"
-        backHref="/home"
-      />
+},[]);
 
 
-      <div className="max-w-lg mx-auto px-5 py-6">
 
+if(!status){
 
-        <p className="text-sm text-indigo/60 mb-6">
-          Build trust. Unlock more features across Konek.
-        </p>
+return (
 
+<main className="min-h-screen bg-background flex items-center justify-center">
 
+<p className="text-indigo/50">
+Loading verification...
+</p>
 
-        {/* Verification Level */}
+</main>
 
-        <div className="rounded-2xl bg-indigo text-white p-6 mb-6">
+);
 
-          <p className="text-xs text-white/60">
-            Your verification level
-          </p>
+}
 
 
-          <p className="text-3xl font-bold mt-2">
-            Tier {kyc.tier}
-          </p>
 
+const progress =
+status.tier >= 2
+?
+100
+:
+status.tier >= 1
+?
+60
+:
+20;
 
-          <p className="text-sm text-white/70 mt-1">
-            {kyc.tier >= 2
-              ? "Identity Verified"
-              : "Basic Account"}
-          </p>
 
 
-          <div className="mt-5 h-2 rounded-full bg-white/20">
+return (
 
-            <div
-              className="h-2 rounded-full bg-konek-green"
-              style={{
-                width: `${progress}%`,
-              }}
-            />
+<main className="min-h-screen bg-background pb-28">
 
-          </div>
 
+<PageHeader
+title="Verification"
+backHref="/home"
+/>
 
-          <p className="text-xs text-white/70 mt-2">
-            {progress}% Complete
-          </p>
 
-        </div>
 
+<div className="max-w-lg mx-auto px-5 py-6">
 
 
-        {/* Progress */}
+<div className="rounded-3xl bg-indigo text-white p-6 mb-6">
 
-        <div className="rounded-2xl bg-white border border-indigo/10 p-5 mb-6">
 
-          <p className="font-bold text-indigo mb-4">
-            Your Progress
-          </p>
+<p className="text-sm text-white/60">
+Your Konek verification
+</p>
 
 
-          <div className="space-y-3 text-sm">
+<h1 className="text-2xl font-bold mt-2">
+Secure your account
+</h1>
 
 
-            <p className="flex justify-between">
-              <span>Account created</span>
-              <span className="text-konek-green">
-                ✓
-              </span>
-            </p>
+<div className="mt-5 h-3 bg-white/20 rounded-full overflow-hidden">
 
+<div
+className="h-full bg-konek-green"
+style={{
+width:`${progress}%`
+}}
+/>
 
-            <p className="flex justify-between">
-              <span>Phone verified</span>
-              <span className="text-konek-green">
-                ✓
-              </span>
-            </p>
+</div>
 
 
-            <p className="flex justify-between">
-              <span>Email verified</span>
-              <span className="text-konek-green">
-                ✓
-              </span>
-            </p>
+<p className="text-xs text-white/70 mt-2">
+{progress}% completed
+</p>
 
 
-            <p className="flex justify-between">
-              <span>Personal Information</span>
-              <span>
-                {kyc.tier >= 2 ? "✓" : "○"}
-              </span>
-            </p>
+</div>
 
 
-            <p className="flex justify-between">
-              <span>Government ID</span>
-              <span>
-                {kyc.tier >= 2 ? "✓" : "○"}
-              </span>
-            </p>
 
 
-            <p className="flex justify-between">
-              <span>Selfie / Liveness</span>
-              <span>
-                {kyc.tier >= 2 ? "✓" : "○"}
-              </span>
-            </p>
 
+<div className="space-y-4">
 
-          </div>
 
-        </div>
 
+<div className="rounded-3xl bg-white border p-5">
 
+<h2 className="font-bold text-indigo">
+Tier 0 — Browse
+</h2>
 
+<p className="text-sm text-indigo/60 mt-2">
+Explore Konek services and manage your account.
+</p>
 
-        {/* Unlock Features */}
+</div>
 
-        <div className="rounded-2xl bg-konek-green/10 border border-konek-green/30 p-5 mb-6">
 
 
-          <p className="font-bold text-indigo mb-3">
-            Complete Tier 2 to unlock
-          </p>
 
 
-          <div className="space-y-2 text-sm text-indigo/80">
+<div className="rounded-3xl bg-white border p-5">
 
-            <p>
-              🇺🇸 USD Global Account
-            </p>
 
-            <p>
-              🇬🇧 GBP Global Account
-            </p>
+<div className="flex justify-between">
 
-            <p>
-              🇪🇺 EUR Global Account
-            </p>
+<h2 className="font-bold text-indigo">
+Tier 1 — Verified Identity
+</h2>
 
-            <p>
-              💳 Virtual Card
-            </p>
 
-            <p>
-              💰 Higher transaction limits
-            </p>
+<span>
+{status.tier >= 1 ? "✅":"🔒"}
+</span>
 
 
-          </div>
+</div>
 
-        </div>
 
+<p className="text-sm text-indigo/60 mt-2">
+Verify your BVN or NIN to unlock wallet funding, airtime, data and eSIM purchases.
+</p>
 
 
 
-        {kyc.tier < 2 ? (
+{status.tier < 1 && (
 
-          <Link
-            href="/kyc/personal-information"
-            className="block w-full rounded-xl bg-indigo text-white text-center py-3 font-semibold"
-          >
-            Continue Verification
-          </Link>
+<Link
+href="/kyc/bvn"
+className="inline-block mt-4 rounded-xl bg-indigo text-white px-5 py-2 font-semibold"
+>
+Verify Identity
+</Link>
 
-        ) : (
+)}
 
-          <Link
-            href="/wallet/dollar-account"
-            className="block w-full rounded-xl bg-konek-green text-white text-center py-3 font-semibold"
-          >
-            Explore Global Accounts
-          </Link>
 
-        )}
+</div>
 
 
 
-      </div>
 
-    </main>
-  );
+
+
+<div className="rounded-3xl bg-white border p-5">
+
+
+<div className="flex justify-between">
+
+<h2 className="font-bold text-indigo">
+Tier 2 — Full Finance
+</h2>
+
+
+<span>
+{status.tier >= 2 ? "✅":"🔒"}
+</span>
+
+
+</div>
+
+
+
+<p className="text-sm text-indigo/60 mt-2">
+Unlock global accounts, virtual cards and advanced financial features.
+</p>
+
+
+
+
+{status.tier >= 2 ? (
+
+<p className="mt-3 text-sm text-konek-green">
+✅ Full Finance access enabled
+</p>
+
+) : (
+
+<p className="mt-3 text-sm text-indigo/50">
+Complete account verification to unlock more financial services.
+</p>
+
+)}
+
+
+
+</div>
+
+
+
+
+
+<div className="rounded-3xl bg-indigo/5 p-5">
+
+
+<h3 className="font-bold text-indigo">
+Security Protection
+</h3>
+
+
+<p className="text-sm text-indigo/60 mt-2">
+Additional security checks may be requested when needed to protect your account.
+</p>
+
+
+</div>
+
+
+
+</div>
+
+
+
+</div>
+
+
+</main>
+
+);
+
 }

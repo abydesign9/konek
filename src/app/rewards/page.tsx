@@ -1,257 +1,285 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { PageHeader } from "@/components/PageHeader";
 
-interface RewardEvent {
-  kind: string;
-  coins: number;
-  meta: { creditMinor?: number; label?: string } & Record<string, unknown>;
-  created_at: string;
-}
 
-interface SpinStatus {
-  canSpin: boolean;
-  lastResult: { label: string; coins: number; creditMinor: number; budgetLimited: boolean } | null;
-}
-
-interface Mission {
-  code: string;
-  title: string;
-  coin_reward: number;
-  status: string | null;
-}
-
-interface RewardsData {
-  coins: number;
-  dailyStreak: number;
-  weeklyStreak: number;
-  longestWeeklyStreak: number;
-  level: string;
-  perkDiscountPct: number;
-  referralCode: string;
-  referralCount: number;
-  missions: Mission[];
-  history: RewardEvent[];
-}
-
-const KIND_LABEL: Record<string, string> = {
-  coins_earn: "Purchase reward",
-  referral: "Referral bonus",
-  streak_bonus: "Streak bonus",
-  spin: "Spin reward",
-  mission: "Mission reward",
-};
-
-const LEVEL_COLOR: Record<string, string> = {
-  bronze: "bg-orange-100 text-orange-700",
-  silver: "bg-gray-200 text-gray-700",
-  gold: "bg-gold/20 text-gold",
-};
-
-export default function RewardsPage() {
-  const [data, setData] = useState<RewardsData | null>(null);
-  const [copied, setCopied] = useState(false);
-  const [spinStatus, setSpinStatus] = useState<SpinStatus | null>(null);
-  const [spinning, setSpinning] = useState(false);
-  const [spinError, setSpinError] = useState<string | null>(null);
-
-  function loadSpin() {
-    fetch("/api/rewards/spin")
-      .then((res) => res.json())
-      .then(setSpinStatus);
+const achievements = [
+  {
+    icon:"🎯",
+    title:"First Wallet Funding",
+    text:"Completed your first deposit"
+  },
+  {
+    icon:"🌍",
+    title:"Global User",
+    text:"Used Konek international services"
+  },
+  {
+    icon:"🔥",
+    title:"Saving Streak",
+    text:"Maintained your financial habit"
   }
+];
 
-  useEffect(() => {
-    fetch("/api/rewards")
-      .then((res) => res.json())
-      .then(setData);
-    loadSpin();
-  }, []);
 
-  async function doSpin() {
-    setSpinning(true);
-    setSpinError(null);
-    const res = await fetch("/api/rewards/spin", { method: "POST" });
-    const body = await res.json().catch(() => ({}));
-    setSpinning(false);
-    if (!res.ok) {
-      setSpinError(body.error ?? "Something went wrong");
-      return;
-    }
-    setSpinStatus({ canSpin: false, lastResult: body });
-    fetch("/api/rewards")
-      .then((res2) => res2.json())
-      .then(setData);
+const activities = [
+  {
+    title:"Cashback earned",
+    amount:"+₦500",
+    date:"Today"
+  },
+  {
+    title:"Referral reward",
+    amount:"+₦1,000",
+    date:"Yesterday"
+  },
+  {
+    title:"Transaction bonus",
+    amount:"+₦200",
+    date:"3 days ago"
   }
+];
 
-  if (!data) {
-    return <main className="min-h-screen bg-background px-6 py-8" />;
-  }
 
-  const referralLink =
-    typeof window !== "undefined" ? `${window.location.origin}/signup?ref=${data.referralCode}` : "";
 
-  return (
-    <main className="min-h-screen bg-background">
-      <PageHeader
-        title="Rewards"
-        backHref="/home"
-        right={
-          <span className={`rounded-full px-2.5 py-1 text-xs font-bold capitalize ${LEVEL_COLOR[data.level] ?? ""}`}>
-            {data.level}
-          </span>
-        }
-      />
-      <div className="max-w-lg mx-auto px-4 sm:px-6 py-6">
-      <div className="grid grid-cols-2 gap-4 mb-4">
-        <div className="rounded-2xl bg-indigo px-5 py-4 text-white">
-          <p className="text-xs text-white/60 mb-1">Coins</p>
-          <p className="font-heading text-2xl font-bold">{data.coins}</p>
-        </div>
-        <div className="rounded-2xl bg-gold/15 px-5 py-4">
-          <p className="text-xs text-indigo/60 mb-1">Daily streak</p>
-          <p className="font-heading text-2xl font-bold text-indigo">
-            {data.dailyStreak} {data.dailyStreak === 1 ? "day" : "days"}
-          </p>
-        </div>
-      </div>
+export default function RewardsPage(){
 
-      <div className="rounded-2xl border border-indigo/10 bg-white p-4 mb-8">
-        <p className="text-xs text-indigo/60 mb-1">Weekly streak</p>
-        <p className="text-sm font-semibold text-indigo">
-          {data.weeklyStreak} {data.weeklyStreak === 1 ? "week" : "weeks"} running
-          {data.longestWeeklyStreak > data.weeklyStreak && (
-            <span className="text-indigo/40"> · best {data.longestWeeklyStreak}</span>
-          )}
-        </p>
-        {data.perkDiscountPct > 0 && (
-          <p className="text-xs text-konek-green mt-1">
-            {data.level} perk: {(data.perkDiscountPct * 100).toFixed(1)}% off
-          </p>
-        )}
-      </div>
 
-      <div className="rounded-2xl border border-gold/30 bg-gold/10 p-5 mb-8">
-        <p className="text-sm font-semibold text-indigo mb-1">🎰 Daily spin</p>
-        <p className="text-xs text-indigo/60 mb-4">One free spin a day — coins or a wallet credit surprise.</p>
-        {spinStatus?.canSpin ? (
-          <button
-            onClick={doSpin}
-            disabled={spinning}
-            className="w-full rounded-xl bg-gold text-white font-semibold py-3 disabled:opacity-50"
-          >
-            {spinning ? "Spinning…" : "Spin now"}
-          </button>
-        ) : (
-          <div className="rounded-xl bg-white/70 px-4 py-3 text-center">
-            <p className="text-sm font-semibold text-indigo">
-              {spinStatus?.lastResult
-                ? `You won ${spinStatus.lastResult.label}`
-                : "Loading…"}
-            </p>
-            <p className="text-xs text-indigo/50 mt-0.5">Come back tomorrow for another spin</p>
-          </div>
-        )}
-        {spinError && <p className="text-xs text-red-600 mt-2">{spinError}</p>}
-      </div>
+return (
 
-      <div className="rounded-2xl border border-indigo/10 bg-white p-5 mb-8">
-        <p className="text-sm font-semibold text-indigo mb-1">Invite friends — earn $10 each</p>
-        <p className="text-xs text-indigo/60 mb-4">
-          Earn <span className="font-semibold text-konek-green">$10</span> for every friend who joins
-          with your link and transacts $100 or more. They get a 50-coin welcome too.
-          {data.referralCount > 0 && ` ${data.referralCount} referred so far.`}
-        </p>
+<main className="min-h-screen bg-background pb-28">
 
-        <div className="mb-4 flex flex-col gap-2">
-          {[
-            { n: "1", t: "Share your link", d: "Send your invite link to friends and family." },
-            { n: "2", t: "They join & transact", d: "They sign up and spend $100 or more on Konek." },
-            { n: "3", t: "You earn $10", d: "Paid as wallet credit at today's rate — spend it on any Konek service." },
-          ].map((s) => (
-            <div key={s.n} className="flex items-start gap-3">
-              <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-konek-green/15 text-xs font-bold text-konek-green">
-                {s.n}
-              </span>
-              <div>
-                <p className="text-xs font-semibold text-indigo">{s.t}</p>
-                <p className="text-xs text-indigo/55">{s.d}</p>
-              </div>
-            </div>
-          ))}
-        </div>
 
-        <div className="flex items-center gap-2">
-          <input
-            readOnly
-            value={referralLink}
-            className="flex-1 rounded-lg border border-indigo/20 px-3 py-2 text-xs text-indigo/70"
-          />
-          <button
-            onClick={() => {
-              navigator.clipboard.writeText(referralLink);
-              setCopied(true);
-              setTimeout(() => setCopied(false), 1500);
-            }}
-            className="rounded-lg bg-indigo text-white text-xs font-semibold px-3 py-2 whitespace-nowrap"
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        </div>
-        <Link href="/invite" className="mt-3 inline-block text-xs font-semibold text-konek-green">
-          Share & track your invites →
-        </Link>
-      </div>
+<PageHeader
 
-      <p className="text-sm text-indigo/60 mb-3">Missions</p>
-      <div className="flex flex-col gap-2 mb-8">
-        {data.missions.map((m) => (
-          <div
-            key={m.code}
-            className="flex items-center justify-between rounded-xl border border-indigo/10 bg-white px-4 py-3"
-          >
-            <span className={`text-sm ${m.status ? "text-indigo/40 line-through" : "text-indigo"}`}>
-              {m.title}
-            </span>
-            <span className={`text-xs font-semibold ${m.status ? "text-konek-green" : "text-indigo/50"}`}>
-              {m.status ? "✓ done" : `+${m.coin_reward}`}
-            </span>
-          </div>
-        ))}
-      </div>
+title="Rewards"
 
-      <p className="text-sm text-indigo/60 mb-3">History</p>
-      <div className="flex flex-col gap-2 mb-8">
-        {data.history.length === 0 && <p className="text-sm text-indigo/50">No rewards yet.</p>}
-        {data.history.map((event, i) => {
-          const creditMinor = event.meta?.creditMinor ?? 0;
-          return (
-            <div
-              key={i}
-              className="flex items-center justify-between rounded-xl border border-indigo/10 bg-white px-4 py-3"
-            >
-              <span className="text-sm text-indigo">{KIND_LABEL[event.kind] ?? event.kind}</span>
-              <span className="text-sm font-semibold text-konek-green text-right">
-                {event.coins > 0 && `+${event.coins} coins`}
-                {event.coins > 0 && creditMinor > 0 && " · "}
-                {creditMinor > 0 && `+₦${(creditMinor / 100).toLocaleString()}`}
-              </span>
-            </div>
-          );
-        })}
-      </div>
+backHref="/home"
 
-      <div className="flex gap-4">
-        <Link href="/squads" className="text-sm text-indigo/60 underline">
-          View squads →
-        </Link>
-        <Link href="/leaderboard" className="text-sm text-indigo/60 underline">
-          Leaderboard →
-        </Link>
-      </div>
-      </div>
-    </main>
-  );
+/>
+
+
+
+
+<div className="max-w-lg mx-auto px-5 py-6">
+
+
+
+<div className="rounded-3xl bg-indigo text-white p-6 mb-5">
+
+
+<p className="text-sm text-white/60">
+Your rewards balance
+</p>
+
+
+<h1 className="text-3xl font-bold mt-2">
+2,450 Points
+</h1>
+
+
+<p className="text-sm text-white/70 mt-2">
+Earn rewards every time you use Konek.
+</p>
+
+
+
+</div>
+
+
+
+
+
+
+
+<div className="grid grid-cols-2 gap-3 mb-6">
+
+
+<div className="rounded-2xl bg-white border border-indigo/10 p-4">
+
+<p className="text-xs text-indigo/50">
+Cashback earned
+</p>
+
+<p className="text-xl font-bold text-indigo mt-2">
+₦1,700
+</p>
+
+</div>
+
+
+
+
+<div className="rounded-2xl bg-white border border-indigo/10 p-4">
+
+<p className="text-xs text-indigo/50">
+Current streak
+</p>
+
+<p className="text-xl font-bold text-indigo mt-2">
+🔥 7 days
+</p>
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<div className="rounded-3xl bg-white border border-indigo/10 p-5 mb-5">
+
+
+<div className="flex justify-between items-center mb-4">
+
+<h2 className="font-bold text-indigo">
+Achievements
+</h2>
+
+
+<span className="text-sm text-indigo/50">
+Badges
+</span>
+
+</div>
+
+
+
+
+<div className="space-y-3">
+
+
+{achievements.map(item=>(
+
+<div
+
+key={item.title}
+
+className="flex items-center gap-3 rounded-xl bg-indigo/5 p-3"
+
+>
+
+
+<div className="text-2xl">
+{item.icon}
+</div>
+
+
+<div>
+
+<p className="font-semibold text-indigo">
+{item.title}
+</p>
+
+
+<p className="text-xs text-indigo/60">
+{item.text}
+</p>
+
+
+</div>
+
+
+</div>
+
+))}
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<div className="rounded-3xl bg-white border border-indigo/10 p-5 mb-5">
+
+
+<h2 className="font-bold text-indigo mb-4">
+Reward Activity
+</h2>
+
+
+
+<div className="space-y-3">
+
+
+{activities.map(item=>(
+
+<div
+
+key={item.title}
+
+className="flex justify-between"
+
+>
+
+
+<div>
+
+<p className="text-sm font-semibold text-indigo">
+{item.title}
+</p>
+
+
+<p className="text-xs text-indigo/50">
+{item.date}
+</p>
+
+</div>
+
+
+
+<p className="font-bold text-konek-green">
+{item.amount}
+</p>
+
+
+</div>
+
+))}
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+<Link
+
+href="/referrals"
+
+className="block rounded-2xl bg-indigo text-white text-center py-3.5 font-semibold"
+
+>
+
+Invite Friends & Earn Rewards →
+
+</Link>
+
+
+
+
+
+</div>
+
+
+</main>
+
+);
+
 }

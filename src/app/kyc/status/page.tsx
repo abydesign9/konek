@@ -4,206 +4,225 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { PageHeader } from "@/components/PageHeader";
 
-type Status = "pending" | "approved" | "rejected";
 
-interface KycStatusData {
-  status: Status;
-  tier: number;
+interface VerificationStatus {
+
+  tier:number;
+
+  status:string;
+
+  bvnVerified:boolean;
+
+  ninVerified:boolean;
+
 }
 
-export default function KycStatusPage() {
 
-  const [data, setData] = useState<KycStatusData>({
-    status: "pending",
-    tier: 1,
-  });
 
+export default function KycStatusPage(){
 
-  useEffect(() => {
 
-    fetch("/api/kyc/status")
-      .then((res) => res.json())
-      .then((result) => {
+const [data,setData] =
+useState<VerificationStatus|null>(null);
 
-        setData({
-          status:
-            result.status ?? "pending",
 
-          tier:
-            result.tier ?? result.kycTier ?? 1,
-        });
 
-      })
-      .catch(() => {
+useEffect(()=>{
 
-        setData({
-          status: "pending",
-          tier: 1,
-        });
+fetch("/api/verification/status")
+.then(res=>res.json())
+.then(setData);
 
-      });
+},[]);
 
-  }, []);
 
 
 
-  return (
-    <main className="min-h-screen bg-background">
+if(!data){
 
-      <PageHeader
-        title="Verification Status"
-        backHref="/kyc"
-      />
+return (
 
+<main className="min-h-screen bg-background flex items-center justify-center">
 
-      <div className="max-w-lg mx-auto px-5 py-6">
+<p className="text-indigo/50">
+Loading verification...
+</p>
 
+</main>
 
-        {data.status === "pending" && (
+);
 
-          <div className="rounded-2xl bg-white border border-indigo/10 p-6">
+}
 
-            <div className="text-5xl mb-5">
-              🟡
-            </div>
 
 
-            <h1 className="text-xl font-bold text-indigo mb-3">
-              Under Review
-            </h1>
 
 
-            <p className="text-sm text-indigo/60 mb-6">
-              Your documents have been submitted.
-              Our team is reviewing your information.
-            </p>
+return (
 
+<main className="min-h-screen bg-background pb-28">
 
-            <div className="rounded-xl bg-indigo/5 p-4">
 
-              <p className="text-sm text-indigo">
-                Current Level:
-                <strong> Tier {data.tier}</strong>
-              </p>
+<PageHeader
+title="Verification Status"
+backHref="/kyc"
+/>
 
 
-              <p className="text-sm text-indigo mt-2">
-                Requested:
-                <strong> Tier 2</strong>
-              </p>
 
-            </div>
+<div className="max-w-lg mx-auto px-5 py-6">
 
 
-            <p className="text-xs text-indigo/50 mt-5">
-              Expected review time: Within 24 hours.
-            </p>
 
-          </div>
+<div className="rounded-3xl bg-indigo text-white p-6 mb-6">
 
-        )}
 
+<p className="text-sm text-white/60">
+Current verification level
+</p>
 
 
+<h1 className="text-3xl font-bold mt-2">
 
-        {data.status === "approved" && (
+Tier {data.tier}
 
-          <div className="rounded-2xl bg-white border border-konek-green/30 p-6">
+</h1>
 
 
-            <div className="text-5xl mb-5">
-              🎉
-            </div>
+<p className="text-sm text-white/70 mt-2">
 
+{data.status}
 
-            <h1 className="text-xl font-bold text-indigo mb-3">
-              Congratulations
-            </h1>
+</p>
 
 
-            <p className="text-sm text-indigo/60 mb-6">
-              Your identity has been verified.
-              You are now Tier 2 verified.
-            </p>
+</div>
 
 
 
-            <div className="rounded-xl bg-konek-green/10 p-4 mb-6">
 
-              <p className="font-bold text-indigo mb-3">
-                Unlocked
-              </p>
 
+<div className="rounded-3xl bg-white border border-indigo/10 p-5 mb-5">
 
-              <p className="text-sm text-indigo">
-                ✓ USD Global Account
-                <br />
-                ✓ GBP Global Account
-                <br />
-                ✓ EUR Global Account
-                <br />
-                ✓ Virtual Card
-                <br />
-                ✓ Higher Limits
-              </p>
 
+<h2 className="font-bold text-indigo mb-4">
+Identity Verification
+</h2>
 
-            </div>
 
 
+<div className="flex justify-between py-3 border-b">
 
-            <Link
-              href="/wallet/dollar-account"
-              className="block rounded-xl bg-indigo text-white text-center py-3 font-semibold"
-            >
-              Explore Global Accounts
-            </Link>
+<span className="text-indigo/60">
+BVN Verification
+</span>
 
 
-          </div>
+<span>
+{data.bvnVerified ? "✅":"⭕"}
+</span>
 
-        )}
 
+</div>
 
 
 
 
+<div className="flex justify-between py-3">
 
-        {data.status === "rejected" && (
+<span className="text-indigo/60">
+NIN Verification
+</span>
 
-          <div className="rounded-2xl bg-white border border-red-200 p-6">
 
-            <div className="text-5xl mb-5">
-              ⚠️
-            </div>
+<span>
+{data.ninVerified ? "✅":"⭕"}
+</span>
 
 
-            <h1 className="text-xl font-bold text-indigo mb-3">
-              Verification Needs Attention
-            </h1>
+</div>
 
 
-            <p className="text-sm text-indigo/60 mb-6">
-              We could not verify your details.
-            </p>
+</div>
 
 
-            <Link
-              href="/kyc/document"
-              className="block rounded-xl bg-indigo text-white text-center py-3 font-semibold"
-            >
-              Update Documents
-            </Link>
 
 
-          </div>
 
-        )}
 
 
+<div className="rounded-3xl bg-white border border-indigo/10 p-5">
 
-      </div>
 
-    </main>
-  );
+<h2 className="font-bold text-indigo mb-4">
+Your Access
+</h2>
+
+
+
+{data.tier >= 1 ? (
+
+<div className="space-y-3 text-sm text-indigo">
+
+<p>✅ Wallet funding</p>
+
+<p>✅ Airtime and data purchases</p>
+
+<p>✅ eSIM purchases</p>
+
+</div>
+
+) : (
+
+<Link
+href="/kyc/bvn"
+className="block rounded-xl bg-indigo text-white text-center py-3 font-semibold"
+>
+Verify Identity
+</Link>
+
+)}
+
+
+
+
+
+<div className="mt-6 pt-5 border-t">
+
+
+<h3 className="font-bold text-indigo">
+Tier 2 — Full Finance
+</h3>
+
+
+<p className="text-sm text-indigo/60 mt-2">
+Unlock global accounts, virtual cards and advanced financial features.
+</p>
+
+
+{data.tier >= 2 && (
+
+<p className="mt-3 text-sm">
+✅ Tier unlocked
+</p>
+
+)}
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+</div>
+
+
+</main>
+
+);
+
 }
