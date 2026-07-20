@@ -3,217 +3,191 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-
 const steps = [
-
-{
-icon:"👋",
-title:"Welcome to Konek",
-text:"Your smart financial companion for payments, savings and global access."
-},
-
-{
-icon:"✅",
-title:"Verify Your Identity",
-text:"Complete verification to unlock wallet funding and financial services.",
-href:"/kyc"
-},
-
-{
-icon:"💰",
-title:"Fund Your Wallet",
-text:"Add money to your Konek wallet and start using services instantly.",
-href:"/wallet/fund"
-},
-
-{
-icon:"📱",
-title:"Buy Your First Service",
-text:"Purchase airtime, data, eSIM and other services easily.",
-href:"/buy/airtime"
-},
-
-{
-icon:"🌍",
-title:"Create Global Accounts",
-text:"Access international financial features.",
-href:"/wallet/global-account"
-},
-
-{
-icon:"💳",
-title:"Get Your Virtual Card",
-text:"Spend online securely with your Konek card.",
-href:"/cards"
-}
-
+  {
+    icon: "👋",
+    title: "Welcome to Konek",
+    text: "Your smart financial companion for payments, savings and global access."
+  },
+  {
+    icon: "✅",
+    title: "Verify Your Identity",
+    text: "Complete verification to unlock wallet funding and financial services.",
+    href: "/kyc"
+  },
+  {
+    icon: "💰",
+    title: "Fund Your Wallet",
+    text: "Add money to your Konek wallet and start using services instantly.",
+    href: "/wallet/fund"
+  },
+  {
+    icon: "📱",
+    title: "Buy Your First Service",
+    text: "Purchase airtime, data, eSIM and other services easily.",
+    href: "/buy/airtime"
+  },
+  {
+    icon: "🌍",
+    title: "Create Global Accounts",
+    text: "Access international financial features.",
+    href: "/wallet/global-account"
+  },
+  {
+    icon: "💳",
+    title: "Get Your Virtual Card",
+    text: "Spend online securely with your Konek card.",
+    href: "/cards"
+  }
 ];
-
 
 
 export function OnboardingTour(){
 
-const router = useRouter();
+  const router = useRouter();
 
-const [step,setStep] =
-useState(0);
+  const [step,setStep] = useState(0);
 
+  const current = steps[step];
 
-const current =
-steps[step];
 
+  function finish(){
 
+    localStorage.setItem(
+      "konek_onboarding_completed",
+      "true"
+    );
 
-function next(){
+    router.push("/home");
 
-if(step < steps.length - 1){
+  }
 
-setStep(step + 1);
 
-}
 
-else{
+  function continueTour(){
 
-localStorage.setItem(
-"konek_onboarding_completed",
-"true"
-);
+    if(step < steps.length - 1){
 
-router.push("/home");
+      setStep(step + 1);
 
-}
+    } else {
 
-}
+      finish();
 
+    }
 
+  }
 
 
 
-function skip(){
+  function skip(){
 
-localStorage.setItem(
-"konek_onboarding_completed",
-"true"
-);
+    finish();
 
-router.push("/home");
+  }
 
-}
 
 
+  return (
 
+    <div className="fixed inset-0 z-50 bg-background flex items-center justify-center px-6">
 
-return (
+      <div className="max-w-sm w-full text-center">
 
-<div className="fixed inset-0 z-50 bg-background flex items-center justify-center px-6">
 
+        <div className="text-6xl mb-6">
+          {current.icon}
+        </div>
 
-<div className="max-w-sm w-full text-center">
 
+        <h1 className="text-2xl font-bold text-indigo">
+          {current.title}
+        </h1>
 
-<div className="text-6xl mb-6">
 
-{current.icon}
+        <p className="text-indigo/60 mt-3">
+          {current.text}
+        </p>
 
-</div>
 
 
+        <div className="flex justify-center gap-2 mt-8">
 
-<h1 className="text-2xl font-bold text-indigo">
+          {steps.map((_,index)=>(
 
-{current.title}
+            <div
+              key={index}
+              className={`h-2 rounded-full ${
+                index===step
+                ?
+                "w-8 bg-indigo"
+                :
+                "w-2 bg-indigo/20"
+              }`}
+            />
 
-</h1>
+          ))}
 
+        </div>
 
 
-<p className="text-indigo/60 mt-3">
 
-{current.text}
 
-</p>
+        <button
 
+          onClick={continueTour}
 
+          className="mt-8 w-full rounded-xl bg-indigo text-white py-3.5 font-semibold"
 
+        >
 
+          {step === steps.length - 1
+            ?
+            "Start Using Konek"
+            :
+            "Continue"}
 
-<div className="flex justify-center gap-2 mt-8">
+        </button>
 
 
-{steps.map((_,index)=>(
 
-<div
 
-key={index}
+        {current.href && (
 
-className={`h-2 rounded-full ${
-index===step
-?
-"w-8 bg-indigo"
-:
-"w-2 bg-indigo/20"
-}`}
+          <button
 
-/>
+            onClick={()=>router.push(current.href)}
 
-))}
+            className="mt-4 text-sm text-indigo underline"
 
+          >
 
-</div>
+            Open {current.title}
 
+          </button>
 
+        )}
 
 
 
+        <button
 
-<button
+          onClick={skip}
 
-onClick={()=>{
+          className="mt-4 block mx-auto text-sm text-indigo/50"
 
-if(current.href){
+        >
 
-router.push(current.href);
+          Skip Tour
 
-}
+        </button>
 
-else{
 
-next();
 
-}
+      </div>
 
-}}
+    </div>
 
-className="mt-8 w-full rounded-xl bg-indigo text-white py-3.5 font-semibold"
-
->
-
-{current.href ? "Open" : step === steps.length - 1 ? "Start Using Konek" : "Continue"}
-
-</button>
-
-
-
-
-<button
-
-onClick={skip}
-
-className="mt-4 text-sm text-indigo/50"
-
->
-
-Skip
-
-</button>
-
-
-
-</div>
-
-
-</div>
-
-);
+  );
 
 }
