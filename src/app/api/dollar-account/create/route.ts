@@ -1,13 +1,20 @@
 import { NextResponse } from "next/server";
 import { getSessionUserId } from "@/lib/auth/session";
-import { AlreadyHasAccountError, createDollarAccount, KycTierTooLowError } from "@/lib/dollarAccount/dollarAccountService";
+import { AlreadyHasAccountError, createGlobalAccount, KycTierTooLowError } from "@/lib/dollarAccount/dollarAccountService";
 
-export async function POST() {
+export async function POST(req: Request) {
   const userId = await getSessionUserId();
   if (!userId) return NextResponse.json({ error: "unauthenticated" }, { status: 401 });
 
   try {
-    const result = await createDollarAccount(userId);
+    const body = await req.json().catch(() => ({}));
+
+    const currency =
+      body.currency === "GBP" || body.currency === "EUR"
+        ? body.currency
+        : "USD";
+
+    const result = await createGlobalAccount(userId, currency);
     return NextResponse.json(result);
   } catch (err) {
     if (err instanceof KycTierTooLowError) {

@@ -24,13 +24,16 @@ export class AlreadyHasAccountError extends Error {
   }
 }
 
-export async function createDollarAccount(userId: string): Promise<{ virtualAccountId: string }> {
+export async function createGlobalAccount(
+  userId: string,
+  currency: "USD" | "GBP" | "EUR"
+): Promise<{ virtualAccountId: string }> {
   const { rows: userRows } = await query<{ kyc_tier: number }>(`SELECT kyc_tier FROM users WHERE id = $1`, [userId]);
   if ((userRows[0]?.kyc_tier ?? 0) < REQUIRED_KYC_TIER) throw new KycTierTooLowError();
 
   const { rows: existing } = await query<{ id: string }>(
-    `SELECT id FROM virtual_accounts WHERE user_id = $1`,
-    [userId]
+    `SELECT id FROM virtual_accounts WHERE user_id = $1 AND currency = $2`,
+    [userId, currency]
   );
   if (existing[0]) throw new AlreadyHasAccountError();
 
@@ -38,8 +41,17 @@ export async function createDollarAccount(userId: string): Promise<{ virtualAcco
 
   const { rows } = await query<{ id: string }>(
     `INSERT INTO virtual_accounts (user_id, provider, provider_ref, currency, account_number, routing_number, bank_name, kyc_tier_required)
-     VALUES ($1, $2, $3, 'USD', $4, $5, $6, $7) RETURNING id`,
-    [userId, adapter.id, account.providerRef, account.accountNumber, account.routingNumber, account.bankName, REQUIRED_KYC_TIER]
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`,
+    [
+      userId,
+      adapter.id,
+      account.providerRef,
+      currency,
+      account.accountNumber,
+      account.routingNumber,
+      account.bankName,
+      REQUIRED_KYC_TIER
+    ]
   );
   await logAudit(userId, "dollar_account_created", "virtual_account", rows[0].id);
   return { virtualAccountId: rows[0].id };
