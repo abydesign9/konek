@@ -1,46 +1,118 @@
-import { redirect } from "next/navigation";
-import { getSessionUserId } from "@/lib/auth/session";
-import { query } from "@/lib/db";
-import { getUserWalletAccount } from "@/lib/ledger/accounts";
-import { getBalance } from "@/lib/ledger/balance";
+"use client";
+
+import { useEffect, useState } from "react";
+import Link from "next/link";
 import { PageHeader } from "@/components/PageHeader";
 
-export default async function GlobalAccountDetail({
+type Currency = "USD" | "GBP" | "EUR";
+
+interface Account {
+  id: string;
+  currency: Currency;
+  account_number: string;
+  routing_number: string | null;
+  bank_name: string;
+  status: string;
+  balanceMinor: number;
+}
+
+interface GlobalAccountData {
+  kycTier: number;
+  accounts: Account[];
+}
+
+function CopyRow({
+  label,
+  value,
+}: {
+  label: string;
+  value: string;
+}) {
+  const [copied, setCopied] = useState(false);
+
+  return (
+    <button
+      type="button"
+      className="w-full flex justify-between items-center py-3 border-b border-indigo/10 last:border-0"
+      onClick={() => {
+        navigator.clipboard.writeText(value);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1200);
+      }}
+    >
+      <span>
+        <span className="block text-xs text-indigo/50">
+          {label}
+        </span>
+
+        <span className="font-mono text-sm text-indigo">
+          {value}
+        </span>
+      </span>
+
+      <span className="text-xs text-konek-green font-semibold">
+        {copied ? "Copied" : "Copy"}
+      </span>
+    </button>
+  );
+}
+
+export default function GlobalAccountPage({
   params,
 }: {
-  params: { currency: string };
+  params: { currency: Currency };
 }) {
-  const userId = await getSessionUserId();
+  const [data, setData] = useState<GlobalAccountData | null>(null);
+  const [creating, setCreating] = useState(false);
+  const [error, setError] = useState("");
 
-  if (!userId) {
-    redirect("/login");
+  const currency = params.currency.toUpperCase() as Currency;
+
+  function load() {
+    fetch("/api/dollar-account/me")
+      .then((res) => res.json())
+      .then(setData);
   }
 
-  const currency = params.currency.toUpperCase();
+  useEffect(() => {
+    load();
+  }, []);
 
-  const { rows } = await query(
-    `
-    SELECT
-      account_number,
-      routing_number,
-      bank_name,
-      status
-    FROM virtual_accounts
-    WHERE user_id = $1
-    AND currency = $2
-    `,
-    [userId, currency]
+  const account = data?.accounts.find(
+    (item) => item.currency === currency
   );
 
-  const account = rows[0];
+  async function createAccount() {
+    setCreating(true);
+    setError("");
 
-  if (!account) {
-    redirect("/wallet/dollar-account");
+    const res = await fetch("/api/dollar-account/create", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        currency,
+      }),
+    });
+
+    const body = await res.json().catch(() => ({}));
+
+    setCreating(false);
+
+    if (!res.ok) {
+      setError(body.error ?? "Unable to create account");
+      return;
+    }
+
+    load();
   }
 
-  const balanceMinor = await getBalance(
-    await getUserWalletAccount(userId, currency)
-  );
+  if (!data) {
+    return (
+      <main className="min-h-screen bg-background" />
+    );
+  }
 
   const symbol =
     currency === "USD"
@@ -59,89 +131,184 @@ export default async function GlobalAccountDetail({
 
       <div className="max-w-lg mx-auto px-5 py-6">
 
-        <div className="rounded-2xl bg-indigo text-white p-6 mb-6">
-
-          <p className="text-xs text-white/60">
-            {currency} Balance
-          </p>
-
-          <p className="text-3xl font-bold mt-2">
-            {symbol}
-            {(balanceMinor / 100).toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-            })}
-          </p>
-
-        </div>
+        <p className="text-sm text-indigo/60 mb-6">
+          Receive international payments in {currency}.
+          Keep your money inside Konek and use it for
+          payments, subscriptions, business services,
+          or withdraw when needed.
+        </p>
 
 
-        <div className="rounded-2xl bg-white border border-indigo/10 p-5 mb-6">
+        {!account && data.kycTier >= 2 && (
+          <div className="rounded-2xl bg-white border border-indigo/10 p-5">
 
-          <p className="font-heading font-bold text-indigo mb-4">
-            Receive international payments
-          </p>
+            <p className="font-heading font-bold text-indigo mb-2">
+              Create {currency} account
+            </p>
 
-          <p className="text-sm text-indigo/60 mb-4">
-            Share these details with clients, employers and
-            business partners to receive {currency} payments.
-          </p>
+            <p className="text-sm text-indigo/60 mb-5">
+              Get your {currency} account details and receive
+              payments from clients, employers and businesses
+              worldwide.
+            </p>
+
+            <button
+              onClick={createAccount}
+              disabled={creating}
+              className="w-full rounded-xl bg-indigo text-white py-3 font-semibold"
+            >
+              {creating
+                ? "Creating..."
+                : `Create ${currency} account`}
+            </button>
+
+            {error && (
+              <p className="text-sm text-red-600 mt-3">
+                {error}
+              </p>
+            )}
+
+          </div>
+        )}
 
 
-          <p className="text-xs text-indigo/50">
-            Account Number
-          </p>
+        {account && (
+          <>
 
-          <p className="font-mono text-sm mb-4">
-            {account.account_number}
-          </p>
+            {/* Balance */}
+            <div className="rounded-2xl bg-indigo text-white p-6 mb-6">
 
-
-          {account.routing_number && (
-            <>
-              <p className="text-xs text-indigo/50">
-                Routing / Bank Code
+              <p className="text-xs text-white/60">
+                Available Balance
               </p>
 
-              <p className="font-mono text-sm mb-4">
-                {account.routing_number}
+              <p className="text-3xl font-bold mt-2">
+                {symbol}
+                {(account.balanceMinor / 100).toLocaleString(
+                  undefined,
+                  {
+                    minimumFractionDigits: 2,
+                  }
+                )}
               </p>
-            </>
-          )}
+
+            </div>
 
 
-          <p className="text-xs text-indigo/50">
-            Bank
-          </p>
-
-          <p className="text-sm">
-            {account.bank_name}
-          </p>
-
-        </div>
+            {/* Primary products */}
+            <p className="font-heading font-bold text-indigo mb-3">
+              Use your money
+            </p>
 
 
-        <button className="w-full rounded-xl bg-indigo text-white py-3 font-semibold mb-3">
-          Withdraw to Bank Account
-        </button>
+            <div className="flex flex-col gap-3 mb-8">
+
+              <div className="rounded-2xl bg-white border border-indigo/10 p-5">
+                <p className="font-bold text-indigo">
+                  💳 Virtual Dollar Card
+                </p>
+
+                <p className="text-sm text-indigo/60 mt-1">
+                  Pay Netflix, Spotify, ads, software
+                  subscriptions and online services.
+                </p>
+
+                <button className="mt-4 text-sm font-semibold text-konek-green">
+                  Open Card →
+                </button>
+              </div>
 
 
-        <div className="rounded-2xl bg-konek-green/10 border border-konek-green/30 p-5">
+              <div className="rounded-2xl bg-white border border-indigo/10 p-5">
+                <p className="font-bold text-indigo">
+                  📱 eSIM & Data
+                </p>
 
-          <p className="font-bold text-indigo mb-2">
-            Use your balance for
-          </p>
+                <p className="text-sm text-indigo/60 mt-1">
+                  Stay connected anywhere in the world.
+                </p>
 
-          <p className="text-sm text-indigo/70">
-            ✓ eSIM
-            <br />
-            ✓ Netflix and subscriptions
-            <br />
-            ✓ Online services
-            <br />
-            ✓ Business payments
-          </p>
+                <Link
+                  href="/buy/esim"
+                  className="mt-4 block text-sm font-semibold text-konek-green"
+                >
+                  Buy eSIM →
+                </Link>
+              </div>
 
-        </div>
+
+              <div className="rounded-2xl bg-white border border-indigo/10 p-5">
+                <p className="font-bold text-indigo">
+                  🧾 Bills & Subscriptions
+                </p>
+
+                <p className="text-sm text-indigo/60 mt-1">
+                  Pay your daily services directly from
+                  your global balance.
+                </p>
+              </div>
+
+
+              <div className="rounded-2xl bg-white border border-indigo/10 p-5">
+                <p className="font-bold text-indigo">
+                  🏢 Business Payments
+                </p>
+
+                <p className="text-sm text-indigo/60 mt-1">
+                  Pay suppliers, partners and teams.
+                </p>
+              </div>
+
+            </div>
+
+
+            {/* Receive money */}
+            <div className="rounded-2xl bg-white border border-indigo/10 p-5 mb-6">
+
+              <p className="font-bold text-indigo mb-3">
+                Receive payments
+              </p>
+
+              <CopyRow
+                label="Account Number"
+                value={account.account_number}
+              />
+
+              {account.routing_number && (
+                <CopyRow
+                  label="Routing / Bank Code"
+                  value={account.routing_number}
+                />
+              )}
+
+              <CopyRow
+                label="Bank"
+                value={account.bank_name}
+              />
+
+            </div>
+
+
+            {/* Withdraw secondary */}
+            <div className="rounded-2xl border border-indigo/10 bg-white p-5">
+
+              <p className="font-bold text-indigo">
+                Need cash?
+              </p>
+
+              <p className="text-sm text-indigo/60 mt-1 mb-4">
+                Withdraw your balance to your verified
+                Nigerian bank account.
+              </p>
+
+              <button className="w-full rounded-xl border border-indigo text-indigo py-3 font-semibold">
+                Withdraw
+              </button>
+
+            </div>
+
+          </>
+        )}
 
       </div>
 
