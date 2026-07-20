@@ -73,7 +73,7 @@ function Signup() {
       setError(data.error ?? "Something went wrong");
       return;
     }
-    router.push("/home");
+    router.push("/settings/pin?next=/home");
     router.refresh();
   }
 

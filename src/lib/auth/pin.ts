@@ -2,13 +2,13 @@ import bcrypt from "bcryptjs";
 import { query } from "@/lib/db";
 import { logAudit } from "@/lib/audit";
 
-const PIN_PATTERN = /^\d{4,6}$/;
+const PIN_PATTERN = /^\d{4}$/;
 const MAX_PIN_ATTEMPTS = 5;
 const PIN_LOCK_MINUTES = 15;
 
 export class InvalidPinFormatError extends Error {
   constructor() {
-    super("PIN must be 4-6 digits");
+    super("PIN must be exactly 4 digits");
     this.name = "InvalidPinFormatError";
   }
 }
