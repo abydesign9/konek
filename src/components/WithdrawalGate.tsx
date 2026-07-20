@@ -1,0 +1,24 @@
+"use client";
+
+import { ReactNode } from "react";
+import KycGate from "@/components/KycGate";
+
+export default function WithdrawalGate({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  return (
+    <KycGate
+      requirements={[
+        "BVN_VERIFIED",
+        "KYC_APPROVED",
+        "LIVENESS_VERIFIED",
+        "BANK_VERIFIED",
+      ]}
+      featureName="Withdrawals"
+    >
+      {children}
+    </KycGate>
+  );
+}

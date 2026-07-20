@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/PageHeader";
 import { PinPad } from "@/components/PinPad";
 import { BANKS } from "@/lib/payout/banks";
+import Link from "next/link";
 
 interface BankAccount {
   id: string;
@@ -39,7 +40,8 @@ export default function WithdrawPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-
+  const [checkingKyc, setCheckingKyc] = useState(true);
+  const [kycAllowed, setKycAllowed] = useState(false);
   function loadAccounts() {
     fetch("/api/bank-accounts")
       .then((r) => r.json())
@@ -54,6 +56,15 @@ export default function WithdrawPage() {
   }
   useEffect(loadAccounts, []);
 
+  useEffect(() => {
+    fetch("/api/verification/status")
+      .then((r) => r.json())
+      .then((data) => {
+        setKycAllowed(data.tier >= 2);
+        setCheckingKyc(false);
+      })
+      .catch(() => setCheckingKyc(false));
+  }, []);
   const amount = useMemo(
     () => amountMinor ?? (customNaira ? Math.round(Number(customNaira) * 100) : null),
     [amountMinor, customNaira]
@@ -136,6 +147,37 @@ export default function WithdrawPage() {
     setTimeout(() => router.push("/wallet"), 1400);
   }
 
+  if (checkingKyc) {
+    return (
+      <main className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-indigo/60">Checking verification status...</p>
+      </main>
+    );
+  }
+
+  if (!kycAllowed) {
+    return (
+      <main className="min-h-screen bg-background">
+        <PageHeader title="Withdraw" backHref="/wallet" />
+        <div className="max-w-lg mx-auto px-5 py-8">
+          <div className="rounded-2xl border border-gold/30 bg-gold/10 p-5">
+            <h2 className="font-heading font-bold text-indigo mb-2">
+              Complete verification first
+            </h2>
+            <p className="text-sm text-indigo/70 mb-5">
+              Withdrawals require BVN/NIN verification and liveness check.
+            </p>
+            <Link
+              href="/kyc"
+              className="inline-block rounded-xl bg-indigo px-5 py-3 text-white text-sm font-semibold"
+            >
+              Verify account
+            </Link>
+          </div>
+        </div>
+      </main>
+    );
+  }
   if (success) {
     return (
       <main className="min-h-screen bg-background px-6 py-8 flex flex-col items-center justify-center text-center">
