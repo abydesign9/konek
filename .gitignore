@@ -48,3 +48,5 @@ next-env.d.ts
 
 # local dev postgres (embedded-postgres)
 .pgdata/
+
+.data/

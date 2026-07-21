@@ -1,0 +1,375 @@
+.stage {
+  position: relative;
+  isolation: isolate;
+  min-height: 560px;
+  display: grid;
+  place-items: center;
+  padding: 30px 20px;
+}
+
+.greenGlow,
+.goldGlow {
+  position: absolute;
+  z-index: -2;
+  border-radius: 999px;
+  filter: blur(70px);
+  pointer-events: none;
+}
+
+.greenGlow {
+  width: 320px;
+  height: 320px;
+  left: 3%;
+  bottom: 4%;
+  background: rgba(20, 184, 122, 0.18);
+}
+
+.goldGlow {
+  width: 290px;
+  height: 290px;
+  right: 2%;
+  top: 2%;
+  background: rgba(222, 174, 64, 0.18);
+}
+
+.imageFrame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border: 1px solid rgba(15, 24, 72, 0.08);
+  border-radius: 32px;
+  background: #ffffff;
+  box-shadow:
+    0 35px 80px rgba(12, 23, 70, 0.17),
+    0 8px 24px rgba(12, 23, 70, 0.08);
+}
+
+.heroImage {
+  object-fit: cover;
+  transition: transform 900ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.imageFrame:hover .heroImage {
+  transform: scale(1.025);
+}
+
+.imageOverlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.03),
+    rgba(8, 18, 62, 0.08)
+  );
+}
+
+.floatingPanel {
+  position: absolute;
+  z-index: 5;
+  min-width: 190px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 13px 15px;
+  border: 1px solid rgba(255, 255, 255, 0.82);
+  border-radius: 17px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 20px 45px rgba(14, 25, 76, 0.15);
+  backdrop-filter: blur(18px);
+}
+
+.floatingPanel small,
+.floatingPanel strong,
+.floatingPanel p {
+  display: block;
+}
+
+.floatingPanel small {
+  color: #858ca2;
+  font-size: 9px;
+}
+
+.floatingPanel strong {
+  margin-top: 2px;
+  color: #10194b;
+  font-size: 11px;
+}
+
+.floatingPanel p {
+  margin: 2px 0 0;
+  color: #6e7690;
+  font-size: 8px;
+}
+
+.greenIcon,
+.businessIcon {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  color: #07845d;
+  background: #dcf8ec;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.businessIcon {
+  color: #3543bd;
+  background: #e9ecff;
+}
+
+.statusDot {
+  width: 9px;
+  height: 9px;
+  margin-left: auto;
+  border-radius: 50%;
+  background: #16b97c;
+  box-shadow: 0 0 0 5px rgba(22, 185, 124, 0.12);
+}
+
+.flag {
+  font-size: 25px;
+}
+
+.esimPanel {
+  left: -20px;
+  top: 50px;
+  animation: floatOne 5.5s ease-in-out infinite;
+}
+
+.usdPanel {
+  right: -18px;
+  top: 35px;
+  animation: floatTwo 6s ease-in-out infinite;
+}
+
+.businessPanel {
+  left: 5%;
+  bottom: 28px;
+  animation: floatThree 6.4s ease-in-out infinite;
+}
+
+.currencyPanel {
+  position: absolute;
+  z-index: 6;
+  display: grid;
+  gap: 7px;
+}
+
+.currencyPosition {
+  right: -25px;
+  top: 155px;
+  animation: floatOne 6.8s ease-in-out infinite;
+}
+
+.currencyPanel > div {
+  width: 185px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 13px;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 14px 32px rgba(14, 25, 76, 0.13);
+  backdrop-filter: blur(15px);
+}
+
+.currencyPanel > div > span {
+  font-size: 20px;
+}
+
+.currencyPanel p {
+  margin: 0;
+}
+
+.currencyPanel small,
+.currencyPanel strong {
+  display: block;
+}
+
+.currencyPanel small {
+  color: #858ca2;
+  font-size: 8px;
+}
+
+.currencyPanel strong {
+  margin-top: 2px;
+  color: #11194b;
+  font-size: 10px;
+}
+
+.virtualCard {
+  position: absolute;
+  z-index: 4;
+  right: 1%;
+  bottom: 15px;
+  width: 225px;
+  min-height: 138px;
+  padding: 19px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 20px;
+  color: #ffffff;
+  background:
+    radial-gradient(
+      circle at 90% 15%,
+      rgba(105, 238, 181, 0.28),
+      transparent 32%
+    ),
+    linear-gradient(135deg, #091442, #27309a);
+  box-shadow: 0 28px 55px rgba(7, 17, 58, 0.28);
+  transform: rotate(7deg);
+  animation: cardFloat 6s ease-in-out infinite;
+}
+
+.cardTop,
+.cardBottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cardTop strong {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+}
+
+.cardTop span {
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 7px;
+  letter-spacing: 0.14em;
+}
+
+.virtualCard > p {
+  margin: 40px 0 18px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+}
+
+.cardBottom small {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 7px;
+}
+
+.cardBottom strong {
+  font-size: 12px;
+}
+
+@keyframes floatOne {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-13px);
+  }
+}
+
+@keyframes floatTwo {
+  0%,
+  100% {
+    transform: translateY(0) translateX(0);
+  }
+
+  50% {
+    transform: translateY(11px) translateX(-4px);
+  }
+}
+
+@keyframes floatThree {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-9px);
+  }
+}
+
+@keyframes cardFloat {
+  0%,
+  100% {
+    transform: rotate(7deg) translateY(0);
+  }
+
+  50% {
+    transform: rotate(4deg) translateY(-12px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .esimPanel,
+  .usdPanel,
+  .businessPanel,
+  .currencyPosition,
+  .virtualCard {
+    animation: none;
+  }
+
+  .heroImage {
+    transition: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .stage {
+    min-height: 610px;
+    padding: 35px 5px 90px;
+  }
+
+  .imageFrame {
+    aspect-ratio: 4 / 3;
+    border-radius: 25px;
+  }
+
+  .esimPanel {
+    left: -5px;
+    top: 12px;
+  }
+
+  .usdPanel {
+    right: -5px;
+    top: 85px;
+  }
+
+  .currencyPosition {
+    right: -4px;
+    top: auto;
+    bottom: 70px;
+  }
+
+  .currencyPanel > div {
+    width: 145px;
+    padding: 9px 10px;
+  }
+
+  .currencyPanel > div:nth-child(2),
+  .currencyPanel > div:nth-child(3) {
+    display: none;
+  }
+
+  .businessPanel {
+    left: -3px;
+    bottom: 60px;
+  }
+
+  .virtualCard {
+    right: 4px;
+    bottom: -10px;
+    width: 170px;
+    min-height: 110px;
+    padding: 15px;
+  }
+
+  .virtualCard > p {
+    margin: 27px 0 13px;
+    font-size: 10px;
+  }
+}

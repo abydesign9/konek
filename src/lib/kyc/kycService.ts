@@ -131,7 +131,8 @@ export async function submitIdentity(
   return getKycStatus(userId);
 }
 
-// Tier 2: liveness + duplicate-face check. Requires transact tier first.
+// Fraud-only liveness and duplicate-face check. It does not grant a KYC tier.
+// Requires transact tier first so the check is always linked to a verified identity.
 export async function submitLiveness(userId: string, imageRef?: string): Promise<KycStatus> {
   const current = await getKycStatus(userId);
   if (current.tier < KYC_TIER.TRANSACT) {
@@ -170,11 +171,9 @@ export async function submitLiveness(userId: string, imageRef?: string): Promise
   await query(
     `UPDATE users
      SET liveness_verified = true,
-         kyc_tier = GREATEST(kyc_tier, $2),
-         kyc_status = 'verified',
          updated_at = now()
      WHERE id = $1`,
-    [userId, KYC_TIER.FINANCE]
+    [userId]
   );
   await logAudit(userId, "kyc_liveness_verified", "user", userId, { vendorRef: check.vendorRef });
   return getKycStatus(userId);

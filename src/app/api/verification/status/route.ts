@@ -26,21 +26,17 @@ export async function GET() {
 
   return NextResponse.json({
 
-    bvnVerified:
-      kyc.bvnVerified,
+    tier: kyc.tier,
 
+    status: kyc.status,
 
-    kycStatus:
-      kyc.status,
+    bvnVerified: kyc.bvnVerified,
 
+    ninVerified: kyc.ninVerified,
 
-    livenessVerified:
-      kyc.livenessVerified ?? false,
+    livenessVerified: kyc.livenessVerified,
 
-
-    bankVerified:
-      false,
-
+    duplicateFlag: kyc.duplicateFlag,
 
   });
 

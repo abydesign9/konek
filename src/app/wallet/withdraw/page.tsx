@@ -121,7 +121,7 @@ export default function WithdrawPage() {
       return;
     }
     if (res.status === 403) {
-      setError("Withdrawals need identity + liveness verification.");
+      setError("Withdrawals require approved Tier 2 verification.");
       setPin("");
       setShowPin(false);
       return;
@@ -165,13 +165,13 @@ export default function WithdrawPage() {
               Complete verification first
             </h2>
             <p className="text-sm text-indigo/70 mb-5">
-              Withdrawals require BVN/NIN verification and liveness check.
+              Withdrawals require approved Tier 2 verification.
             </p>
             <Link
               href="/kyc"
               className="inline-block rounded-xl bg-indigo px-5 py-3 text-white text-sm font-semibold"
             >
-              Verify account
+              View verification
             </Link>
           </div>
         </div>

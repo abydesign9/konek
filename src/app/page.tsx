@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { FloatingBadge } from "@/components/FloatingBadge";
+import HeroFloatingUI from "@/components/landing/HeroFloatingUI";
 
 const NAV_LINKS = [
   { label: "Ecosystem", href: "#ecosystem" },
@@ -181,21 +182,7 @@ export default function LandingPage() {
             </div>
             <p className="text-sm text-indigo/50">No money transfer. No hidden fees. Just the services you actually use.</p>
           </div>
-          <div className="relative">
-            <div className="relative aspect-[2000/1125] w-full overflow-hidden rounded-3xl shadow-2xl shadow-indigo/20">
-              <Image
-                src="/landing/konek_app_day.jpg"
-                alt="The Konek app: home screen, send money, cards, exchange and trip planning, all in one place"
-                fill
-                priority
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-cover"
-              />
-            </div>
-            <FloatingBadge icon="📶" className="-left-5 -top-5" size="md" />
-            <FloatingBadge icon="💵" className="-right-6 bottom-16" delay={0.8} size="md" />
-            <FloatingBadge icon="🌍" className="-bottom-5 left-10" delay={1.6} size="md" />
-          </div>
+          <HeroFloatingUI />
         </div>
       </section>
 
@@ -336,6 +323,7 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
 
       {/* ---------- 8. Business ---------- */}
       <section id="business" className="bg-indigo">

@@ -6,13 +6,19 @@ import { OnboardingTour } from "@/components/OnboardingTour";
 
 export function OnboardingWrapper(){
 
+const [mounted,setMounted] = useState(false);
+
 const [show,setShow] = useState(false);
+
 
 
 useEffect(()=>{
 
+setMounted(true);
+
+
 const completed =
-localStorage.getItem(
+window.localStorage.getItem(
 "konek_onboarding_completed"
 );
 
@@ -23,11 +29,29 @@ setShow(true);
 
 }
 
+
 },[]);
 
 
 
-if(!show){
+function complete(){
+
+window.localStorage.setItem(
+"konek_onboarding_completed",
+"true"
+);
+
+
+setShow(false);
+
+
+window.location.reload();
+
+}
+
+
+
+if(!mounted || !show){
 
 return null;
 
@@ -39,7 +63,7 @@ return (
 
 <OnboardingTour
 
-onComplete={()=>setShow(false)}
+onComplete={complete}
 
 />
 

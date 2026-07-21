@@ -3,7 +3,7 @@ import { query } from "@/lib/db";
 // Progressive KYC tiers (mirrors users.kyc_tier).
 //   0 browse   — signed up, can look around, no money movement
 //   1 transact — BVN or NIN verified → fund wallet, local VTU, intl top-up, eSIM
-//   2 finance  — liveness verified → USD account, virtual card
+//   2 finance  — government document reviewed and approved by compliance
 //   9 business — CAC + director verification (Business Hub)
 export const KYC_TIER = {
   BROWSE: 0,

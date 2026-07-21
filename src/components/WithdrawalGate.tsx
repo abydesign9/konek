@@ -13,8 +13,6 @@ export default function WithdrawalGate({
       requirements={[
         "BVN_VERIFIED",
         "KYC_APPROVED",
-        "LIVENESS_VERIFIED",
-        "BANK_VERIFIED",
       ]}
       featureName="Withdrawals"
     >

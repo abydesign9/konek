@@ -163,13 +163,29 @@ Verify your BVN or NIN to unlock wallet funding, airtime, data and eSIM purchase
 href="/kyc/bvn"
 className="inline-block mt-4 rounded-xl bg-indigo text-white px-5 py-2 font-semibold"
 >
-Verify Identity
+Start Verification
 </Link>
 
 )}
 
 
+
+{status.tier >= 1 && status.tier < 2 && (
+
+<Link
+href="/kyc/identity-checks"
+className="inline-block mt-4 rounded-xl border border-indigo text-indigo px-5 py-2 font-semibold"
+>
+Continue Verification
+</Link>
+
+)}
+
+
+
 </div>
+
+
 
 
 
@@ -219,6 +235,7 @@ Complete account verification to unlock more financial services.
 
 
 </div>
+
 
 
 
