@@ -1,7 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+
+interface Props {
+  onComplete?: () => void;
+}
+
 
 const steps = [
   {
@@ -12,182 +16,152 @@ const steps = [
   {
     icon: "✅",
     title: "Verify Your Identity",
-    text: "Complete verification to unlock wallet funding and financial services.",
-    href: "/kyc"
+    text: "Complete verification to unlock wallet funding and financial services."
   },
   {
     icon: "💰",
     title: "Fund Your Wallet",
-    text: "Add money to your Konek wallet and start using services instantly.",
-    href: "/wallet/fund"
+    text: "Add money to your Konek wallet and start using services instantly."
   },
   {
     icon: "📱",
     title: "Buy Your First Service",
-    text: "Purchase airtime, data, eSIM and other services easily.",
-    href: "/buy/airtime"
+    text: "Purchase airtime, data, eSIM and other services easily."
   },
   {
     icon: "🌍",
     title: "Create Global Accounts",
-    text: "Access international financial features.",
-    href: "/wallet/global-account"
+    text: "Access international financial features."
   },
   {
     icon: "💳",
     title: "Get Your Virtual Card",
-    text: "Spend online securely with your Konek card.",
-    href: "/cards"
+    text: "Spend online securely with your Konek card."
   }
 ];
 
 
-export function OnboardingTour(){
+export function OnboardingTour({onComplete}:Props){
 
-  const router = useRouter();
+const [step,setStep] = useState(0);
 
-  const [step,setStep] = useState(0);
 
-  const current = steps[step];
+const current = steps[step];
 
 
-  function finish(){
+function finish(){
 
-    localStorage.setItem(
-      "konek_onboarding_completed",
-      "true"
-    );
+localStorage.setItem(
+"konek_onboarding_completed",
+"true"
+);
 
-    router.push("/home");
+if(onComplete){
+onComplete();
+}
 
-  }
+}
 
 
 
-  function continueTour(){
+function next(){
 
-    if(step < steps.length - 1){
+if(step < steps.length - 1){
 
-      setStep(step + 1);
+setStep(step + 1);
 
-    } else {
+}else{
 
-      finish();
+finish();
 
-    }
+}
 
-  }
+}
 
 
 
-  function skip(){
+return (
 
-    finish();
+<div className="fixed inset-0 z-50 bg-background flex items-center justify-center px-6">
 
-  }
+<div className="max-w-sm w-full text-center">
 
 
+<div className="text-6xl mb-6">
+{current.icon}
+</div>
 
-  return (
 
-    <div className="fixed inset-0 z-50 bg-background flex items-center justify-center px-6">
+<h1 className="text-2xl font-bold text-indigo">
+{current.title}
+</h1>
 
-      <div className="max-w-sm w-full text-center">
 
+<p className="text-indigo/60 mt-3">
+{current.text}
+</p>
 
-        <div className="text-6xl mb-6">
-          {current.icon}
-        </div>
 
 
-        <h1 className="text-2xl font-bold text-indigo">
-          {current.title}
-        </h1>
+<div className="flex justify-center gap-2 mt-8">
 
+{steps.map((_,index)=>(
 
-        <p className="text-indigo/60 mt-3">
-          {current.text}
-        </p>
+<div
+key={index}
+className={`h-2 rounded-full ${
+index===step
+?
+"w-8 bg-indigo"
+:
+"w-2 bg-indigo/20"
+}`}
+/>
 
+))}
 
+</div>
 
-        <div className="flex justify-center gap-2 mt-8">
 
-          {steps.map((_,index)=>(
 
-            <div
-              key={index}
-              className={`h-2 rounded-full ${
-                index===step
-                ?
-                "w-8 bg-indigo"
-                :
-                "w-2 bg-indigo/20"
-              }`}
-            />
+<button
 
-          ))}
+onClick={next}
 
-        </div>
+className="mt-8 w-full rounded-xl bg-indigo text-white py-3.5 font-semibold"
 
+>
 
+{
+step === steps.length - 1
+?
+"Start Using Konek"
+:
+"Continue"
+}
 
+</button>
 
-        <button
 
-          onClick={continueTour}
 
-          className="mt-8 w-full rounded-xl bg-indigo text-white py-3.5 font-semibold"
 
-        >
+<button
 
-          {step === steps.length - 1
-            ?
-            "Start Using Konek"
-            :
-            "Continue"}
+onClick={finish}
 
-        </button>
+className="mt-4 text-sm text-indigo/50"
 
+>
 
+Skip Tour
 
+</button>
 
-        {current.href && (
 
-          <button
+</div>
 
-            onClick={()=>router.push(current.href)}
+</div>
 
-            className="mt-4 text-sm text-indigo underline"
-
-          >
-
-            Open {current.title}
-
-          </button>
-
-        )}
-
-
-
-        <button
-
-          onClick={skip}
-
-          className="mt-4 block mx-auto text-sm text-indigo/50"
-
-        >
-
-          Skip Tour
-
-        </button>
-
-
-
-      </div>
-
-    </div>
-
-  );
+);
 
 }
