@@ -28,6 +28,7 @@ const CONNECTIVITY = [
   { key: "data", label: "Data", sub: "Bundles for every carrier", Icon: IconData, href: "/buy/data" },
   { key: "esim", label: "eSIM", sub: "Travel data, activated in seconds", Icon: IconEsim, href: "/buy/esim" },
   { key: "intl", label: "International Top-Up", sub: "Send credit abroad", Icon: IconGlobe, href: "/buy/intl-topup" },
+  { key: "data", label: "Data Top-Up", sub: "Mobile data for numbers abroad", Icon: IconData, href: "/buy/data-topup" },
   { key: "cable", label: "Cable TV", sub: "DStv, GOtv, StarTimes", Icon: IconCable, href: "/buy/cable" },
   { key: "electricity", label: "Electricity", sub: "Prepaid & postpaid tokens", Icon: IconElectricity, href: "/buy/electricity" },
   { key: "exam", label: "Exam Pins", sub: "WAEC, NECO, JAMB", Icon: IconExam, href: "/buy/exam-pin" },

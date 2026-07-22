@@ -66,7 +66,14 @@ function recipientLabel(key: string, type: string): string | null {
       return "Carrier";
     case "displayCurrency":
       return "Charged in";
+    case "bankName":
+      return "Bank";
+    case "accountName":
+      return "Account name";
+    case "accountNumberLast4":
+      return "Account number";
     default:
+      // Internal identifiers (e.g. bankAccountId, bankCode) stay hidden.
       return null;
   }
 }
@@ -107,6 +114,7 @@ export default async function ReceiptPage({ params }: { params: { id: string } }
       const carrier = country?.carriers.find((c) => c.id === carrierId)?.name ?? carrierId;
       return country ? `${country.flag} ${carrier}` : carrier;
     }
+    if (key === "accountNumberLast4") return `••••${value}`;
     return String(value);
   }
 

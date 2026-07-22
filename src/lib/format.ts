@@ -24,11 +24,13 @@ export const TXN_TYPE_LABEL: Record<string, string> = {
   betting: "Betting",
   gift_card: "Gift card",
   intl_topup: "International top-up",
+  intl_data: "Data top-up",
   esim: "eSIM",
   fx_convert: "Currency conversion",
   reward_credit: "Reward credit",
   refund: "Refund",
   dollar_inflow: "Dollar inflow",
+  withdrawal: "Withdrawal",
 };
 
 export function txnTypeLabel(type: string): string {
