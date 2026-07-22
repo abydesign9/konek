@@ -12,12 +12,36 @@ import {
   IconInfo,
   IconChevronRight,
 } from "@/components/icons";
+import { Avatar } from "@/components/Avatar";
 
 interface ProfileData {
   phone: string | null;
   full_name: string | null;
   email: string | null;
+  username: string | null;
+  avatar_url: string | null;
+  date_of_birth: string | null;
+  address: string | null;
   kyc_status: string;
+}
+
+// Non-vanity completeness: each item is a real thing the user benefits from
+// finishing. Verification counts for two because it unlocks funding/accounts.
+function completeness(p: ProfileData): { pct: number; nextHref: string; nextLabel: string } | null {
+  const items: { done: boolean; href: string; label: string }[] = [
+    { done: !!p.full_name, href: "/profile/account", label: "Add your name" },
+    { done: !!p.username, href: "/profile/account", label: "Pick a username" },
+    { done: !!p.avatar_url, href: "/profile/account", label: "Choose an avatar" },
+    { done: !!p.email, href: "/profile/account", label: "Add your email" },
+    { done: !!p.date_of_birth, href: "/profile/account", label: "Add your date of birth" },
+    { done: !!p.address, href: "/profile/account", label: "Add your address" },
+    { done: p.kyc_status === "verified", href: "/profile/verification", label: "Verify your identity" },
+  ];
+  const done = items.filter((i) => i.done).length;
+  const pct = Math.round((done / items.length) * 100);
+  if (pct >= 100) return null;
+  const next = items.find((i) => !i.done)!;
+  return { pct, nextHref: next.href, nextLabel: next.label };
 }
 
 // Grouped by what the user is trying to do, not by internal feature name —
@@ -88,14 +112,14 @@ export function ProfileClient() {
         >
           {profile ? (
             <>
-              <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-indigo/10 font-heading text-lg font-bold text-indigo">
-                {(profile.full_name || profile.email || profile.phone || "K").charAt(0).toUpperCase()}
-              </span>
+              <Avatar value={profile.avatar_url} name={profile.full_name || profile.email || profile.phone} size={56} />
               <div className="min-w-0 flex-1">
                 <p className="truncate font-heading text-base font-bold text-indigo">
                   {profile.full_name || "Add your name"}
                 </p>
-                <p className="truncate text-sm text-indigo/55">{profile.email || profile.phone || "Complete your profile"}</p>
+                <p className="truncate text-sm text-indigo/55">
+                  {profile.username ? `@${profile.username}` : profile.email || profile.phone || "Complete your profile"}
+                </p>
               </div>
             </>
           ) : (
@@ -111,6 +135,25 @@ export function ProfileClient() {
           <IconChevronRight className="h-4 w-4 shrink-0 text-indigo/30" />
         </Link>
       </section>
+
+      {/* ---------- Completeness nudge ---------- */}
+      {profile && (() => {
+        const c = completeness(profile);
+        if (!c) return null;
+        return (
+          <section className="mt-4 px-5">
+            <Link href={c.nextHref} className="konek-card-shadow konek-tile block rounded-2xl bg-white px-5 py-4">
+              <div className="mb-2 flex items-center justify-between">
+                <p className="text-sm font-semibold text-indigo">Profile {c.pct}% complete</p>
+                <span className="text-xs font-semibold text-konek-green">{c.nextLabel} →</span>
+              </div>
+              <div className="h-2 w-full overflow-hidden rounded-full bg-indigo/10">
+                <div className="h-full rounded-full bg-konek-green transition-all" style={{ width: `${c.pct}%` }} />
+              </div>
+            </Link>
+          </section>
+        );
+      })()}
 
       {/* ---------- Grouped categories ---------- */}
       <section className="mt-6 flex flex-col gap-2.5 px-5">

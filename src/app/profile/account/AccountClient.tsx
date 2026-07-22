@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Avatar } from "@/components/Avatar";
+import { AVATAR_PRESETS, emojiValue } from "@/lib/avatars";
 
 interface ProfileData {
   phone: string | null;
@@ -12,12 +14,6 @@ interface ProfileData {
   address: string | null;
   kyc_tier: number;
   kyc_status: string;
-}
-
-// Preset avatars sourced online (DiceBear, single self-contained SVG per seed).
-const AVATAR_SEEDS = ["Koala", "Nala", "Milo", "Zara", "Bandit", "Sasha", "Leo", "Pepper"];
-function avatarUrlFor(seed: string): string {
-  return `https://api.dicebear.com/9.x/thumbs/svg?seed=${encodeURIComponent(seed)}`;
 }
 
 export function AccountClient() {
@@ -77,37 +73,28 @@ export function AccountClient() {
     return <p className="px-5 pt-8 text-sm text-indigo/50">Loading…</p>;
   }
 
-  const currentAvatar = avatarUrl ?? avatarUrlFor(username || fullName || "Konek");
-
   return (
     <div className="mx-auto flex max-w-lg flex-col gap-6 px-5 py-6">
       <section>
         <p className="mb-3 text-xs font-bold uppercase tracking-wide text-indigo/40">Avatar</p>
         <div className="konek-card-shadow rounded-2xl bg-white px-5 py-5">
           <div className="mb-4 flex items-center gap-4">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={currentAvatar}
-              alt="Your avatar"
-              width={56}
-              height={56}
-              className="h-14 w-14 rounded-full bg-indigo/5"
-            />
+            <Avatar value={avatarUrl} name={fullName || username} size={56} />
             <p className="text-xs text-indigo/55">Pick an avatar for your profile.</p>
           </div>
           <div className="flex flex-wrap gap-2.5">
-            {AVATAR_SEEDS.map((seed) => {
-              const url = avatarUrlFor(seed);
-              const active = avatarUrl === url;
+            {AVATAR_PRESETS.map((emoji) => {
+              const val = emojiValue(emoji);
+              const active = avatarUrl === val;
               return (
                 <button
-                  key={seed}
+                  key={emoji}
                   type="button"
-                  onClick={() => setAvatarUrl(url)}
-                  className={`rounded-full p-0.5 transition ${active ? "ring-2 ring-konek-green" : "ring-1 ring-indigo/10"}`}
+                  aria-label={`Choose ${emoji} avatar`}
+                  onClick={() => setAvatarUrl(val)}
+                  className={`rounded-full transition ${active ? "ring-2 ring-konek-green" : "ring-1 ring-indigo/10"}`}
                 >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={url} alt={seed} width={40} height={40} className="h-10 w-10 rounded-full" />
+                  <Avatar value={val} size={40} />
                 </button>
               );
             })}
