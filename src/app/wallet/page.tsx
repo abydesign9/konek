@@ -29,10 +29,11 @@ export default async function WalletPage() {
   if (!userId) redirect("/login");
 
 
-  // Central KYC verification source
+  // Central KYC verification source. Identity is verified via BVN OR NIN — either
+  // reaches the transact tier, so the wallet must not demand BVN specifically.
   const kyc = await getKycStatus(userId);
 
-  const walletAllowed = kyc.bvnVerified;
+  const walletAllowed = kyc.bvnVerified || kyc.ninVerified || kyc.tier >= 1;
 
 
 

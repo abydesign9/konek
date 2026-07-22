@@ -193,7 +193,8 @@ export default async function HomeDashboard() {
 
 
 
-  const walletAllowed = kyc.bvnVerified;
+  // Identity is verified via BVN OR NIN — either reaches the transact tier.
+  const walletAllowed = kyc.bvnVerified || kyc.ninVerified || kyc.tier >= 1;
 
 
 
@@ -546,14 +547,14 @@ export default async function HomeDashboard() {
               >
 
                 <div
-                  className="konek-card-shadow flex h-11 w-11 items-center justify-center rounded-xl"
+                  className="konek-card-shadow flex h-12 w-12 items-center justify-center rounded-2xl"
                   style={{
                     backgroundColor:c.bg
                   }}
                 >
 
                   <Icon
-                    className="h-5 w-5"
+                    className="h-6 w-6"
                     style={{
                       color:c.fg
                     }}
@@ -616,7 +617,7 @@ export default async function HomeDashboard() {
 
                 <div
 
-                  className="konek-card-shadow flex h-11 w-11 items-center justify-center rounded-xl"
+                  className="konek-card-shadow flex h-12 w-12 items-center justify-center rounded-2xl"
 
                   style={{
                     backgroundColor:c.bg
@@ -626,7 +627,7 @@ export default async function HomeDashboard() {
 
                   <Icon
 
-                    className="h-5 w-5"
+                    className="h-6 w-6"
 
                     style={{
                       color:c.fg
@@ -660,9 +661,9 @@ export default async function HomeDashboard() {
 
           >
 
-            <div className="konek-card-shadow flex h-11 w-11 items-center justify-center rounded-xl bg-hover-tint">
+            <div className="konek-card-shadow flex h-12 w-12 items-center justify-center rounded-2xl bg-hover-tint">
 
-              <IconChevronRight className="h-5 w-5 text-indigo/60"/>
+              <IconChevronRight className="h-6 w-6 text-indigo/60"/>
 
             </div>
 
