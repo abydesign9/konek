@@ -3,15 +3,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {
-  IconHelp,
-  IconProfile,
-  IconShield,
-  IconSliders,
-  IconLink,
-  IconInfo,
-  IconChevronRight,
-} from "@/components/icons";
 import { Avatar } from "@/components/Avatar";
 
 interface ProfileData {
@@ -26,7 +17,7 @@ interface ProfileData {
 }
 
 // Non-vanity completeness: each item is a real thing the user benefits from
-// finishing. Verification counts for two because it unlocks funding/accounts.
+// finishing. Verification is last because it unlocks funding/accounts.
 function completeness(p: ProfileData): { pct: number; nextHref: string; nextLabel: string } | null {
   const items: { done: boolean; href: string; label: string }[] = [
     { done: !!p.full_name, href: "/profile/account", label: "Add your name" },
@@ -44,46 +35,28 @@ function completeness(p: ProfileData): { pct: number; nextHref: string; nextLabe
   return { pct, nextHref: next.href, nextLabel: next.label };
 }
 
-// Grouped by what the user is trying to do, not by internal feature name —
-// same shape as the reference: Get help / Account / Privacy & security /
-// Preferences / Connected accounts / About, then Log out on its own. Each
-// row owns exactly one concern so future settings (biometrics, language,
-// device sessions...) have an obvious home without adding new top-level
-// rows here.
-const CATEGORIES = [
-  { label: "Get help", sub: "Contact support and resolve your issues", Icon: IconHelp, href: "/support" },
-  {
-    label: "Account information",
-    sub: "Update your details, username, avatar and address",
-    Icon: IconProfile,
-    href: "/profile/account",
-  },
-  {
-    label: "Verification",
-    sub: "Verify your identity to unlock funding, accounts and cards",
-    Icon: IconShield,
-    href: "/profile/verification",
-  },
-  {
-    label: "Privacy and security",
-    sub: "Manage your PIN, 2-step verification, and biometrics",
-    Icon: IconShield,
-    href: "/settings",
-  },
-  {
-    label: "Preferences",
-    sub: "Customize notifications and appearance settings",
-    Icon: IconSliders,
-    href: "/settings/preferences",
-  },
-  {
-    label: "Connected accounts",
-    sub: "Manage your virtual cards and payment methods",
-    Icon: IconLink,
-    href: "/settings/connected-accounts",
-  },
-  { label: "About Konek", sub: "FAQs, terms and conditions, and contact options", Icon: IconInfo, href: "/profile/about" },
+// Emoji-card menu (the old Settings design), now the single account hub.
+const CARDS = [
+  { title: "Account information", description: "Personal details, username, avatar and address", href: "/profile/account", icon: "👤" },
+  { title: "Verification", description: "Verify your identity to unlock accounts and cards", href: "/profile/verification", icon: "✅" },
+  { title: "Privacy and security", description: "PIN, password, biometrics and sessions", href: "/settings", icon: "🔐" },
+  { title: "Preferences", description: "Notifications and appearance settings", href: "/settings/preferences", icon: "⚙️" },
+  { title: "Connected accounts", description: "Manage your cards and linked services", href: "/settings/connected-accounts", icon: "🔗" },
+  { title: "Get help", description: "Contact support and resolve your issues", href: "/support", icon: "💬" },
+  { title: "About Konek", description: "FAQs, terms and conditions, and contact", href: "/profile/about", icon: "ℹ️" },
 ];
+
+function SettingCard({ title, description, href, icon }: { title: string; description: string; href: string; icon: string }) {
+  return (
+    <Link href={href} className="konek-tile flex items-center gap-4 rounded-2xl border border-indigo/10 bg-white p-4">
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo/10 text-xl">{icon}</div>
+      <div className="min-w-0 flex-1">
+        <p className="font-semibold text-indigo">{title}</p>
+        <p className="truncate text-sm text-indigo/60">{description}</p>
+      </div>
+    </Link>
+  );
+}
 
 export function ProfileClient() {
   const router = useRouter();
@@ -102,89 +75,71 @@ export function ProfileClient() {
     router.push("/login");
   }
 
+  const c = profile ? completeness(profile) : null;
+
   return (
-    <>
-      {/* ---------- Identity card ---------- */}
-      <section className="px-5">
-        <Link
-          href="/profile/account"
-          className="konek-card-shadow konek-tile flex items-center gap-3 rounded-2xl bg-white px-5 py-5"
-        >
+    <div className="mx-auto max-w-lg px-5 py-6">
+      {/* ---------- Account header ---------- */}
+      <Link href="/profile/account" className="konek-tile mb-4 block rounded-3xl bg-indigo p-6 text-white">
+        <div className="flex items-center gap-4">
           {profile ? (
-            <>
-              <Avatar value={profile.avatar_url} name={profile.full_name || profile.email || profile.phone} size={56} />
-              <div className="min-w-0 flex-1">
-                <p className="truncate font-heading text-base font-bold text-indigo">
-                  {profile.full_name || "Add your name"}
-                </p>
-                <p className="truncate text-sm text-indigo/55">
-                  {profile.username ? `@${profile.username}` : profile.email || profile.phone || "Complete your profile"}
-                </p>
-              </div>
-            </>
+            <Avatar
+              value={profile.avatar_url}
+              name={profile.full_name || profile.email || profile.phone}
+              size={56}
+              className="ring-2 ring-white/25"
+            />
           ) : (
-            // Loading skeleton — avoids the "?" avatar / placeholder text flash.
-            <>
-              <span className="h-14 w-14 shrink-0 animate-pulse rounded-full bg-indigo/10" />
-              <div className="min-w-0 flex-1 space-y-2">
-                <div className="h-4 w-32 animate-pulse rounded bg-indigo/10" />
-                <div className="h-3 w-44 animate-pulse rounded bg-indigo/5" />
-              </div>
-            </>
+            <span className="h-14 w-14 shrink-0 animate-pulse rounded-full bg-white/20" />
           )}
-          <IconChevronRight className="h-4 w-4 shrink-0 text-indigo/30" />
-        </Link>
-      </section>
+          <div className="min-w-0 flex-1">
+            <p className="truncate font-heading text-lg font-bold">{profile?.full_name || "Your Account"}</p>
+            <p className="truncate text-sm text-white/70">
+              {profile?.username
+                ? `@${profile.username}`
+                : profile?.email || profile?.phone || "Manage your profile, security and preferences"}
+            </p>
+          </div>
+        </div>
+      </Link>
 
       {/* ---------- Completeness nudge ---------- */}
-      {profile && (() => {
-        const c = completeness(profile);
-        if (!c) return null;
-        return (
-          <section className="mt-4 px-5">
-            <Link href={c.nextHref} className="konek-card-shadow konek-tile block rounded-2xl bg-white px-5 py-4">
-              <div className="mb-2 flex items-center justify-between">
-                <p className="text-sm font-semibold text-indigo">Profile {c.pct}% complete</p>
-                <span className="text-xs font-semibold text-konek-green">{c.nextLabel} →</span>
-              </div>
-              <div className="h-2 w-full overflow-hidden rounded-full bg-indigo/10">
-                <div className="h-full rounded-full bg-konek-green transition-all" style={{ width: `${c.pct}%` }} />
-              </div>
-            </Link>
-          </section>
-        );
-      })()}
+      {c && (
+        <Link href={c.nextHref} className="konek-tile mb-4 block rounded-2xl border border-indigo/10 bg-white px-5 py-4">
+          <div className="mb-2 flex items-center justify-between">
+            <p className="text-sm font-semibold text-indigo">Profile {c.pct}% complete</p>
+            <span className="text-xs font-semibold text-konek-green">{c.nextLabel} →</span>
+          </div>
+          <div className="h-2 w-full overflow-hidden rounded-full bg-indigo/10">
+            <div className="h-full rounded-full bg-konek-green transition-all" style={{ width: `${c.pct}%` }} />
+          </div>
+        </Link>
+      )}
 
-      {/* ---------- Grouped categories ---------- */}
-      <section className="mt-6 flex flex-col gap-2.5 px-5">
-        {CATEGORIES.map(({ label, sub, Icon, href }) => (
-          <Link
-            key={href}
-            href={href}
-            className="konek-card-shadow konek-tile flex items-center gap-3 rounded-2xl bg-white px-4 py-3.5"
-          >
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo/10">
-              <Icon className="h-5 w-5 text-indigo" />
-            </span>
-            <span className="min-w-0 flex-1">
-              <span className="block text-sm font-semibold text-indigo">{label}</span>
-              <span className="block truncate text-xs leading-snug text-indigo/55">{sub}</span>
-            </span>
-            <IconChevronRight className="h-4 w-4 shrink-0 text-indigo/30" />
-          </Link>
+      {/* ---------- Menu ---------- */}
+      <div className="space-y-3">
+        {CARDS.map((card) => (
+          <SettingCard key={card.href} {...card} />
         ))}
-      </section>
+      </div>
 
-      {/* ---------- Logout ---------- */}
-      <section className="mt-6 px-5">
-        <button
-          onClick={logout}
-          disabled={loggingOut}
-          className="konek-card-shadow w-full rounded-2xl bg-white px-4 py-3.5 text-center text-sm font-semibold text-red-600 disabled:opacity-50"
-        >
-          {loggingOut ? "Logging out…" : "Log out"}
-        </button>
-      </section>
-    </>
+      {/* ---------- Security note ---------- */}
+      <div className="mt-6 rounded-3xl border border-indigo/10 bg-white p-5">
+        <h2 className="font-bold text-indigo">Security protection</h2>
+        <p className="mt-2 text-sm text-indigo/60">
+          Konek protects your account with identity verification, transaction PINs, fraud monitoring and
+          secure sessions.
+        </p>
+      </div>
+
+      {/* ---------- Log out ---------- */}
+      <button
+        onClick={logout}
+        disabled={loggingOut}
+        className="konek-card-shadow mt-6 w-full rounded-2xl bg-white px-4 py-3.5 text-center text-sm font-semibold text-red-600 disabled:opacity-50"
+      >
+        {loggingOut ? "Logging out…" : "Log out"}
+      </button>
+    </div>
   );
 }
