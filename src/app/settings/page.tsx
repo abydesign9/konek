@@ -108,7 +108,7 @@ title="Profile"
 
 description="Personal information and account details"
 
-href="/settings/profile"
+href="/profile/account"
 
 icon="👤"
 

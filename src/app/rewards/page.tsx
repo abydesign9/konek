@@ -261,7 +261,7 @@ className="flex justify-between"
 
 <Link
 
-href="/referrals"
+href="/invite"
 
 className="block rounded-2xl bg-indigo text-white text-center py-3.5 font-semibold"
 
