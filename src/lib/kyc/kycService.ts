@@ -131,8 +131,9 @@ export async function submitIdentity(
   return getKycStatus(userId);
 }
 
-// Fraud-only liveness and duplicate-face check. It does not grant a KYC tier.
-// Requires transact tier first so the check is always linked to a verified identity.
+// Liveness + duplicate-face check that completes finance verification (grants
+// FINANCE tier). Requires transact tier first so the check is always linked to a
+// verified identity.
 export async function submitLiveness(userId: string, imageRef?: string): Promise<KycStatus> {
   const current = await getKycStatus(userId);
   if (current.tier < KYC_TIER.TRANSACT) {
@@ -168,12 +169,17 @@ export async function submitLiveness(userId: string, imageRef?: string): Promise
     throw new VerificationFailedError(check.reason ?? "Liveness check failed — try again in good light");
   }
 
+  // A clean liveness check completes finance verification: promote to FINANCE
+  // (tier 2), which is what unlocks USD accounts, cards and withdrawals. Idempotent
+  // via GREATEST so it never downgrades a higher tier.
   await query(
     `UPDATE users
      SET liveness_verified = true,
+         kyc_tier = GREATEST(kyc_tier, $2),
+         kyc_status = 'verified',
          updated_at = now()
      WHERE id = $1`,
-    [userId]
+    [userId, KYC_TIER.FINANCE]
   );
   await logAudit(userId, "kyc_liveness_verified", "user", userId, { vendorRef: check.vendorRef });
   return getKycStatus(userId);
