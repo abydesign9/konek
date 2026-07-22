@@ -46,6 +46,44 @@ useState(false);
 const [details,setDetails] =
 useState<CardDetails | null>(null);
 
+const [error,setError] =
+useState<string|null>(null);
+
+
+async function issueCard(){
+
+setLoading(true);
+setError(null);
+
+const res =
+await fetch("/api/cards/issue",{ method:"POST" });
+
+const json =
+await res.json().catch(()=>({}));
+
+setLoading(false);
+
+if(!res.ok){
+
+if(json.code==="no_dollar_account"){
+setError("Create your USD account first, then come back to add a card.");
+return;
+}
+
+if(res.status===403){
+setError("Cards need finance verification (identity + liveness).");
+return;
+}
+
+setError(json.error ?? "Could not create card");
+return;
+
+}
+
+load();
+
+}
+
 
 async function load(){
 
@@ -171,6 +209,32 @@ No card yet
 <p className="text-sm text-indigo/60 mt-2">
 Create a virtual card to spend online worldwide.
 </p>
+
+
+<button
+onClick={issueCard}
+disabled={loading}
+className="mt-6 w-full rounded-2xl bg-indigo text-white py-3.5 font-semibold disabled:opacity-50"
+>
+{loading ? "Creating…" : "Create Card"}
+</button>
+
+
+{error && (
+<p className="mt-4 text-sm text-red-600">
+{error}
+</p>
+)}
+
+
+{error && error.startsWith("Create your USD") && (
+<a
+href="/wallet/dollar-account"
+className="mt-3 inline-block text-sm font-semibold text-konek-green"
+>
+Open USD account →
+</a>
+)}
 
 
 </div>
