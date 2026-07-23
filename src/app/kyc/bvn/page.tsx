@@ -99,10 +99,19 @@ export default function BvnVerificationPage() {
                 Verify your BVN
               </h1>
 
-              <p className="text-sm text-indigo/60 mb-6">
+              <p className="text-sm text-indigo/60 mb-4">
                 Your Bank Verification Number helps us confirm your identity
                 and create your secure Konek wallet.
               </p>
+
+              {/* CBN / fraud reassurance (Plug.ng-style) */}
+              <div className="mb-6 flex items-start gap-2 rounded-xl border border-gold/30 bg-gold/10 px-3.5 py-3 text-xs text-indigo/70">
+                <span className="mt-0.5 shrink-0 text-sm">ⓘ</span>
+                <span>
+                  Submitting your BVN keeps your account secure against fraud and fully compliant with
+                  CBN regulations. We never see your bank password or PIN.
+                </span>
+              </div>
 
               <label className="block text-sm font-semibold text-indigo mb-2">
                 BVN Number

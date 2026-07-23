@@ -56,6 +56,7 @@ const GROUPS: { title: string; rows: { icon: string; label: string; sub?: string
     title: "Security & app",
     rows: [
       { icon: "🔐", label: "Privacy and security", sub: "PIN, password, biometrics, sessions", href: "/settings" },
+      { icon: "🏦", label: "Payout account", sub: "Manage your withdrawal bank", href: "/settings/payout" },
       { icon: "⚙️", label: "Preferences", sub: "Notifications, appearance, language", href: "/settings/preferences" },
       { icon: "🔗", label: "Connected accounts", sub: "Cards and linked services", href: "/settings/connected-accounts" },
     ],

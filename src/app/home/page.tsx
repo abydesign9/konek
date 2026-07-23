@@ -9,6 +9,7 @@ import { getStreak } from "@/lib/rewards/getStreak";
 import { listActiveInAppMessages } from "@/lib/notifications/inAppMessages";
 import { NetworkLogo } from "@/components/NetworkLogo";
 import PromoCarousel from "@/components/PromoCarousel";
+import { SetupCard } from "@/components/SetupCard";
 import { OnboardingWrapper } from "@/components/OnboardingWrapper";
 import {
   IconAirtime,
@@ -481,6 +482,11 @@ export default async function HomeDashboard() {
 
 
 
+
+      {/* Complete your setup (hides itself at 100%) */}
+      <div className="mt-4">
+        <SetupCard />
+      </div>
 
       {carousel.length > 0 && (
 

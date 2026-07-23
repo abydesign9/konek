@@ -22,14 +22,17 @@ import {
 // grouped the way the design brief asked for: Connectivity / Finance /
 // Business. Business only renders for accounts that actually have one —
 // no dead section for 99% of users.
-const CONNECTIVITY = [
-  { key: "airtime", label: "Airtime", sub: "Top up any network", Icon: IconAirtime, href: "/buy/airtime" },
-  { key: "data", label: "Data", sub: "Bundles for every carrier", Icon: IconData, href: "/buy/data" },
+const TELCO = ["/brand/telco_mtn.png", "/brand/telco_airtel.png", "/brand/telco_glo.png", "/brand/telco_9mobile.png"];
+const CABLE = ["/brand/telco_dstv.png", "/brand/telco_gotv.png", "/brand/telco_startimes.png"];
+
+const CONNECTIVITY: { key: string; label: string; sub: string; Icon: typeof IconAirtime; href: string; logos?: string[] }[] = [
+  { key: "airtime", label: "Airtime", sub: "Top up any network", Icon: IconAirtime, href: "/buy/airtime", logos: TELCO },
+  { key: "data", label: "Data", sub: "Bundles for every carrier", Icon: IconData, href: "/buy/data", logos: TELCO },
   { key: "esim", label: "eSIM", sub: "Travel data, activated in seconds", Icon: IconEsim, href: "/buy/esim" },
   { key: "router", label: "Router & MiFi", sub: "Portable internet devices & data", Icon: IconData, href: "/buy/router-mifi" },
   { key: "intl", label: "International Top-Up", sub: "Send credit abroad", Icon: IconGlobe, href: "/buy/intl-topup" },
-  { key: "data", label: "Data Top-Up", sub: "Mobile data for numbers abroad", Icon: IconData, href: "/buy/data-topup" },
-  { key: "cable", label: "Cable TV", sub: "DStv, GOtv, StarTimes", Icon: IconCable, href: "/buy/cable" },
+  { key: "global-data", label: "Data Top-Up", sub: "Mobile data for numbers abroad", Icon: IconData, href: "/buy/data-topup" },
+  { key: "cable", label: "Cable TV", sub: "DStv, GOtv, StarTimes", Icon: IconCable, href: "/buy/cable", logos: CABLE },
   { key: "electricity", label: "Electricity", sub: "Prepaid & postpaid tokens", Icon: IconElectricity, href: "/buy/electricity" },
   { key: "exam", label: "Exam Pins", sub: "WAEC, NECO, JAMB", Icon: IconExam, href: "/buy/exam-pin" },
   { key: "betting", label: "Betting", sub: "Fund a betting wallet", Icon: IconBetting, href: "/buy/betting" },
@@ -47,7 +50,7 @@ const EARN = [
   { key: "invite", label: "Invite & Earn", sub: "Refer friends, get rewarded", Icon: IconGift, href: "/invite" },
 ];
 
-function Row({ label, sub, Icon, href, tint }: { label: string; sub: string; Icon: typeof IconAirtime; href: string; tint: { bg: string; fg: string } }) {
+function Row({ label, sub, Icon, href, tint, logos }: { label: string; sub: string; Icon: typeof IconAirtime; href: string; tint: { bg: string; fg: string }; logos?: string[] }) {
   return (
     <Link href={href} className="flex items-center gap-3 rounded-2xl bg-white px-4 py-3.5 konek-card-shadow konek-tile">
       <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl" style={{ backgroundColor: tint.bg }}>
@@ -57,6 +60,14 @@ function Row({ label, sub, Icon, href, tint }: { label: string; sub: string; Ico
         <span className="block text-sm font-semibold text-indigo">{label}</span>
         <span className="block truncate text-xs text-indigo/55">{sub}</span>
       </span>
+      {logos && (
+        <span className="hidden shrink-0 items-center gap-1 sm:flex">
+          {logos.map((src) => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img key={src} src={src} alt="" aria-hidden="true" className="h-5 w-5 rounded-full object-contain" />
+          ))}
+        </span>
+      )}
       <IconChevronRight className="h-4 w-4 shrink-0 text-indigo/30" />
     </Link>
   );
@@ -83,7 +94,7 @@ export default async function ConnectPage() {
         <p className="mb-3 text-xs font-bold uppercase tracking-wide text-indigo/40">Connectivity</p>
         <div className="flex flex-col gap-2.5">
           {CONNECTIVITY.map((item) => (
-            <Row key={item.key} label={item.label} sub={item.sub} Icon={item.Icon} href={item.href} tint={SERVICE_COLORS[item.key] ?? SERVICE_COLORS.more} />
+            <Row key={item.key} label={item.label} sub={item.sub} Icon={item.Icon} href={item.href} tint={SERVICE_COLORS[item.key] ?? SERVICE_COLORS.more} logos={item.logos} />
           ))}
         </div>
       </section>
