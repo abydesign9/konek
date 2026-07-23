@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSessionUserId } from "@/lib/auth/session";
 import { query } from "@/lib/db";
 import { BusinessNotVerifiedError, createBulkBatch, processBulkBatch } from "@/lib/bulk/bulkBatchService";
-import { canDistribute, getMembership } from "@/lib/business/teamService";
+import { canDistribute, requireVerifiedBusiness } from "@/lib/business/teamService";
 
 const VALID_SERVICE_TYPES = ["airtime", "data"];
 const VALID_NETWORKS = ["mtn", "glo", "airtel", "9mobile"];
@@ -11,8 +11,10 @@ export async function GET() {
   const userId = await getSessionUserId();
   if (!userId) return NextResponse.json({ error: "unauthenticated" }, { status: 401 });
 
-  const membership = await getMembership(userId);
-  if (!membership) return NextResponse.json({ batches: [] });
+  const gate = await requireVerifiedBusiness(userId);
+  if (!gate.ok && gate.code !== "no_business") return NextResponse.json({ error: gate.error, code: gate.code }, { status: gate.status });
+  if (!gate.ok) return NextResponse.json({ batches: [] });
+  const membership = gate.membership;
 
   const { rows } = await query(
     `SELECT id, purpose, total_items, total_amount_minor, status, created_at, completed_at
@@ -26,8 +28,10 @@ export async function POST(req: NextRequest) {
   const userId = await getSessionUserId();
   if (!userId) return NextResponse.json({ error: "unauthenticated" }, { status: 401 });
 
-  const membership = await getMembership(userId);
-  if (!membership) return NextResponse.json({ error: "no business account — apply first" }, { status: 404 });
+  const gate = await requireVerifiedBusiness(userId);
+  if (!gate.ok && gate.code !== "no_business") return NextResponse.json({ error: gate.error, code: gate.code }, { status: gate.status });
+  if (!gate.ok) return NextResponse.json({ error: "no business account — apply first" }, { status: 404 });
+  const membership = gate.membership;
 
   // Role gate (M9 permissions): viewers/marketing can see reports but not
   // move value. Owner/admin/finance/hr can distribute.

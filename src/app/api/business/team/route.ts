@@ -4,7 +4,7 @@ import {
   AlreadyMemberError,
   assertCanManageTeam,
   ForbiddenRoleError,
-  getMembership,
+  requireVerifiedBusiness,
   inviteMember,
   listTeam,
   TEAM_ROLES,
@@ -16,8 +16,10 @@ export async function GET() {
   const userId = await getSessionUserId();
   if (!userId) return NextResponse.json({ error: "unauthenticated" }, { status: 401 });
 
-  const membership = await getMembership(userId);
-  if (!membership) return NextResponse.json({ team: [], role: null });
+  const gate = await requireVerifiedBusiness(userId);
+  if (!gate.ok && gate.code !== "no_business") return NextResponse.json({ error: gate.error, code: gate.code }, { status: gate.status });
+  if (!gate.ok) return NextResponse.json({ team: [], role: null });
+  const membership = gate.membership;
 
   const team = await listTeam(membership.businessAccountId);
   return NextResponse.json({ team, role: membership.role });
@@ -27,8 +29,10 @@ export async function POST(req: NextRequest) {
   const userId = await getSessionUserId();
   if (!userId) return NextResponse.json({ error: "unauthenticated" }, { status: 401 });
 
-  const membership = await getMembership(userId);
-  if (!membership) return NextResponse.json({ error: "no business account" }, { status: 404 });
+  const gate = await requireVerifiedBusiness(userId);
+  if (!gate.ok && gate.code !== "no_business") return NextResponse.json({ error: gate.error, code: gate.code }, { status: gate.status });
+  if (!gate.ok) return NextResponse.json({ error: "no business account" }, { status: 404 });
+  const membership = gate.membership;
 
   const body = await req.json().catch(() => null);
   const phone = body?.phone;

@@ -57,6 +57,39 @@ export async function getMembership(userId: string): Promise<BusinessMembership 
   };
 }
 
+export type VerifiedBusinessGate =
+  | { ok: true; membership: BusinessMembership }
+  | { ok: false; status: number; error: string; code: "no_business" | "kyb_pending" | "kyb_rejected" };
+
+// Membership + KYB gate in one step. Every business API that reads or moves
+// business data must use this instead of bare getMembership: applying only
+// creates a PENDING application, and nothing beyond /business/me is available
+// until an admin approves it (kyb_status = 'verified').
+export async function requireVerifiedBusiness(userId: string): Promise<VerifiedBusinessGate> {
+  const membership = await getMembership(userId);
+  if (!membership) {
+    return { ok: false, status: 404, error: "No business on this account", code: "no_business" };
+  }
+
+  const { rows } = await query<{ kyb_status: string }>(
+    `SELECT kyb_status FROM business_accounts WHERE id = $1`,
+    [membership.businessAccountId]
+  );
+  const status = rows[0]?.kyb_status ?? "pending";
+  if (status === "rejected") {
+    return { ok: false, status: 403, error: "This business application was rejected — contact support", code: "kyb_rejected" };
+  }
+  if (status !== "verified") {
+    return {
+      ok: false,
+      status: 403,
+      error: "This business is awaiting verification — you'll get access once Konek approves it",
+      code: "kyb_pending",
+    };
+  }
+  return { ok: true, membership };
+}
+
 export function canDistribute(role: string): boolean {
   return CAN_DISTRIBUTE.has(role);
 }

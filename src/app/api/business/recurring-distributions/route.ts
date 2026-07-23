@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionUserId } from "@/lib/auth/session";
-import { canDistribute, getMembership } from "@/lib/business/teamService";
+import { canDistribute, requireVerifiedBusiness } from "@/lib/business/teamService";
 import { createRecurringDistribution, listRecurringDistributions } from "@/lib/recurring/recurringDistributions";
 
 const VALID_SERVICE_TYPES = ["airtime", "data"];
@@ -11,8 +11,10 @@ export async function GET() {
   const userId = await getSessionUserId();
   if (!userId) return NextResponse.json({ error: "unauthenticated" }, { status: 401 });
 
-  const membership = await getMembership(userId);
-  if (!membership) return NextResponse.json({ schedules: [] });
+  const gate = await requireVerifiedBusiness(userId);
+  if (!gate.ok && gate.code !== "no_business") return NextResponse.json({ error: gate.error, code: gate.code }, { status: gate.status });
+  if (!gate.ok) return NextResponse.json({ schedules: [] });
+  const membership = gate.membership;
 
   return NextResponse.json({ schedules: await listRecurringDistributions(membership.businessAccountId) });
 }
@@ -21,8 +23,10 @@ export async function POST(req: NextRequest) {
   const userId = await getSessionUserId();
   if (!userId) return NextResponse.json({ error: "unauthenticated" }, { status: 401 });
 
-  const membership = await getMembership(userId);
-  if (!membership) return NextResponse.json({ error: "no business account — apply first" }, { status: 404 });
+  const gate = await requireVerifiedBusiness(userId);
+  if (!gate.ok && gate.code !== "no_business") return NextResponse.json({ error: gate.error, code: gate.code }, { status: gate.status });
+  if (!gate.ok) return NextResponse.json({ error: "no business account — apply first" }, { status: 404 });
+  const membership = gate.membership;
   if (!canDistribute(membership.role)) {
     return NextResponse.json({ error: `Your role (${membership.role}) cannot run distributions` }, { status: 403 });
   }

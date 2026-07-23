@@ -3,6 +3,7 @@ import { getSessionUserId } from "@/lib/auth/session";
 import { query } from "@/lib/db";
 import { purchaseVtu, InsufficientBalanceError } from "@/lib/purchases/purchaseVtuService";
 import { NoHealthyVendorError } from "@/vendors/registry";
+import { usdMinorToNgnMinor } from "@/lib/fx";
 
 export async function GET() {
   const userId = await getSessionUserId();
@@ -33,9 +34,12 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json().catch(() => null);
-  const { travelerName, travelerEmail, planExternalId, country } = body ?? {};
+  const { travelerName, travelerEmail, planExternalId, country, idempotencyKey } = body ?? {};
   if (typeof travelerName !== "string" || typeof planExternalId !== "string" || typeof country !== "string") {
     return NextResponse.json({ error: "travelerName, planExternalId, and country are required" }, { status: 400 });
+  }
+  if (typeof idempotencyKey !== "string" || idempotencyKey.length < 8) {
+    return NextResponse.json({ error: "idempotencyKey is required" }, { status: 400 });
   }
 
   const { rows: catalogRows } = await query<{ id: string; price_minor: string; currency: string }>(
@@ -45,12 +49,16 @@ export async function POST(req: NextRequest) {
   const plan = catalogRows[0];
   if (!plan) return NextResponse.json({ error: "unknown eSIM plan" }, { status: 400 });
 
-  const amountMinor = plan.currency === "USD" ? Math.round(Number(plan.price_minor) * 1600) : Number(plan.price_minor);
+  // Server-side pricing at the live rate — never a hardcoded FX constant.
+  const amountMinor =
+    plan.currency === "USD" ? await usdMinorToNgnMinor(Number(plan.price_minor)) : Number(plan.price_minor);
 
   try {
     const result = await purchaseVtu({
       userId,
-      idempotencyKey: `corp_travel:${biz[0].id}:${planExternalId}:${travelerEmail ?? travelerName}:${Date.now()}`,
+      // Client-supplied so a retry replays the original purchase instead of
+      // double-charging (Date.now() here previously defeated idempotency).
+      idempotencyKey: `corp_travel:${biz[0].id}:${idempotencyKey}`,
       serviceType: "esim",
       network: country,
       phone: "na",

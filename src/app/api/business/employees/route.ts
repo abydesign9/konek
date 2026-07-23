@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionUserId } from "@/lib/auth/session";
-import { getMembership } from "@/lib/business/teamService";
+import { requireVerifiedBusiness } from "@/lib/business/teamService";
 import { addEmployee, addEmployeesBulk, listEmployees } from "@/lib/business/employeeService";
 
 const VALID_NETWORKS = ["mtn", "glo", "airtel", "9mobile"];
@@ -9,8 +9,10 @@ export async function GET() {
   const userId = await getSessionUserId();
   if (!userId) return NextResponse.json({ error: "unauthenticated" }, { status: 401 });
 
-  const membership = await getMembership(userId);
-  if (!membership) return NextResponse.json({ employees: [] });
+  const gate = await requireVerifiedBusiness(userId);
+  if (!gate.ok && gate.code !== "no_business") return NextResponse.json({ error: gate.error, code: gate.code }, { status: gate.status });
+  if (!gate.ok) return NextResponse.json({ employees: [] });
+  const membership = gate.membership;
 
   return NextResponse.json({ employees: await listEmployees(membership.businessAccountId) });
 }
@@ -31,8 +33,10 @@ export async function POST(req: NextRequest) {
   const userId = await getSessionUserId();
   if (!userId) return NextResponse.json({ error: "unauthenticated" }, { status: 401 });
 
-  const membership = await getMembership(userId);
-  if (!membership) return NextResponse.json({ error: "no business account — apply first" }, { status: 404 });
+  const gate = await requireVerifiedBusiness(userId);
+  if (!gate.ok && gate.code !== "no_business") return NextResponse.json({ error: gate.error, code: gate.code }, { status: gate.status });
+  if (!gate.ok) return NextResponse.json({ error: "no business account — apply first" }, { status: 404 });
+  const membership = gate.membership;
 
   const body = await req.json().catch(() => null);
 
