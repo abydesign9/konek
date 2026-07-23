@@ -25,7 +25,7 @@ export default function AdminLoginPage() {
       setError(data.error ?? "Invalid email or secret");
       return;
     }
-    router.push("/admin");
+    router.push("/admin/dashboard");
   }
 
   return (

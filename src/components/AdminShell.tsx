@@ -26,7 +26,10 @@ import {
 const NAV_GROUPS = [
   {
     label: "Overview",
-    items: [{ label: "Dashboard", href: "/admin", icon: DashboardIcon }],
+    items: [
+      { label: "Executive dashboard", href: "/admin/dashboard", icon: DashboardIcon },
+      { label: "Console", href: "/admin", icon: DashboardIcon },
+    ],
   },
   {
     label: "Operations",
