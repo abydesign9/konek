@@ -6,6 +6,7 @@ import { isCircuitOpen } from "@/lib/http/resilientHttp";
 import { RoutingCandidate, routeVendor } from "./routing";
 import { VendorAdapter, VendorServiceType } from "./types";
 import { mockVtuAdapter, mockVtuAdapter2 } from "./mockVtu";
+import { esimAccessAdapter, isEsimAccessConfigured } from "./esim/esimAccess";
 
 // Add real aggregators here as they're wired up (e.g. reloadly, vtu_ng).
 // Which one actually gets used for a given purchase is decided by
@@ -13,6 +14,9 @@ import { mockVtuAdapter, mockVtuAdapter2 } from "./mockVtu";
 const ADAPTERS: Record<string, VendorAdapter> = {
   [mockVtuAdapter.id]: mockVtuAdapter,
   [mockVtuAdapter2.id]: mockVtuAdapter2,
+  // eSIM Access (real) — registered only when credentials are set. Routing still
+  // decides whether it wins: it needs an enabled `vendors` row (migration 0039).
+  ...(isEsimAccessConfigured() ? { [esimAccessAdapter.id]: esimAccessAdapter } : {}),
 };
 
 const SERVICE_TYPE_TO_VENDOR_KIND: Record<VendorServiceType, string> = {
@@ -77,6 +81,7 @@ export async function selectVendor(serviceType: VendorServiceType): Promise<Vend
 
   const candidates: RoutingCandidate[] = rows.map((r) => {
     const m = byProvider.get(r.id);
+    const adapter = ADAPTERS[r.id];
     return {
       id: r.id,
       priority: r.priority,
@@ -84,7 +89,10 @@ export async function selectVendor(serviceType: VendorServiceType): Promise<Vend
       enabled: r.enabled,
       maintenance: r.maintenance,
       circuitOpen: isCircuitOpen(r.id),
-      registered: Boolean(ADAPTERS[r.id]),
+      // Several service types share one vendor `kind`, so a vendor row alone
+      // isn't enough — the adapter must actually declare this service. A
+      // specialist (e.g. the eSIM provider) must never be routed an airtime sale.
+      registered: Boolean(adapter) && adapter.capabilities.services.includes(serviceType),
       floatBalanceMinor: r.float_balance_minor !== null ? Number(r.float_balance_minor) : null,
       floatThresholdMinor: r.float_threshold_minor !== null ? Number(r.float_threshold_minor) : 0,
       costWeight: r.cost_weight !== null ? Number(r.cost_weight) : 1,

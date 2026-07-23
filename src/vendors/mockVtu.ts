@@ -106,7 +106,19 @@ function buildMockAdapter(id: string): VendorAdapter {
     // Reference capability declaration: this mock stands in for a full-featured
     // VTU aggregator (all local service types, requery + balance + catalog).
     capabilities: {
-      services: ["airtime", "data", "cable", "electricity", "exam_pin", "betting", "gift_card", "intl_topup", "esim"],
+      services: [
+        "airtime",
+        "data",
+        "cable",
+        "electricity",
+        "exam_pin",
+        "betting",
+        "gift_card",
+        "intl_topup",
+        "intl_data",
+        "router_mifi",
+        "esim",
+      ],
       supportsRequery: true,
       supportsWebhooks: false,
       supportsBalance: true,
