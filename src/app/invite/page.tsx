@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { PageHeader } from "@/components/PageHeader";
 
 interface Friend {
@@ -12,6 +13,8 @@ interface Friend {
 
 interface ReferralData {
   referralCode: string | null;
+  referralHandle: string | null;
+  hasUsername: boolean;
   referralCount: number;
   earnedMinor: number;
   friends: Friend[];
@@ -35,13 +38,15 @@ export default function InvitePage() {
     fetch("/api/referrals/me")
       .then((r) => r.json())
       .then((d) => setData(d))
-      .catch(() => setData({ referralCode: null, referralCount: 0, earnedMinor: 0, friends: [] }));
+      .catch(() =>
+        setData({ referralCode: null, referralHandle: null, hasUsername: false, referralCount: 0, earnedMinor: 0, friends: [] })
+      );
   }, []);
 
+  // Default the link to the username (readable) — falls back to the code.
+  const handle = data?.referralHandle ?? data?.referralCode ?? null;
   const inviteLink =
-    data?.referralCode && typeof window !== "undefined"
-      ? `${window.location.origin}/signup?ref=${data.referralCode}`
-      : "";
+    handle && typeof window !== "undefined" ? `${window.location.origin}/signup?ref=${handle}` : "";
   const shareText = `Join me on Konek for airtime, data, bills, eSIMs and a USD account: ${inviteLink}`;
 
   async function copyLink() {
@@ -86,12 +91,17 @@ export default function InvitePage() {
 
       <div className="mx-auto max-w-lg px-5 py-6">
         <div className="mb-5 rounded-3xl bg-indigo p-6 text-white">
-          <p className="text-sm text-white/60">Your referral code</p>
-          <h1 className="mt-2 text-3xl font-bold tracking-wide">{data.referralCode ?? "—"}</h1>
+          <p className="text-sm text-white/60">{data.hasUsername ? "Your referral handle" : "Your referral code"}</p>
+          <h1 className="mt-2 text-3xl font-bold tracking-wide">{data.hasUsername ? `@${handle}` : handle ?? "—"}</h1>
           <p className="mt-3 text-sm text-white/70">
             Earn <span className="font-semibold text-konek-green">$10</span> for every friend who joins
             with your link and transacts $100 or more.
           </p>
+          {!data.hasUsername && (
+            <Link href="/profile/account" className="mt-3 inline-block rounded-full bg-white/15 px-3 py-1.5 text-xs font-semibold">
+              Set a username for a readable link →
+            </Link>
+          )}
         </div>
 
         <div className="mb-5 rounded-3xl border border-indigo/10 bg-white p-5">

@@ -10,7 +10,10 @@ export async function GET() {
   if (!userId) return NextResponse.json({ error: "unauthenticated" }, { status: 401 });
 
   const [{ rows: userRows }, { rows: earnedRows }, { rows: friends }] = await Promise.all([
-    query<{ referral_code: string | null }>(`SELECT referral_code FROM users WHERE id = $1`, [userId]),
+    query<{ referral_code: string | null; username: string | null }>(
+      `SELECT referral_code, username FROM users WHERE id = $1`,
+      [userId]
+    ),
     query<{ earned: string }>(
       `SELECT COALESCE(SUM(credit_minor), 0) AS earned FROM reward_events
        WHERE user_id = $1 AND kind = 'referral' AND meta->>'role' = 'referrer'`,
@@ -27,8 +30,13 @@ export async function GET() {
     ),
   ]);
 
+  // The shareable handle is the username by default (readable), falling back to
+  // the referral_code if they haven't set a username yet.
+  const referralHandle = userRows[0]?.username ?? userRows[0]?.referral_code ?? null;
   return NextResponse.json({
     referralCode: userRows[0]?.referral_code ?? null,
+    referralHandle,
+    hasUsername: !!userRows[0]?.username,
     referralCount: friends.length,
     earnedMinor: Number(earnedRows[0]?.earned ?? 0),
     friends: friends.map((f) => {

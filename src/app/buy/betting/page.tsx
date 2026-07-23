@@ -6,8 +6,9 @@ import { PageHeader } from "@/components/PageHeader";
 import { PinPad } from "@/components/PinPad";
 import { CustomAmountField } from "@/components/CustomAmountField";
 
-const PROVIDERS = ["Bet9ja", "SportyBet", "1xBet", "BetKing"];
-const AMOUNTS = [50000, 100000, 200000, 500000];
+const PROVIDERS = ["Bet9ja", "SportyBet", "1xBet", "BetKing", "NairaBet", "MerryBet"];
+// 8 quick amounts (₦100–₦20,000), Flyspeed-style.
+const AMOUNTS = [10000, 20000, 50000, 100000, 200000, 500000, 1000000, 2000000];
 
 function money(minor: number) {
   return `₦${(minor / 100).toLocaleString()}`;
@@ -130,12 +131,12 @@ export default function BettingPage() {
         />
 
         <label className="mb-2 block text-sm font-semibold text-indigo">Amount</label>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-4 gap-2">
           {AMOUNTS.map((item) => (
             <button
               key={item}
               onClick={() => setAmount(item)}
-              className={`rounded-xl border py-3 font-semibold ${
+              className={`rounded-xl border py-3 text-sm font-semibold ${
                 amount === item ? "border-konek-green bg-konek-green/10 text-indigo" : "border-indigo/20 text-indigo"
               }`}
             >

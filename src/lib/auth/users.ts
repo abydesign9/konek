@@ -1,11 +1,17 @@
 import crypto from "node:crypto";
 import { query } from "@/lib/db";
 
-export async function resolveReferrerId(referralCode: string | null | undefined): Promise<string | null> {
-  if (!referralCode) return null;
+// A referral identifier in a link can be a username (the default — links look
+// like /signup?ref=ada) or the legacy referral_code. Match either, so people can
+// share a readable link without setting anything up. Username match is
+// case-insensitive; referral_code is upper-cased.
+export async function resolveReferrerId(ref: string | null | undefined): Promise<string | null> {
+  if (!ref) return null;
+  const trimmed = ref.trim();
+  if (!trimmed) return null;
   const { rows } = await query<{ id: string }>(
-    `SELECT id FROM users WHERE referral_code = $1`,
-    [referralCode.toUpperCase()]
+    `SELECT id FROM users WHERE lower(username) = lower($1) OR referral_code = upper($1) LIMIT 1`,
+    [trimmed]
   );
   return rows[0]?.id ?? null;
 }
