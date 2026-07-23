@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { PageHeader } from "@/components/PageHeader";
+import { CONTACT, SOCIALS, whatsappLink } from "@/lib/contact";
 
 interface SupportMessage {
   id: string;
@@ -40,6 +41,23 @@ const CATEGORIES = [
   { id: "other", label: "Something else" },
 ];
 
+function ContactRow({ icon, title, sub, href, external }: { icon: string; title: string; sub: string; href: string; external?: boolean }) {
+  return (
+    <a
+      href={href}
+      {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+      className="flex items-center gap-3 px-4 py-3.5 hover:bg-indigo/[0.03] active:bg-indigo/5"
+    >
+      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-konek-green/10 text-lg">{icon}</span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-sm font-semibold text-indigo">{title}</span>
+        <span className="block truncate text-xs text-indigo/55">{sub}</span>
+      </span>
+      <span className="text-indigo/30">›</span>
+    </a>
+  );
+}
+
 export default function SupportPage() {
   const [messages, setMessages] = useState<SupportMessage[] | null>(null);
   const [showForm, setShowForm] = useState(false);
@@ -54,7 +72,6 @@ export default function SupportPage() {
       .then((res) => res.json())
       .then((data) => setMessages(data.messages ?? []));
   }
-
   useEffect(load, []);
 
   async function submit() {
@@ -84,21 +101,29 @@ export default function SupportPage() {
 
   return (
     <main className="min-h-screen bg-background pb-28">
-      <PageHeader title="Get help" backHref="/profile" />
+      <PageHeader title="Help & support" backHref="/profile" />
 
       <div className="mx-auto max-w-lg px-5 py-6">
         {/* Hero */}
         <div className="mb-5 rounded-3xl bg-indigo p-6 text-white">
           <h1 className="font-heading text-xl font-bold">How can we help? 👋</h1>
-          <p className="mt-1 text-sm text-white/70">
-            We usually reply within a few hours. Start with the quick answers or message us directly.
-          </p>
-          <button
-            onClick={() => setShowForm(true)}
-            className="mt-4 w-full rounded-xl bg-white py-3 text-center font-semibold text-indigo"
+          <p className="mt-1 text-sm text-white/70">We&rsquo;re here for you — chat, call or send a message.</p>
+          <a
+            href={whatsappLink()}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-konek-green py-3 text-center font-semibold text-white"
           >
-            Message support
-          </button>
+            💬 Live chat on WhatsApp
+          </a>
+        </div>
+
+        {/* Contact channels */}
+        <p className="mb-2 text-xs font-bold uppercase tracking-wide text-indigo/40">Konek customer service</p>
+        <div className="mb-6 overflow-hidden rounded-2xl border border-indigo/10 bg-white [&>a+a]:border-t [&>a+a]:border-indigo/5">
+          <ContactRow icon="🟢" title="WhatsApp" sub={CONTACT.whatsappNumber} href={whatsappLink()} external />
+          <ContactRow icon="📞" title="Call us" sub={CONTACT.phone} href={`tel:${CONTACT.phone}`} />
+          <ContactRow icon="✉️" title="Email" sub={CONTACT.email} href={`mailto:${CONTACT.email}`} />
         </div>
 
         {/* Quick help */}
@@ -106,13 +131,13 @@ export default function SupportPage() {
           <Link href="/faq" className="konek-tile rounded-2xl border border-indigo/10 bg-white p-4">
             <div className="mb-2 flex h-9 w-9 items-center justify-center rounded-full bg-indigo/5 text-lg">📖</div>
             <p className="text-sm font-semibold text-indigo">Help center</p>
-            <p className="text-xs text-indigo/55">Instant answers to common questions</p>
+            <p className="text-xs text-indigo/55">FAQs & quick answers</p>
           </Link>
-          <a href="mailto:support@konek.app" className="konek-tile rounded-2xl border border-indigo/10 bg-white p-4">
-            <div className="mb-2 flex h-9 w-9 items-center justify-center rounded-full bg-indigo/5 text-lg">✉️</div>
-            <p className="text-sm font-semibold text-indigo">Email us</p>
-            <p className="text-xs text-indigo/55">support@konek.app for urgent issues</p>
-          </a>
+          <button onClick={() => setShowForm(true)} className="konek-tile rounded-2xl border border-indigo/10 bg-white p-4 text-left">
+            <div className="mb-2 flex h-9 w-9 items-center justify-center rounded-full bg-indigo/5 text-lg">📝</div>
+            <p className="text-sm font-semibold text-indigo">Send a message</p>
+            <p className="text-xs text-indigo/55">We reply in-app</p>
+          </button>
         </div>
 
         {/* New message form */}
@@ -163,16 +188,14 @@ export default function SupportPage() {
         <p className="mb-2 text-xs font-bold uppercase tracking-wide text-indigo/40">Your conversations</p>
         {messages === null && (
           <div className="animate-pulse space-y-2">
-            {Array.from({ length: 3 }).map((_, i) => (
+            {Array.from({ length: 2 }).map((_, i) => (
               <div key={i} className="h-16 rounded-2xl bg-indigo/5" />
             ))}
           </div>
         )}
         {messages !== null && messages.length === 0 && (
-          <div className="rounded-2xl border border-indigo/10 bg-white p-6 text-center">
-            <p className="text-sm text-indigo/55">
-              No conversations yet — message us any time and replies land right here.
-            </p>
+          <div className="rounded-2xl border border-indigo/10 bg-white p-6 text-center text-sm text-indigo/55">
+            No conversations yet — send a message and replies land here.
           </div>
         )}
         {messages !== null && messages.length > 0 && (
@@ -181,9 +204,7 @@ export default function SupportPage() {
               <Link
                 key={m.id}
                 href={`/support/${m.id}`}
-                className={`flex items-center justify-between gap-3 px-4 py-3.5 hover:bg-indigo/5 ${
-                  i > 0 ? "border-t border-indigo/5" : ""
-                }`}
+                className={`flex items-center justify-between gap-3 px-4 py-3.5 hover:bg-indigo/5 ${i > 0 ? "border-t border-indigo/5" : ""}`}
               >
                 <div className="min-w-0">
                   <p className="truncate text-sm font-semibold text-indigo">{m.subject}</p>
@@ -196,6 +217,23 @@ export default function SupportPage() {
             ))}
           </div>
         )}
+
+        {/* Socials */}
+        <p className="mb-2 mt-6 text-xs font-bold uppercase tracking-wide text-indigo/40">Follow Konek</p>
+        <div className="konek-scrollbar-none flex gap-2 overflow-x-auto">
+          {SOCIALS.map((s) => (
+            <a
+              key={s.label}
+              href={s.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="konek-tile flex min-w-[72px] flex-col items-center gap-1 rounded-2xl border border-indigo/10 bg-white px-3 py-3"
+            >
+              <span className="text-lg">{s.icon}</span>
+              <span className="text-[11px] font-semibold text-indigo/70">{s.handle}</span>
+            </a>
+          ))}
+        </div>
       </div>
     </main>
   );

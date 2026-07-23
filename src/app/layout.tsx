@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Sora, Inter } from "next/font/google";
 import { InstallPrompt } from "@/components/InstallPrompt";
 import { BottomNavGate } from "@/components/BottomNavGate";
+import { LiveChatBubble } from "@/components/LiveChatBubble";
 import "./globals.css";
 
 const sora = Sora({ subsets: ["latin"], variable: "--font-sora" });
@@ -59,6 +60,7 @@ export default function RootLayout({
         {children}
         {/* One persistent tab bar for the whole app — never re-rendered per page. */}
         <BottomNavGate />
+        <LiveChatBubble />
         <InstallPrompt />
       </body>
     </html>
