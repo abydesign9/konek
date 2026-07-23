@@ -16,8 +16,10 @@ export async function applyAsAgent(userId: string): Promise<{ agentId: string }>
 
   const floatAccountId = await getOrCreateAccount("user", userId, "NGN", "agent_float");
 
+  // Explicitly pending: the table default is 'active', which would make every
+  // applicant an instantly commission-earning agent with no admin approval.
   const { rows } = await query<{ id: string }>(
-    `INSERT INTO agents (user_id, float_account_id) VALUES ($1, $2) RETURNING id`,
+    `INSERT INTO agents (user_id, float_account_id, status) VALUES ($1, $2, 'pending') RETURNING id`,
     [userId, floatAccountId]
   );
   await logAudit(userId, "agent_apply", "agent", rows[0].id);

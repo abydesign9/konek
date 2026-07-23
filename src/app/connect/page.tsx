@@ -42,6 +42,11 @@ const FINANCE = [
   { key: "wallet", label: "Wallet", sub: "Fund, balance & history", Icon: IconWallet, href: "/wallet" },
 ];
 
+const EARN = [
+  { key: "agent", label: "Become an Agent", sub: "Sell Konek services, earn commission", Icon: IconWallet, href: "/agent" },
+  { key: "invite", label: "Invite & Earn", sub: "Refer friends, get rewarded", Icon: IconGift, href: "/invite" },
+];
+
 function Row({ label, sub, Icon, href, tint }: { label: string; sub: string; Icon: typeof IconAirtime; href: string; tint: { bg: string; fg: string } }) {
   return (
     <Link href={href} className="flex items-center gap-3 rounded-2xl bg-white px-4 py-3.5 konek-card-shadow konek-tile">
@@ -88,6 +93,15 @@ export default async function ConnectPage() {
         <div className="flex flex-col gap-2.5">
           {FINANCE.map((item) => (
             <Row key={item.key} label={item.label} sub={item.sub} Icon={item.Icon} href={item.href} tint={SERVICE_COLORS.wallet} />
+          ))}
+        </div>
+      </section>
+
+      <section className="mt-7 px-5">
+        <p className="mb-3 text-xs font-bold uppercase tracking-wide text-indigo/40">Earn with Konek</p>
+        <div className="flex flex-col gap-2.5">
+          {EARN.map((item) => (
+            <Row key={item.key} label={item.label} sub={item.sub} Icon={item.Icon} href={item.href} tint={SERVICE_COLORS.rewards ?? SERVICE_COLORS.more} />
           ))}
         </div>
       </section>
