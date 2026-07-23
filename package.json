@@ -10,7 +10,10 @@
     "db:migrate": "node -r dotenv/config scripts/migrate.mjs dotenv_config_path=.env.local",
     "test": "vitest run",
     "reconcile": "node -r dotenv/config scripts/reconcile.mjs dotenv_config_path=.env.local",
-    "cron:dev": "node -r dotenv/config scripts/cron_dev.mjs dotenv_config_path=.env.local"
+    "cron:dev": "node -r dotenv/config scripts/cron_dev.mjs dotenv_config_path=.env.local",
+    "sync": "bash scripts/sync.sh",
+    "update": "git pull --rebase origin $(git rev-parse --abbrev-ref HEAD) && npm install && npm run db:migrate",
+    "check": "npx tsc --noEmit && next lint && vitest run --exclude \"**/*.integration.test.ts\""
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

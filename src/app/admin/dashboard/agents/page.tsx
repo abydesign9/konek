@@ -27,13 +27,13 @@ export default async function AgentsDashboardPage() {
 
         <Section title="Network">
           <StatCard label="Active agents" value={active.toLocaleString()} tone="good" />
-          <StatCard label="Pending applications" value={pending.toLocaleString()} tone={pending > 0 ? "warn" : "default"} href="/admin" sub={pending > 0 ? "approve in the console →" : undefined} />
+          <StatCard label="Pending applications" value={pending.toLocaleString()} tone={pending > 0 ? "warn" : "default"} href="/admin/agents" sub={pending > 0 ? "approve now →" : undefined} />
           <StatCard label="Suspended" value={suspended.toLocaleString()} tone={suspended > 0 ? "bad" : "default"} />
           <StatCard label="Total float" value={naira(m.floatTotalMinor)} sub="across all agent float accounts" />
         </Section>
 
         <Section title="Commissions">
-          <StatCard label="Unpaid commissions" value={naira(m.unpaidCommissionsMinor)} tone={m.unpaidCommissionsMinor > 0 ? "warn" : "default"} sub="owed to agents — pay from the console" href="/admin" />
+          <StatCard label="Unpaid commissions" value={naira(m.unpaidCommissionsMinor)} tone={m.unpaidCommissionsMinor > 0 ? "warn" : "default"} sub="owed to agents — pay them out →" href="/admin/agents" />
           <StatCard label="Earned this month" value={naira(m.commissionsMtdMinor)} tone="good" />
         </Section>
 
