@@ -2,7 +2,6 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getSessionUserId } from "@/lib/auth/session";
 import { query } from "@/lib/db";
-import { BottomNav } from "@/components/BottomNav";
 import {
   IconAirtime,
   IconData,
@@ -120,8 +119,6 @@ export default async function ConnectPage() {
           </div>
         </section>
       )}
-
-      <BottomNav />
     </main>
   );
 }

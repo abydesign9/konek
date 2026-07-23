@@ -8,7 +8,6 @@ import { getBalance } from "@/lib/ledger/balance";
 import { getStreak } from "@/lib/rewards/getStreak";
 import { listActiveInAppMessages } from "@/lib/notifications/inAppMessages";
 import { NetworkLogo } from "@/components/NetworkLogo";
-import { BottomNav } from "@/components/BottomNav";
 import PromoCarousel from "@/components/PromoCarousel";
 import { OnboardingWrapper } from "@/components/OnboardingWrapper";
 import {
@@ -892,10 +891,6 @@ export default async function HomeDashboard() {
         </section>
 
       )}
-
-
-
-      <BottomNav />
 
       <OnboardingWrapper />
 

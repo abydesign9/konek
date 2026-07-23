@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Sora, Inter } from "next/font/google";
 import { InstallPrompt } from "@/components/InstallPrompt";
+import { BottomNavGate } from "@/components/BottomNavGate";
 import "./globals.css";
 
 const sora = Sora({ subsets: ["latin"], variable: "--font-sora" });
@@ -34,6 +35,11 @@ export const viewport: Viewport = {
   themeColor: "#22315C",
   width: "device-width",
   initialScale: 1,
+  // Native-app feel: no pinch-zoom jumps when focusing inputs, and the layout
+  // extends behind the iPhone home indicator (BottomNav pads itself with
+  // env(safe-area-inset-bottom)).
+  maximumScale: 1,
+  viewportFit: "cover",
 };
 
 // Users can save a theme preference (see /settings/preferences), but it
@@ -51,6 +57,8 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${sora.variable} ${inter.variable} font-body antialiased`}>
         {children}
+        {/* One persistent tab bar for the whole app — never re-rendered per page. */}
+        <BottomNavGate />
         <InstallPrompt />
       </body>
     </html>

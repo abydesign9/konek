@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { PageHeader } from "@/components/PageHeader";
-import { BottomNav } from "@/components/BottomNav";
 
 interface Notification {
   id: string;
@@ -182,8 +181,6 @@ export default function NotificationsPage() {
           </p>
         </Link>
       </div>
-
-      <BottomNav />
     </main>
   );
 }

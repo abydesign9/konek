@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 import { getSessionUserId } from "@/lib/auth/session";
-import { BottomNav } from "@/components/BottomNav";
 import { ProfileClient } from "./ProfileClient";
 
 export default async function ProfilePage() {
@@ -13,7 +12,6 @@ export default async function ProfilePage() {
         <h1 className="font-heading text-2xl font-bold text-indigo">Profile</h1>
       </header>
       <ProfileClient />
-      <BottomNav />
     </main>
   );
 }

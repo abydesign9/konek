@@ -22,6 +22,41 @@ body {
   color: var(--foreground);
   background: var(--background);
 }
+
+/* ---------- Native-app feel on the web (iOS-first) ---------- */
+
+html {
+  /* No grey/blue flash when tapping — native apps don't flash links. */
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  /* Stop the page rubber-banding past the edges like a website; individual
+     scroll areas still bounce naturally. */
+  overscroll-behavior-y: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a,
+button,
+[role="button"] {
+  /* Removes the ~300ms tap delay and accidental double-tap zoom on touch. */
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+@media (max-width: 640px) {
+  /* iOS Safari auto-zooms into any focused input with font-size < 16px,
+     which shatters the native illusion. Force 16px on touch-sized screens
+     regardless of the utility class on the element. */
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
 /* Hero balance card texture — subtle geometric pattern, not literal flags */
 .konek-hero {
   background: linear-gradient(135deg, #22315C 0%, #2E4079 55%, #1A2647 100%);

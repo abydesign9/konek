@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { PageHeader } from "@/components/PageHeader";
-import { BottomNav } from "@/components/BottomNav";
 
 interface SupportMessage {
   id: string;
@@ -198,8 +197,6 @@ export default function SupportPage() {
           </div>
         )}
       </div>
-
-      <BottomNav />
     </main>
   );
 }

@@ -4,7 +4,6 @@ import { getSessionUserId } from "@/lib/auth/session";
 import { query } from "@/lib/db";
 import { getUserWalletAccount } from "@/lib/ledger/accounts";
 import { getBalance } from "@/lib/ledger/balance";
-import { BottomNav } from "@/components/BottomNav";
 import { IconWallet, IconGlobe, IconChevronRight } from "@/components/icons";
 import { getKycStatus } from "@/lib/kyc/kycService";
 import WalletBalanceCard from "@/components/WalletBalanceCard";
@@ -104,8 +103,6 @@ export default async function WalletPage() {
 
 
         <WalletInsights />
-
-      <BottomNav />
 
       </main>
 
@@ -366,8 +363,6 @@ export default async function WalletPage() {
 
 
       <WalletInsights />
-
-      <BottomNav />
 
 
     </main>
