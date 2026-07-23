@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Avatar } from "@/components/Avatar";
+import { IconChevronRight } from "@/components/icons";
 
 interface ProfileData {
   phone: string | null;
@@ -35,28 +36,38 @@ function completeness(p: ProfileData): { pct: number; nextHref: string; nextLabe
   return { pct, nextHref: next.href, nextLabel: next.label };
 }
 
-// Emoji-card menu (the old Settings design), now the single account hub.
-const CARDS = [
-  { title: "Account information", description: "Personal details, username, avatar and address", href: "/profile/account", icon: "👤" },
-  { title: "Verification", description: "Verify your identity to unlock accounts and cards", href: "/profile/verification", icon: "✅" },
-  { title: "Privacy and security", description: "PIN, password, biometrics and sessions", href: "/settings", icon: "🔐" },
-  { title: "Preferences", description: "Notifications and appearance settings", href: "/settings/preferences", icon: "⚙️" },
-  { title: "Connected accounts", description: "Manage your cards and linked services", href: "/settings/connected-accounts", icon: "🔗" },
-  { title: "Get help", description: "Contact support and resolve your issues", href: "/support", icon: "💬" },
-  { title: "About Konek", description: "FAQs, terms and conditions, and contact", href: "/profile/about", icon: "ℹ️" },
+// Grouped-list menu: one card per group with hairline dividers — quieter and
+// more scannable than a stack of separate cards.
+const GROUPS: { title: string; rows: { icon: string; label: string; sub?: string; href: string; badge?: (p: ProfileData) => string | null }[] }[] = [
+  {
+    title: "Account",
+    rows: [
+      { icon: "👤", label: "Account information", sub: "Name, username, avatar, address", href: "/profile/account" },
+      {
+        icon: "✅",
+        label: "Verification",
+        sub: "Unlock accounts, cards & withdrawals",
+        href: "/profile/verification",
+        badge: (p) => (p.kyc_status === "verified" ? "Verified" : "Action needed"),
+      },
+    ],
+  },
+  {
+    title: "Security & app",
+    rows: [
+      { icon: "🔐", label: "Privacy and security", sub: "PIN, password, biometrics, sessions", href: "/settings" },
+      { icon: "⚙️", label: "Preferences", sub: "Notifications, appearance, language", href: "/settings/preferences" },
+      { icon: "🔗", label: "Connected accounts", sub: "Cards and linked services", href: "/settings/connected-accounts" },
+    ],
+  },
+  {
+    title: "More",
+    rows: [
+      { icon: "💬", label: "Get help", sub: "Message support, browse FAQs", href: "/support" },
+      { icon: "ℹ️", label: "About Konek", sub: "Terms, privacy and contact", href: "/profile/about" },
+    ],
+  },
 ];
-
-function SettingCard({ title, description, href, icon }: { title: string; description: string; href: string; icon: string }) {
-  return (
-    <Link href={href} className="konek-tile flex items-center gap-4 rounded-2xl border border-indigo/10 bg-white p-4">
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo/10 text-xl">{icon}</div>
-      <div className="min-w-0 flex-1">
-        <p className="font-semibold text-indigo">{title}</p>
-        <p className="truncate text-sm text-indigo/60">{description}</p>
-      </div>
-    </Link>
-  );
-}
 
 export function ProfileClient() {
   const router = useRouter();
@@ -78,59 +89,89 @@ export function ProfileClient() {
   const c = profile ? completeness(profile) : null;
 
   return (
-    <div className="mx-auto max-w-lg px-5 py-6">
-      {/* ---------- Account header ---------- */}
-      <Link href="/profile/account" className="konek-tile mb-4 block rounded-3xl bg-indigo p-6 text-white">
-        <div className="flex items-center gap-4">
+    <div className="mx-auto max-w-lg px-5 pb-6">
+      {/* ---------- Hero: identity + completeness in one seamless card ---------- */}
+      <div className="konek-hero overflow-hidden rounded-3xl text-white">
+        <Link href="/profile/account" className="konek-tile flex items-center gap-4 px-6 pb-5 pt-6">
           {profile ? (
             <Avatar
               value={profile.avatar_url}
               name={profile.full_name || profile.email || profile.phone}
-              size={56}
+              size={60}
               className="ring-2 ring-white/25"
             />
           ) : (
-            <span className="h-14 w-14 shrink-0 animate-pulse rounded-full bg-white/20" />
+            <span className="h-[60px] w-[60px] shrink-0 animate-pulse rounded-full bg-white/20" />
           )}
           <div className="min-w-0 flex-1">
-            <p className="truncate font-heading text-lg font-bold">{profile?.full_name || "Your Account"}</p>
-            <p className="truncate text-sm text-white/70">
-              {profile?.username
-                ? `@${profile.username}`
-                : profile?.email || profile?.phone || "Manage your profile, security and preferences"}
-            </p>
+            {profile ? (
+              <>
+                <p className="truncate font-heading text-xl font-bold">{profile.full_name || "Add your name"}</p>
+                <p className="truncate text-sm text-white/65">
+                  {profile.username ? `@${profile.username}` : profile.email || profile.phone || "Complete your profile"}
+                </p>
+              </>
+            ) : (
+              <div className="space-y-2">
+                <div className="h-4 w-32 animate-pulse rounded bg-white/20" />
+                <div className="h-3 w-44 animate-pulse rounded bg-white/10" />
+              </div>
+            )}
           </div>
-        </div>
-      </Link>
-
-      {/* ---------- Completeness nudge ---------- */}
-      {c && (
-        <Link href={c.nextHref} className="konek-tile mb-4 block rounded-2xl border border-indigo/10 bg-white px-5 py-4">
-          <div className="mb-2 flex items-center justify-between">
-            <p className="text-sm font-semibold text-indigo">Profile {c.pct}% complete</p>
-            <span className="text-xs font-semibold text-konek-green">{c.nextLabel} →</span>
-          </div>
-          <div className="h-2 w-full overflow-hidden rounded-full bg-indigo/10">
-            <div className="h-full rounded-full bg-konek-green transition-all" style={{ width: `${c.pct}%` }} />
-          </div>
+          <span className="shrink-0 rounded-full bg-white/15 px-3 py-1.5 text-xs font-semibold">Edit</span>
         </Link>
-      )}
 
-      {/* ---------- Menu ---------- */}
-      <div className="space-y-3">
-        {CARDS.map((card) => (
-          <SettingCard key={card.href} {...card} />
-        ))}
+        {c && (
+          <Link href={c.nextHref} className="block border-t border-white/10 bg-white/5 px-6 py-3.5">
+            <div className="mb-1.5 flex items-center justify-between text-xs">
+              <span className="font-semibold text-white/80">Profile {c.pct}% complete</span>
+              <span className="font-semibold text-konek-green">{c.nextLabel} →</span>
+            </div>
+            <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/15">
+              <div className="h-full rounded-full bg-konek-green transition-all" style={{ width: `${c.pct}%` }} />
+            </div>
+          </Link>
+        )}
       </div>
 
-      {/* ---------- Security note ---------- */}
-      <div className="mt-6 rounded-3xl border border-indigo/10 bg-white p-5">
-        <h2 className="font-bold text-indigo">Security protection</h2>
-        <p className="mt-2 text-sm text-indigo/60">
-          Konek protects your account with identity verification, transaction PINs, fraud monitoring and
-          secure sessions.
-        </p>
-      </div>
+      {/* ---------- Grouped menu ---------- */}
+      {GROUPS.map((group) => (
+        <section key={group.title} className="mt-6">
+          <p className="mb-2 px-1 text-xs font-bold uppercase tracking-wide text-indigo/40">{group.title}</p>
+          <div className="konek-card-shadow overflow-hidden rounded-2xl bg-white">
+            {group.rows.map((row, i) => {
+              const badge = profile && row.badge ? row.badge(profile) : null;
+              return (
+                <Link
+                  key={row.href}
+                  href={row.href}
+                  className={`flex items-center gap-3.5 px-4 py-3.5 transition-colors hover:bg-indigo/[0.03] active:bg-indigo/5 ${
+                    i > 0 ? "border-t border-indigo/5" : ""
+                  }`}
+                >
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo/5 text-lg">
+                    {row.icon}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-sm font-semibold text-indigo">{row.label}</span>
+                    {row.sub && <span className="block truncate text-xs text-indigo/50">{row.sub}</span>}
+                  </span>
+                  {badge && (
+                    <span
+                      className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold ${
+                        badge === "Verified" ? "bg-konek-green/15 text-konek-green" : "bg-gold/15 text-gold"
+                      }`}
+                    >
+                      {badge}
+                    </span>
+                  )}
+                  <IconChevronRight className="h-4 w-4 shrink-0 text-indigo/25" />
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+      ))}
 
       {/* ---------- Log out ---------- */}
       <button
@@ -140,6 +181,10 @@ export function ProfileClient() {
       >
         {loggingOut ? "Logging out…" : "Log out"}
       </button>
+
+      <p className="mt-4 text-center text-[11px] text-indigo/35">
+        Konek · Secured with encryption, PINs and fraud monitoring
+      </p>
     </div>
   );
 }

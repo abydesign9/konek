@@ -1,263 +1,164 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
 
-
-const referrals = [
-  {
-    name:"John",
-    status:"Completed KYC",
-    reward:"₦1,000"
-  },
-  {
-    name:"Sarah",
-    status:"Pending verification",
-    reward:"Pending"
-  }
-];
-
-
-
-export default function InvitePage(){
-
-
-const [copied,setCopied] =
-useState(false);
-
-
-const referralCode =
-"KONEK12345";
-
-
-const inviteLink =
-`https://konek.app/signup?ref=${referralCode}`;
-
-
-
-async function copyLink(){
-
-await navigator.clipboard.writeText(inviteLink);
-
-setCopied(true);
-
-setTimeout(()=>setCopied(false),2000);
-
+interface Friend {
+  name: string;
+  joinedAt: string;
+  status: string; // pending | qualified | paid
+  rewardMinor: number;
 }
 
-
-
-return (
-
-<main className="min-h-screen bg-background pb-28">
-
-
-<PageHeader
-
-title="Invite & Earn"
-
-backHref="/home"
-
-/>
-
-
-
-<div className="max-w-lg mx-auto px-5 py-6">
-
-
-
-<div className="rounded-3xl bg-indigo text-white p-6 mb-5">
-
-
-<p className="text-sm text-white/60">
-Your referral code
-</p>
-
-
-<h1 className="text-3xl font-bold mt-2">
-{referralCode}
-</h1>
-
-
-<p className="text-sm text-white/70 mt-3">
-Invite friends and earn rewards when they join Konek.
-</p>
-
-
-</div>
-
-
-
-
-
-<div className="rounded-3xl bg-white border border-indigo/10 p-5 mb-5">
-
-
-<h2 className="font-bold text-indigo mb-4">
-Share your invite
-</h2>
-
-
-
-<div className="rounded-xl bg-indigo/5 p-3 text-sm text-indigo/70 break-all mb-4">
-
-{inviteLink}
-
-</div>
-
-
-
-
-<button
-
-onClick={copyLink}
-
-className="w-full rounded-xl bg-indigo text-white py-3 font-semibold"
-
->
-
-{copied ? "Copied ✅" : "Copy Invite Link"}
-
-</button>
-
-
-
-</div>
-
-
-
-
-
-
-
-<div className="grid grid-cols-2 gap-3 mb-5">
-
-
-<div className="rounded-2xl bg-white border border-indigo/10 p-4">
-
-<p className="text-xs text-indigo/50">
-Successful referrals
-</p>
-
-
-<p className="text-2xl font-bold text-indigo mt-2">
-12
-</p>
-
-</div>
-
-
-
-
-<div className="rounded-2xl bg-white border border-indigo/10 p-4">
-
-<p className="text-xs text-indigo/50">
-Rewards earned
-</p>
-
-
-<p className="text-2xl font-bold text-indigo mt-2">
-₦12,000
-</p>
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-<div className="rounded-3xl bg-white border border-indigo/10 p-5">
-
-
-<h2 className="font-bold text-indigo mb-4">
-Referral History
-</h2>
-
-
-
-<div className="space-y-3">
-
-
-{referrals.map(item=>(
-
-
-<div
-
-key={item.name}
-
-className="flex justify-between items-center rounded-xl bg-indigo/5 p-3"
-
->
-
-
-<div>
-
-<p className="font-semibold text-indigo">
-{item.name}
-</p>
-
-
-<p className="text-xs text-indigo/60">
-{item.status}
-</p>
-
-
-</div>
-
-
-
-<p className="font-bold text-konek-green">
-{item.reward}
-</p>
-
-
-</div>
-
-
-))}
-
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-<div className="mt-5 rounded-3xl bg-indigo/5 p-5">
-
-
-<h3 className="font-bold text-indigo">
-How rewards work
-</h3>
-
-
-<p className="text-sm text-indigo/60 mt-2">
-
-Invite friends → They create an account → They complete identity verification → Both users receive rewards.
-
-</p>
-
-
-</div>
-
-
-
-
-</div>
-
-
-</main>
-
-);
-
+interface ReferralData {
+  referralCode: string | null;
+  referralCount: number;
+  earnedMinor: number;
+  friends: Friend[];
+}
+
+const FRIEND_STATUS: Record<string, string> = {
+  pending: "Signed up — not transacted yet",
+  qualified: "Transacting — almost there",
+  paid: "Reward paid",
+};
+
+function naira(minor: number) {
+  return `₦${(minor / 100).toLocaleString()}`;
+}
+
+export default function InvitePage() {
+  const [data, setData] = useState<ReferralData | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/referrals/me")
+      .then((r) => r.json())
+      .then((d) => setData(d))
+      .catch(() => setData({ referralCode: null, referralCount: 0, earnedMinor: 0, friends: [] }));
+  }, []);
+
+  const inviteLink =
+    data?.referralCode && typeof window !== "undefined"
+      ? `${window.location.origin}/signup?ref=${data.referralCode}`
+      : "";
+  const shareText = `Join me on Konek for airtime, data, bills, eSIMs and a USD account: ${inviteLink}`;
+
+  async function copyLink() {
+    if (!inviteLink) return;
+    await navigator.clipboard.writeText(inviteLink);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+
+  async function share() {
+    if (!inviteLink) return;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: "Join me on Konek", text: shareText, url: inviteLink });
+        return;
+      } catch {
+        // dismissed — fall through to copy
+      }
+    }
+    copyLink();
+  }
+
+  if (!data) {
+    return (
+      <main className="min-h-screen bg-background pb-28">
+        <PageHeader title="Invite & Earn" backHref="/home" />
+        <div className="mx-auto max-w-lg animate-pulse px-5 py-6">
+          <div className="mb-5 h-36 rounded-3xl bg-indigo/10" />
+          <div className="mb-5 h-40 rounded-3xl bg-indigo/5" />
+          <div className="grid grid-cols-2 gap-3">
+            <div className="h-24 rounded-2xl bg-indigo/5" />
+            <div className="h-24 rounded-2xl bg-indigo/5" />
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  return (
+    <main className="min-h-screen bg-background pb-28">
+      <PageHeader title="Invite & Earn" backHref="/home" />
+
+      <div className="mx-auto max-w-lg px-5 py-6">
+        <div className="mb-5 rounded-3xl bg-indigo p-6 text-white">
+          <p className="text-sm text-white/60">Your referral code</p>
+          <h1 className="mt-2 text-3xl font-bold tracking-wide">{data.referralCode ?? "—"}</h1>
+          <p className="mt-3 text-sm text-white/70">
+            Earn <span className="font-semibold text-konek-green">$10</span> for every friend who joins
+            with your link and transacts $100 or more.
+          </p>
+        </div>
+
+        <div className="mb-5 rounded-3xl border border-indigo/10 bg-white p-5">
+          <h2 className="mb-4 font-bold text-indigo">Share your invite</h2>
+          <div className="mb-4 break-all rounded-xl bg-indigo/5 p-3 text-sm text-indigo/70">
+            {inviteLink || "Your invite link appears here"}
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={copyLink}
+              disabled={!inviteLink}
+              className="rounded-xl border border-indigo/20 py-3 font-semibold text-indigo disabled:opacity-40"
+            >
+              {copied ? "Copied ✅" : "Copy Link"}
+            </button>
+            <button
+              onClick={share}
+              disabled={!inviteLink}
+              className="rounded-xl bg-indigo py-3 font-semibold text-white disabled:opacity-40"
+            >
+              Share
+            </button>
+          </div>
+        </div>
+
+        <div className="mb-5 grid grid-cols-2 gap-3">
+          <div className="rounded-2xl border border-indigo/10 bg-white p-4">
+            <p className="text-xs text-indigo/50">Friends referred</p>
+            <p className="mt-2 text-2xl font-bold text-indigo">{data.referralCount}</p>
+          </div>
+          <div className="rounded-2xl border border-indigo/10 bg-white p-4">
+            <p className="text-xs text-indigo/50">Rewards earned</p>
+            <p className="mt-2 text-2xl font-bold text-konek-green">{naira(data.earnedMinor)}</p>
+          </div>
+        </div>
+
+        <div className="rounded-3xl border border-indigo/10 bg-white p-5">
+          <h2 className="mb-4 font-bold text-indigo">Referral history</h2>
+          {data.friends.length === 0 ? (
+            <p className="text-sm text-indigo/50">
+              No referrals yet — share your link and your friends will show up here.
+            </p>
+          ) : (
+            <div className="space-y-3">
+              {data.friends.map((f, i) => (
+                <div key={i} className="flex items-center justify-between rounded-xl bg-indigo/5 p-3">
+                  <div>
+                    <p className="font-semibold text-indigo">{f.name}</p>
+                    <p className="text-xs text-indigo/60">{FRIEND_STATUS[f.status] ?? f.status}</p>
+                  </div>
+                  <p className={`font-bold ${f.status === "paid" ? "text-konek-green" : "text-indigo/40"}`}>
+                    {f.status === "paid" ? `+${naira(f.rewardMinor)}` : "Pending"}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="mt-5 rounded-3xl bg-indigo/5 p-5">
+          <h3 className="font-bold text-indigo">How rewards work</h3>
+          <p className="mt-2 text-sm text-indigo/60">
+            Share your link → your friend joins Konek → they spend $100 or more → you get $10 as wallet
+            credit at today&apos;s rate. They get a 50-coin welcome on their first purchase too.
+          </p>
+        </div>
+      </div>
+    </main>
+  );
 }
