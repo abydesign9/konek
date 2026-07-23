@@ -16,6 +16,16 @@ interface CatalogItem {
   active: boolean;
 }
 
+const BLANK_NEW = {
+  serviceType: "data",
+  externalId: "",
+  name: "",
+  network: "",
+  currency: "NGN",
+  costNaira: "",
+  priceNaira: "",
+};
+
 interface FxConfig {
   ngnPerUsd: number;
   usdNgnSpreadPct: number;
@@ -39,6 +49,91 @@ export function RatesConsole() {
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [savingId, setSavingId] = useState<string | null>(null);
   const [filter, setFilter] = useState<string>("all");
+
+  const [showNew, setShowNew] = useState(false);
+  const [draft, setDraft] = useState({ ...BLANK_NEW });
+  const [creating, setCreating] = useState(false);
+  const [createMsg, setCreateMsg] = useState<string | null>(null);
+  const [editing, setEditing] = useState<CatalogItem | null>(null);
+  const [editDraft, setEditDraft] = useState({ name: "", network: "", priceNaira: "", costNaira: "" });
+  const [editMsg, setEditMsg] = useState<string | null>(null);
+
+  async function createItem() {
+    setCreateMsg(null);
+    const priceMinor = Math.round(Number(draft.priceNaira) * 100);
+    const costMinor = draft.costNaira ? Math.round(Number(draft.costNaira) * 100) : 0;
+    if (!draft.serviceType.trim() || !draft.externalId.trim() || !draft.name.trim()) {
+      setCreateMsg("Service type, external id and name are required");
+      return;
+    }
+    if (!Number.isInteger(priceMinor) || priceMinor <= 0) {
+      setCreateMsg("Enter a valid price");
+      return;
+    }
+    setCreating(true);
+    const res = await fetch("/api/admin/rates/catalog", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        serviceType: draft.serviceType.trim(),
+        externalId: draft.externalId.trim(),
+        name: draft.name.trim(),
+        network: draft.network.trim() || undefined,
+        currency: draft.currency,
+        priceMinor,
+        costMinor,
+      }),
+    });
+    setCreating(false);
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      setCreateMsg(body.error ?? "Failed to create");
+      return;
+    }
+    setDraft({ ...BLANK_NEW });
+    setShowNew(false);
+    load();
+  }
+
+  function openEdit(item: CatalogItem) {
+    setEditing(item);
+    setEditMsg(null);
+    setEditDraft({
+      name: item.name,
+      network: item.network ?? "",
+      priceNaira: (Number(item.price_minor) / 100).toString(),
+      costNaira: (Number(item.cost_minor) / 100).toString(),
+    });
+  }
+
+  async function saveEdit() {
+    if (!editing) return;
+    setEditMsg(null);
+    const res = await fetch(`/api/admin/rates/catalog/${editing.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: editDraft.name.trim(),
+        network: editDraft.network.trim(),
+        priceMinor: Math.round(Number(editDraft.priceNaira) * 100),
+        costMinor: Math.round(Number(editDraft.costNaira) * 100),
+      }),
+    });
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      setEditMsg(body.error ?? "Failed to save");
+      return;
+    }
+    setEditing(null);
+    load();
+  }
+
+  async function deleteItem(item: CatalogItem) {
+    if (!confirm(`Delete "${item.name}"? This cannot be undone.`)) return;
+    await fetch(`/api/admin/rates/catalog/${item.id}`, { method: "DELETE" });
+    setEditing(null);
+    load();
+  }
 
   function load() {
     fetch("/api/admin/rates/fx")
@@ -145,22 +240,116 @@ export function RatesConsole() {
 
         <div className="col-span-1 lg:col-span-12">
           <Card
-            title="Catalog pricing"
+            title="Catalog & products"
             action={
-              <select
-                value={filter}
-                onChange={(e) => setFilter(e.target.value)}
-                className="rounded-lg border border-border-soft px-2 py-1.5 text-xs"
-              >
-                <option value="all">All services</option>
-                {serviceTypes.map((s) => (
-                  <option key={s} value={s}>
-                    {SERVICE_LABEL[s] ?? s}
-                  </option>
-                ))}
-              </select>
+              <div className="flex items-center gap-2">
+                <select
+                  value={filter}
+                  onChange={(e) => setFilter(e.target.value)}
+                  className="rounded-lg border border-border-soft px-2 py-1.5 text-xs"
+                >
+                  <option value="all">All services</option>
+                  {serviceTypes.map((s) => (
+                    <option key={s} value={s}>
+                      {SERVICE_LABEL[s] ?? s}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  onClick={() => setShowNew((s) => !s)}
+                  className="rounded-lg bg-konek-green px-3 py-1.5 text-xs font-semibold text-white"
+                >
+                  {showNew ? "Close" : "+ New product"}
+                </button>
+              </div>
             }
           >
+            {showNew && (
+              <div className="mb-4 rounded-xl border border-konek-green/30 bg-konek-green/5 p-4">
+                <p className="mb-3 text-sm font-semibold text-indigo">New catalog product</p>
+                <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
+                  <label className="text-xs text-text-secondary">
+                    Service type
+                    <input
+                      list="svc-types"
+                      value={draft.serviceType}
+                      onChange={(e) => setDraft((d) => ({ ...d, serviceType: e.target.value }))}
+                      placeholder="data, router_mifi…"
+                      className="mt-1 w-full rounded-lg border border-border-soft px-2 py-1.5 text-sm text-indigo"
+                    />
+                    <datalist id="svc-types">
+                      {["data", "cable", "exam_pin", "gift_card", "esim", "router_mifi", "intl_data"].map((s) => (
+                        <option key={s} value={s} />
+                      ))}
+                    </datalist>
+                  </label>
+                  <label className="text-xs text-text-secondary">
+                    External id
+                    <input
+                      value={draft.externalId}
+                      onChange={(e) => setDraft((d) => ({ ...d, externalId: e.target.value }))}
+                      placeholder="unique-plan-id"
+                      className="mt-1 w-full rounded-lg border border-border-soft px-2 py-1.5 text-sm text-indigo"
+                    />
+                  </label>
+                  <label className="text-xs text-text-secondary">
+                    Network / brand
+                    <input
+                      value={draft.network}
+                      onChange={(e) => setDraft((d) => ({ ...d, network: e.target.value }))}
+                      placeholder="MTN, DStv…"
+                      className="mt-1 w-full rounded-lg border border-border-soft px-2 py-1.5 text-sm text-indigo"
+                    />
+                  </label>
+                  <label className="col-span-2 text-xs text-text-secondary md:col-span-3">
+                    Name
+                    <input
+                      value={draft.name}
+                      onChange={(e) => setDraft((d) => ({ ...d, name: e.target.value }))}
+                      placeholder="e.g. 1.5GB Monthly"
+                      className="mt-1 w-full rounded-lg border border-border-soft px-2 py-1.5 text-sm text-indigo"
+                    />
+                  </label>
+                  <label className="text-xs text-text-secondary">
+                    Currency
+                    <select
+                      value={draft.currency}
+                      onChange={(e) => setDraft((d) => ({ ...d, currency: e.target.value }))}
+                      className="mt-1 w-full rounded-lg border border-border-soft px-2 py-1.5 text-sm text-indigo"
+                    >
+                      <option value="NGN">NGN</option>
+                      <option value="USD">USD</option>
+                    </select>
+                  </label>
+                  <label className="text-xs text-text-secondary">
+                    Cost (vendor)
+                    <input
+                      value={draft.costNaira}
+                      onChange={(e) => setDraft((d) => ({ ...d, costNaira: e.target.value.replace(/[^\d.]/g, "") }))}
+                      className="mt-1 w-full rounded-lg border border-border-soft px-2 py-1.5 text-sm text-indigo"
+                    />
+                  </label>
+                  <label className="text-xs text-text-secondary">
+                    Price (customer)
+                    <input
+                      value={draft.priceNaira}
+                      onChange={(e) => setDraft((d) => ({ ...d, priceNaira: e.target.value.replace(/[^\d.]/g, "") }))}
+                      className="mt-1 w-full rounded-lg border border-border-soft px-2 py-1.5 text-sm text-indigo"
+                    />
+                  </label>
+                </div>
+                <div className="mt-3 flex items-center gap-2">
+                  <button
+                    onClick={createItem}
+                    disabled={creating}
+                    className="rounded-lg bg-indigo px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
+                  >
+                    {creating ? "Creating…" : "Create product"}
+                  </button>
+                  {createMsg && <span className="text-xs text-red-600">{createMsg}</span>}
+                </div>
+              </div>
+            )}
             <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
               {visible.map((item) => (
                 <div
@@ -199,6 +388,12 @@ export function RatesConsole() {
                     >
                       {item.active ? "Disable" : "Enable"}
                     </button>
+                    <button
+                      onClick={() => openEdit(item)}
+                      className="rounded-lg bg-indigo/10 px-3 py-1.5 text-xs font-semibold text-indigo"
+                    >
+                      Edit
+                    </button>
                   </div>
                 </div>
               ))}
@@ -207,6 +402,65 @@ export function RatesConsole() {
           </Card>
         </div>
       </Grid>
+
+      {editing && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={() => setEditing(null)}>
+          <div className="w-full max-w-md rounded-2xl bg-white p-5" onClick={(e) => e.stopPropagation()}>
+            <div className="mb-3 flex items-center justify-between">
+              <h3 className="font-heading font-bold text-indigo">Edit product</h3>
+              <button onClick={() => setEditing(null)} className="text-sm text-text-secondary">Close</button>
+            </div>
+            <p className="mb-4 text-xs text-text-secondary">
+              {SERVICE_LABEL[editing.service_type] ?? editing.service_type} · {editing.vendor} · {editing.external_id}
+            </p>
+            <div className="flex flex-col gap-3">
+              <label className="text-xs text-text-secondary">
+                Name
+                <input
+                  value={editDraft.name}
+                  onChange={(e) => setEditDraft((d) => ({ ...d, name: e.target.value }))}
+                  className="mt-1 w-full rounded-lg border border-border-soft px-3 py-2 text-sm text-indigo"
+                />
+              </label>
+              <label className="text-xs text-text-secondary">
+                Network / brand
+                <input
+                  value={editDraft.network}
+                  onChange={(e) => setEditDraft((d) => ({ ...d, network: e.target.value }))}
+                  className="mt-1 w-full rounded-lg border border-border-soft px-3 py-2 text-sm text-indigo"
+                />
+              </label>
+              <div className="grid grid-cols-2 gap-3">
+                <label className="text-xs text-text-secondary">
+                  Cost ({editing.currency})
+                  <input
+                    value={editDraft.costNaira}
+                    onChange={(e) => setEditDraft((d) => ({ ...d, costNaira: e.target.value.replace(/[^\d.]/g, "") }))}
+                    className="mt-1 w-full rounded-lg border border-border-soft px-3 py-2 text-sm text-indigo"
+                  />
+                </label>
+                <label className="text-xs text-text-secondary">
+                  Price ({editing.currency})
+                  <input
+                    value={editDraft.priceNaira}
+                    onChange={(e) => setEditDraft((d) => ({ ...d, priceNaira: e.target.value.replace(/[^\d.]/g, "") }))}
+                    className="mt-1 w-full rounded-lg border border-border-soft px-3 py-2 text-sm text-indigo"
+                  />
+                </label>
+              </div>
+            </div>
+            {editMsg && <p className="mt-3 text-xs text-red-600">{editMsg}</p>}
+            <div className="mt-5 flex items-center justify-between">
+              <button onClick={() => deleteItem(editing)} className="text-sm font-semibold text-red-600">
+                Delete
+              </button>
+              <button onClick={saveEdit} className="rounded-lg bg-indigo px-5 py-2 text-sm font-semibold text-white">
+                Save changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
