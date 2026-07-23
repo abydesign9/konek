@@ -342,6 +342,14 @@ Reveal
 </div>
 
 
+<a
+href={`/cards/${card.id}`}
+className="mb-6 block rounded-2xl bg-white border border-indigo/20 text-indigo text-center py-3 font-semibold"
+>
+Card settings — limits &amp; merchant lock
+</a>
+
+
 
 
 

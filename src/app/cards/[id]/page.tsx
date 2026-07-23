@@ -26,6 +26,7 @@ export default function CardSettingsPage() {
   const id = params.id as string;
 
   const [card, setCard] = useState<Card | null>(null);
+  const [notFound, setNotFound] = useState(false);
   const [singleLimit, setSingleLimit] = useState("");
   const [monthlyLimit, setMonthlyLimit] = useState("");
   const [merchantLock, setMerchantLock] = useState("");
@@ -39,6 +40,11 @@ export default function CardSettingsPage() {
     const found = data.cards.find(
       (item) => item.id === id
     );
+
+    if (!found) {
+      setNotFound(true);
+      return;
+    }
 
     if (found) {
       setCard(found);
@@ -105,6 +111,23 @@ export default function CardSettingsPage() {
   }
 
 
+
+  if (notFound) {
+    return (
+      <main className="min-h-screen bg-background">
+        <PageHeader title="Card Settings" backHref="/cards" />
+        <div className="max-w-lg mx-auto px-5 py-10 text-center">
+          <p className="font-semibold text-indigo mb-1">Card not found</p>
+          <p className="text-sm text-indigo/60">
+            This card doesn&apos;t exist or belongs to another account.
+          </p>
+          <a href="/cards" className="mt-6 inline-block rounded-xl bg-indigo px-6 py-3 text-sm font-semibold text-white">
+            Back to cards
+          </a>
+        </div>
+      </main>
+    );
+  }
 
   if (!card) {
     return (
