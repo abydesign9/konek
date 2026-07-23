@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, Grid, PageHeader } from "@/components/adminUi";
+import { CatalogTable } from "./CatalogTable";
 
 interface CatalogItem {
   id: string;
@@ -46,9 +47,6 @@ export function RatesConsole() {
   const [fxMsg, setFxMsg] = useState<string | null>(null);
 
   const [items, setItems] = useState<CatalogItem[]>([]);
-  const [drafts, setDrafts] = useState<Record<string, string>>({});
-  const [savingId, setSavingId] = useState<string | null>(null);
-  const [filter, setFilter] = useState<string>("all");
 
   const [showNew, setShowNew] = useState(false);
   const [draft, setDraft] = useState({ ...BLANK_NEW });
@@ -169,32 +167,6 @@ export function RatesConsole() {
     if (res.ok) load();
   }
 
-  async function saveCatalogPrice(item: CatalogItem) {
-    const naira = drafts[item.id];
-    const priceMinor = Math.round(Number(naira) * 100);
-    if (!Number.isInteger(priceMinor) || priceMinor <= 0) return;
-    setSavingId(item.id);
-    await fetch(`/api/admin/rates/catalog/${item.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ priceMinor }),
-    });
-    setSavingId(null);
-    load();
-  }
-
-  async function toggleActive(item: CatalogItem) {
-    await fetch(`/api/admin/rates/catalog/${item.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ active: !item.active }),
-    });
-    load();
-  }
-
-  const serviceTypes = useMemo(() => Array.from(new Set(items.map((i) => i.service_type))), [items]);
-  const visible = filter === "all" ? items : items.filter((i) => i.service_type === filter);
-
   return (
     <>
       <PageHeader
@@ -242,26 +214,12 @@ export function RatesConsole() {
           <Card
             title="Catalog & products"
             action={
-              <div className="flex items-center gap-2">
-                <select
-                  value={filter}
-                  onChange={(e) => setFilter(e.target.value)}
-                  className="rounded-lg border border-border-soft px-2 py-1.5 text-xs"
-                >
-                  <option value="all">All services</option>
-                  {serviceTypes.map((s) => (
-                    <option key={s} value={s}>
-                      {SERVICE_LABEL[s] ?? s}
-                    </option>
-                  ))}
-                </select>
-                <button
-                  onClick={() => setShowNew((s) => !s)}
-                  className="rounded-lg bg-konek-green px-3 py-1.5 text-xs font-semibold text-white"
-                >
-                  {showNew ? "Close" : "+ New product"}
-                </button>
-              </div>
+              <button
+                onClick={() => setShowNew((s) => !s)}
+                className="rounded-lg bg-konek-green px-3 py-1.5 text-xs font-semibold text-white"
+              >
+                {showNew ? "Close" : "+ New product"}
+              </button>
             }
           >
             {showNew && (
@@ -350,55 +308,7 @@ export function RatesConsole() {
                 </div>
               </div>
             )}
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
-              {visible.map((item) => (
-                <div
-                  key={item.id}
-                  className={`flex flex-col gap-3 rounded-xl border px-4 py-3 ${
-                    item.active ? "border-border-soft bg-white" : "border-border-soft bg-hover-tint opacity-60"
-                  }`}
-                >
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-indigo">{item.name}</p>
-                    <p className="text-xs text-text-secondary">
-                      {SERVICE_LABEL[item.service_type] ?? item.service_type} · {item.vendor}
-                      {item.network ? ` · ${item.network}` : ""} · cost {item.currency}{" "}
-                      {(Number(item.cost_minor) / 100).toLocaleString()}
-                    </p>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-xs text-text-secondary">{item.currency}</span>
-                    <input
-                      defaultValue={(Number(item.price_minor) / 100).toString()}
-                      onChange={(e) => setDrafts((d) => ({ ...d, [item.id]: e.target.value }))}
-                      className="w-24 rounded-lg border border-border-soft px-2 py-1.5 text-right text-sm"
-                    />
-                    <button
-                      onClick={() => saveCatalogPrice(item)}
-                      disabled={savingId === item.id}
-                      className="rounded-lg bg-indigo px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50"
-                    >
-                      Save
-                    </button>
-                    <button
-                      onClick={() => toggleActive(item)}
-                      className={`rounded-lg px-3 py-1.5 text-xs font-semibold ${
-                        item.active ? "bg-red-50 text-red-600" : "bg-konek-green/10 text-konek-green"
-                      }`}
-                    >
-                      {item.active ? "Disable" : "Enable"}
-                    </button>
-                    <button
-                      onClick={() => openEdit(item)}
-                      className="rounded-lg bg-indigo/10 px-3 py-1.5 text-xs font-semibold text-indigo"
-                    >
-                      Edit
-                    </button>
-                  </div>
-                </div>
-              ))}
-              {visible.length === 0 && <p className="text-sm text-text-secondary">No catalog items synced yet.</p>}
-            </div>
+            <CatalogTable items={items} onReload={load} onEdit={openEdit} />
           </Card>
         </div>
       </Grid>
