@@ -49,6 +49,9 @@ useState<CardDetails | null>(null);
 const [error,setError] =
 useState<string|null>(null);
 
+const [verified,setVerified] =
+useState<boolean|null>(null);
+
 
 async function issueCard(){
 
@@ -101,6 +104,11 @@ setData(json);
 useEffect(()=>{
 
 load();
+
+fetch("/api/verification/status")
+.then((r)=>r.json())
+.then((d)=>setVerified((d.tier ?? 0) >= 2))
+.catch(()=>setVerified(false));
 
 },[]);
 
@@ -193,30 +201,49 @@ backHref="/wallet"
 
 {!card ? (
 
-<div className="rounded-3xl bg-white border border-indigo/10 p-8 text-center">
+<div className="rounded-3xl bg-white border border-indigo/10 p-6">
 
 
-<div className="text-5xl mb-4">
-💳
+<div className="text-center">
+<div className="text-5xl mb-3">💳</div>
+<h2 className="font-bold text-indigo text-xl">Create a virtual card</h2>
+<p className="text-sm text-indigo/60 mt-2">Spend online worldwide from your USD wallet.</p>
 </div>
 
 
-<h2 className="font-bold text-indigo text-xl">
-No card yet
-</h2>
+{/* Fee + KYC notice */}
+<div className="mt-5 rounded-2xl bg-indigo/5 px-4 py-3 text-sm text-indigo/70">
+You must be <span className="font-semibold text-indigo">verified (finance tier)</span> and have a
+funded USD wallet to create a virtual card.
+</div>
 
 
-<p className="text-sm text-indigo/60 mt-2">
-Create a virtual card to spend online worldwide.
-</p>
+{/* Balance */}
+<div className="mt-3 flex items-center justify-between rounded-2xl border border-indigo/10 px-4 py-3">
+<span className="text-sm text-indigo/60">USD wallet balance</span>
+<span className="text-sm font-bold text-indigo">${(data.balanceMinor/100).toLocaleString()}</span>
+</div>
+
+
+{/* User verification badge */}
+<div className="mt-3 rounded-2xl border border-indigo/10 px-4 py-3">
+<p className="mb-1.5 text-xs text-indigo/50">User verification</p>
+{verified === null ? (
+<span className="inline-block rounded-full bg-indigo/10 px-3 py-1 text-xs font-semibold text-indigo/60">Checking…</span>
+) : verified ? (
+<span className="inline-block rounded-full bg-konek-green/15 px-3 py-1 text-xs font-semibold text-konek-green">✓ Verified</span>
+) : (
+<a href="/kyc" className="inline-block rounded-full bg-red-50 px-3 py-1 text-xs font-semibold text-red-600">Not verified · Verify →</a>
+)}
+</div>
 
 
 <button
 onClick={issueCard}
-disabled={loading}
-className="mt-6 w-full rounded-2xl bg-indigo text-white py-3.5 font-semibold disabled:opacity-50"
+disabled={loading || verified === false}
+className="mt-5 w-full rounded-2xl bg-indigo text-white py-3.5 font-semibold disabled:opacity-50"
 >
-{loading ? "Creating…" : "Create Card"}
+{loading ? "Creating…" : verified === false ? "Verify to create a card" : "Create Card"}
 </button>
 
 
