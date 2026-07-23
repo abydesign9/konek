@@ -26,6 +26,7 @@ export const TXN_TYPE_LABEL: Record<string, string> = {
   intl_topup: "International top-up",
   intl_data: "Data top-up",
   esim: "eSIM",
+  router_mifi: "Router & MiFi",
   fx_convert: "Currency conversion",
   reward_credit: "Reward credit",
   refund: "Refund",

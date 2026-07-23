@@ -26,6 +26,7 @@ const CONNECTIVITY = [
   { key: "airtime", label: "Airtime", sub: "Top up any network", Icon: IconAirtime, href: "/buy/airtime" },
   { key: "data", label: "Data", sub: "Bundles for every carrier", Icon: IconData, href: "/buy/data" },
   { key: "esim", label: "eSIM", sub: "Travel data, activated in seconds", Icon: IconEsim, href: "/buy/esim" },
+  { key: "router", label: "Router & MiFi", sub: "Portable internet devices & data", Icon: IconData, href: "/buy/router-mifi" },
   { key: "intl", label: "International Top-Up", sub: "Send credit abroad", Icon: IconGlobe, href: "/buy/intl-topup" },
   { key: "data", label: "Data Top-Up", sub: "Mobile data for numbers abroad", Icon: IconData, href: "/buy/data-topup" },
   { key: "cable", label: "Cable TV", sub: "DStv, GOtv, StarTimes", Icon: IconCable, href: "/buy/cable" },

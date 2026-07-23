@@ -8,6 +8,7 @@ export type VendorServiceType =
   | "gift_card"
   | "intl_topup"
   | "intl_data"
+  | "router_mifi"
   | "esim";
 
 export interface PurchaseParams {

@@ -8,7 +8,6 @@ import { IconWallet, IconGlobe, IconChevronRight } from "@/components/icons";
 import { getKycStatus } from "@/lib/kyc/kycService";
 import WalletBalanceCard from "@/components/WalletBalanceCard";
 import WalletInsights from "@/components/WalletInsights";
-import WalletActions from "@/components/WalletActions";
 import BalanceVisibility from "@/components/BalanceVisibility";
 
 interface RecentTxn {
@@ -172,13 +171,6 @@ export default async function WalletPage() {
 
 
       <WalletBalanceCard balanceMinor={ngnBalanceMinor} />
-
-
-
-
-
-      <WalletActions />
-
 
 
 

@@ -26,9 +26,39 @@ export default function ElectricityPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
+  // Meter verification: confirm the registered customer before paying.
+  const [verifying, setVerifying] = useState(false);
+  const [customerName, setCustomerName] = useState<string | null>(null);
+
+  async function verifyMeter() {
+    if (!provider) return setError("Select electricity provider first");
+    if (!meter) return setError("Enter meter number");
+    setVerifying(true);
+    setError("");
+    setCustomerName(null);
+    const res = await fetch("/api/verify/meter", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ disco: provider, meterNo: meter, meterType }),
+    });
+    const data = await res.json().catch(() => ({}));
+    setVerifying(false);
+    if (!res.ok || !data.verified) {
+      setError(data.error ?? "Could not verify this meter");
+      return;
+    }
+    setCustomerName(data.customerName);
+  }
+
+  // Re-verification is required whenever the meter/provider changes.
+  function resetVerification() {
+    setCustomerName(null);
+  }
+
   function proceed() {
     if (!provider) return setError("Select electricity provider");
     if (!meter) return setError("Enter meter number");
+    if (!customerName) return setError("Verify the meter number first");
     if (!amount) return setError("Select an amount");
     setError("");
     setShowPin(true);
@@ -115,7 +145,7 @@ export default function ElectricityPage() {
           {PROVIDERS.map((item) => (
             <button
               key={item}
-              onClick={() => setProvider(item)}
+              onClick={() => { setProvider(item); resetVerification(); }}
               className={`rounded-xl py-3 font-semibold ${
                 provider === item ? "bg-indigo text-white" : "bg-white border border-indigo/15 text-indigo"
               }`}
@@ -129,7 +159,7 @@ export default function ElectricityPage() {
           {(["prepaid", "postpaid"] as const).map((t) => (
             <button
               key={t}
-              onClick={() => setMeterType(t)}
+              onClick={() => { setMeterType(t); resetVerification(); }}
               className={`rounded-xl py-3 font-semibold capitalize ${
                 meterType === t ? "bg-konek-green/20 border border-konek-green text-indigo" : "bg-white border border-indigo/15 text-indigo"
               }`}
@@ -140,13 +170,30 @@ export default function ElectricityPage() {
         </div>
 
         <label className="mb-2 block text-sm font-semibold text-indigo">Meter number</label>
-        <input
-          value={meter}
-          onChange={(e) => setMeter(e.target.value)}
-          placeholder="Meter number"
-          inputMode="numeric"
-          className="w-full rounded-xl border border-indigo/20 px-4 py-3 mb-6"
-        />
+        <div className="mb-2 flex gap-2">
+          <input
+            value={meter}
+            onChange={(e) => { setMeter(e.target.value); resetVerification(); }}
+            placeholder="Meter number"
+            inputMode="numeric"
+            className="flex-1 rounded-xl border border-indigo/20 px-4 py-3"
+          />
+          <button
+            onClick={verifyMeter}
+            disabled={verifying || !meter || !provider}
+            className="rounded-xl bg-indigo px-4 py-3 text-sm font-semibold text-white disabled:opacity-40"
+          >
+            {verifying ? "…" : "Verify"}
+          </button>
+        </div>
+        {customerName ? (
+          <div className="mb-6 flex items-center gap-2 rounded-xl bg-konek-green/10 px-4 py-2.5 text-sm">
+            <span className="text-konek-green">✓</span>
+            <span className="font-semibold text-indigo">{customerName}</span>
+          </div>
+        ) : (
+          <p className="mb-6 text-xs text-indigo/50">Verify the meter to confirm the customer name before paying.</p>
+        )}
 
         <label className="mb-2 block text-sm font-semibold text-indigo">Amount</label>
         <div className="grid grid-cols-2 gap-3">

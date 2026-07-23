@@ -25,6 +25,7 @@ const SERVICE_TYPE_TO_VENDOR_KIND: Record<VendorServiceType, string> = {
   gift_card: "vtu",
   intl_topup: "vtu",
   intl_data: "vtu",
+  router_mifi: "vtu",
   esim: "vtu",
 };
 
