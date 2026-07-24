@@ -34,11 +34,24 @@ function split(line: string, d: string): string[] {
   for (let i = 0; i < line.length; i++) {
     const c = line[i];
     if (q) {
-      if (c === '"') (line[i + 1] === '"' ? ((cur += '"'), i++) : (q = false));
-      else cur += c;
-    } else if (c === '"') q = true;
-    else if (c === d) (out.push(cur), (cur = ""));
-    else cur += c;
+      if (c === '"') {
+        if (line[i + 1] === '"') {
+          cur += '"';
+          i++;
+        } else {
+          q = false;
+        }
+      } else {
+        cur += c;
+      }
+    } else if (c === '"') {
+      q = true;
+    } else if (c === d) {
+      out.push(cur);
+      cur = "";
+    } else {
+      cur += c;
+    }
   }
   out.push(cur);
   return out.map((s) => s.trim());
