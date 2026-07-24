@@ -41,6 +41,7 @@ const NAV_GROUPS = [
       { label: "Referrals", href: "/admin/referrals", icon: ReferralsIcon },
       { label: "Support", href: "/admin/support", icon: SupportIcon },
       { label: "Providers", href: "/admin/providers", icon: ProvidersIcon },
+      { label: "Marketplace", href: "/admin/marketplace", icon: ProvidersIcon },
     ],
   },
   {

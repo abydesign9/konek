@@ -28,7 +28,7 @@ const CABLE = ["/brand/telco_dstv.png", "/brand/telco_gotv.png", "/brand/telco_s
 const CONNECTIVITY: { key: string; label: string; sub: string; Icon: typeof IconAirtime; href: string; logos?: string[] }[] = [
   { key: "airtime", label: "Airtime", sub: "Top up any network", Icon: IconAirtime, href: "/buy/airtime", logos: TELCO },
   { key: "data", label: "Data", sub: "Bundles for every carrier", Icon: IconData, href: "/buy/data", logos: TELCO },
-  { key: "esim", label: "eSIM", sub: "Travel data, activated in seconds", Icon: IconEsim, href: "/buy/esim" },
+  { key: "esim", label: "eSIM", sub: "Travel data, activated in seconds", Icon: IconEsim, href: "/marketplace" },
   { key: "router", label: "Router & MiFi", sub: "Portable internet devices & data", Icon: IconData, href: "/buy/router-mifi" },
   { key: "intl", label: "International Top-Up", sub: "Send credit abroad", Icon: IconGlobe, href: "/buy/intl-topup" },
   { key: "global-data", label: "Data Top-Up", sub: "Mobile data for numbers abroad", Icon: IconData, href: "/buy/data-topup" },
