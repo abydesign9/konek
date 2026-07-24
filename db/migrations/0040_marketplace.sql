@@ -5,7 +5,7 @@
 --
 --   catalog_products   one customer-facing listing (Nigeria · 1GB · 7 days)
 --   supplier_products  each supplier's SKU + cost for that listing (N per product)
---   pricing_rules      tiered markup bands that derive display price from cost
+--   marketplace_pricing_rules      tiered markup bands that derive display price from cost
 --   import_runs        history of every CSV/API import
 --   purchase_attempts  per-supplier attempt log powering failover + success rate
 --
@@ -94,7 +94,7 @@ CREATE INDEX IF NOT EXISTS idx_supplier_products_selection
   ON supplier_products (catalog_product_id, active, stock_status, supplier_cost_minor);
 
 -- ---------- Pricing rules (tiered markup bands) ----------
-CREATE TABLE IF NOT EXISTS pricing_rules (
+CREATE TABLE IF NOT EXISTS marketplace_pricing_rules (
   id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
   name           text NOT NULL,
   -- Band is on SUPPLIER COST, inclusive lower / exclusive upper. NULL max = ∞.
@@ -111,10 +111,10 @@ CREATE TABLE IF NOT EXISTS pricing_rules (
   updated_at  timestamptz NOT NULL DEFAULT now()
 );
 
-CREATE INDEX IF NOT EXISTS idx_pricing_rules_lookup ON pricing_rules (active, min_cost_minor);
+CREATE INDEX IF NOT EXISTS idx_mkt_pricing_rules_lookup ON marketplace_pricing_rules (active, min_cost_minor);
 
 -- Default global bands (USD cents), exactly as specified.
-INSERT INTO pricing_rules (name, min_cost_minor, max_cost_minor, markup_pct, priority)
+INSERT INTO marketplace_pricing_rules (name, min_cost_minor, max_cost_minor, markup_pct, priority)
 VALUES
   ('Tier 1 · under $3',   0,    300,  145, 900),
   ('Tier 2 · $3–$5',      300,  500,  110, 900),

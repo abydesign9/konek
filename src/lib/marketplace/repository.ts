@@ -20,7 +20,7 @@ export async function loadPricingRules(): Promise<PricingRule[]> {
     priority: number;
     active: boolean;
   }>(`SELECT id, name, min_cost_minor, max_cost_minor, markup_pct, category, country, supplier_id, priority, active
-      FROM pricing_rules WHERE active = true`);
+      FROM marketplace_pricing_rules WHERE active = true`);
   return rows.map((r) => ({
     id: r.id,
     name: r.name,

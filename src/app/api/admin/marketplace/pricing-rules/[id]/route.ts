@@ -42,7 +42,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   if (sets.length === 0) return NextResponse.json({ error: "nothing to update" }, { status: 400 });
   sets.push("updated_at = now()");
 
-  const { rowCount } = await query(`UPDATE pricing_rules SET ${sets.join(", ")} WHERE id = $1`, vals);
+  const { rowCount } = await query(`UPDATE marketplace_pricing_rules SET ${sets.join(", ")} WHERE id = $1`, vals);
   if (!rowCount) return NextResponse.json({ error: "not found" }, { status: 404 });
   await logAudit(admin.adminUserId, "pricing_rule_updated", "pricing_rule", params.id, b);
   return NextResponse.json({ ok: true });
@@ -57,7 +57,7 @@ export async function DELETE(_req: NextRequest, { params }: { params: { id: stri
     if (err instanceof ForbiddenError) return NextResponse.json({ error: err.message }, { status: 403 });
     throw err;
   }
-  await query(`DELETE FROM pricing_rules WHERE id = $1`, [params.id]);
+  await query(`DELETE FROM marketplace_pricing_rules WHERE id = $1`, [params.id]);
   await logAudit(admin.adminUserId, "pricing_rule_deleted", "pricing_rule", params.id, {});
   return NextResponse.json({ ok: true });
 }

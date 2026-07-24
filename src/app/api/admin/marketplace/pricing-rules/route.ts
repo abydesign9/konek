@@ -8,7 +8,7 @@ export async function GET() {
   if (!getAdminSession()) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   const { rows } = await query(
     `SELECT id, name, min_cost_minor, max_cost_minor, markup_pct, category, country, supplier_id, priority, active
-       FROM pricing_rules ORDER BY priority DESC, min_cost_minor ASC`
+       FROM marketplace_pricing_rules ORDER BY priority DESC, min_cost_minor ASC`
   );
   return NextResponse.json({ rules: rows });
 }
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
   }
 
   const { rows } = await query<{ id: string }>(
-    `INSERT INTO pricing_rules (name, min_cost_minor, max_cost_minor, markup_pct, category, country, supplier_id, priority, active)
+    `INSERT INTO marketplace_pricing_rules (name, min_cost_minor, max_cost_minor, markup_pct, category, country, supplier_id, priority, active)
      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,true) RETURNING id`,
     [
       name,
