@@ -308,7 +308,7 @@ export default async function HomeDashboard() {
     <main className="min-h-screen bg-background pb-28">
 
 
-      <header className="sticky top-0 z-40 flex items-center justify-between bg-background px-5 pb-3 pt-6">
+      <header className="flex items-center justify-between px-5 pb-3 pt-6">
 
         <div>
 

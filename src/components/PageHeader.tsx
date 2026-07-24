@@ -36,7 +36,7 @@ export function PageHeader({
   }, [router, backHref]);
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-indigo/10 bg-background shadow-sm">
+    <nav className="border-b border-indigo/10 bg-background">
       <div className="mx-auto flex max-w-lg items-center gap-3 px-4 py-3 sm:px-6">
         <button
           type="button"

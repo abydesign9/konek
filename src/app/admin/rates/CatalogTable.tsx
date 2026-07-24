@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { Fragment, useMemo, useRef, useState } from "react";
 import { parsePriceSheet, type ParsedRow } from "@/lib/admin/priceSheet";
 
 export interface CatalogItem {
@@ -83,6 +83,30 @@ export function CatalogTable({
     );
   }, [items, service, vendor, search]);
 
+  // Segregate plans by operator/provider (MTN, Airtel… under Data; DStv, GOtv…
+  // under Cable). Grouping key is the network; items without one fall under
+  // "Other". Keeps a long catalogue scannable.
+  const grouped = useMemo(() => {
+    const map = new Map<string, CatalogItem[]>();
+    for (const i of visible) {
+      const key = i.network?.trim() || "Other";
+      if (!map.has(key)) map.set(key, []);
+      map.get(key)!.push(i);
+    }
+    return [...map.entries()].sort((a, b) => (a[0] === "Other" ? 1 : b[0] === "Other" ? -1 : a[0].localeCompare(b[0])));
+  }, [visible]);
+
+  function selectGroup(items: CatalogItem[], on: boolean) {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      for (const i of items) {
+        if (on) next.add(i.id);
+        else next.delete(i.id);
+      }
+      return next;
+    });
+  }
+
   const allVisibleSelected = visible.length > 0 && visible.every((i) => selected.has(i.id));
 
   function toggleAll() {
@@ -124,6 +148,31 @@ export function CatalogTable({
       body: JSON.stringify({ active: !item.active }),
     });
     onReload();
+  }
+
+  async function deleteOne(item: CatalogItem) {
+    if (!confirm(`Delete "${item.name}"? This cannot be undone.`)) return;
+    await fetch(`/api/admin/rates/catalog/${item.id}`, { method: "DELETE" });
+    onReload();
+  }
+
+  async function bulk(action: "enable" | "disable" | "delete") {
+    if (selected.size === 0) return;
+    if (action === "delete" && !confirm(`Delete ${selected.size} plan(s)? This cannot be undone.`)) return;
+    setBusy(true);
+    setMessage(null);
+    const res = await fetch("/api/admin/rates/catalog/bulk", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ids: Array.from(selected), action }),
+    });
+    setBusy(false);
+    const data = await res.json().catch(() => ({}));
+    setMessage(res.ok ? `${action}: ${data.affected} plan(s).` : data.error ?? "Failed");
+    if (res.ok) {
+      setSelected(new Set());
+      onReload();
+    }
   }
 
   function markupScope() {
@@ -291,6 +340,25 @@ export function CatalogTable({
         )}
       </div>
 
+      {/* Bulk actions on selection */}
+      {selected.size > 0 && (
+        <div className="mb-3 flex flex-wrap items-center gap-2 rounded-xl border border-indigo/20 bg-white px-3 py-2.5">
+          <span className="text-xs font-semibold text-indigo">{selected.size} selected</span>
+          <button onClick={() => bulk("enable")} disabled={busy} className="rounded-lg bg-konek-green/10 px-3 py-1.5 text-xs font-semibold text-konek-green">
+            Enable
+          </button>
+          <button onClick={() => bulk("disable")} disabled={busy} className="rounded-lg bg-gold/10 px-3 py-1.5 text-xs font-semibold text-gold">
+            Disable
+          </button>
+          <button onClick={() => bulk("delete")} disabled={busy} className="rounded-lg bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-600">
+            Delete
+          </button>
+          <button onClick={() => setSelected(new Set())} className="ml-auto text-xs text-text-secondary">
+            Clear
+          </button>
+        </div>
+      )}
+
       {/* Import panel */}
       {showImport && (
         <div className="mb-3 rounded-xl border border-indigo/20 bg-white p-4">
@@ -399,12 +467,29 @@ export function CatalogTable({
             </tr>
           </thead>
           <tbody>
-            {visible.map((item) => {
-              const cost = Number(item.cost_minor);
-              const price = Number(item.price_minor);
-              const m = marginPct(cost, price);
-              const draft = priceDrafts[item.id];
+            {grouped.map(([network, groupItems]) => {
+              const groupSelected = groupItems.every((i) => selected.has(i.id));
               return (
+                <Fragment key={network}>
+                  <tr className="bg-hover-tint">
+                    <td className="py-1.5">
+                      <input
+                        type="checkbox"
+                        checked={groupSelected}
+                        onChange={() => selectGroup(groupItems, !groupSelected)}
+                        aria-label={`Select all ${network}`}
+                      />
+                    </td>
+                    <td colSpan={9} className="py-1.5 text-xs font-bold uppercase tracking-wide text-indigo">
+                      {network} <span className="text-text-secondary">· {groupItems.length}</span>
+                    </td>
+                  </tr>
+                  {groupItems.map((item) => {
+                    const cost = Number(item.cost_minor);
+                    const price = Number(item.price_minor);
+                    const m = marginPct(cost, price);
+                    const draft = priceDrafts[item.id];
+                    return (
                 <tr key={item.id} className={`border-b border-border-soft ${item.active ? "" : "opacity-50"}`}>
                   <td className="py-2">
                     <input type="checkbox" checked={selected.has(item.id)} onChange={() => toggleOne(item.id)} aria-label={`Select ${item.name}`} />
@@ -446,11 +531,19 @@ export function CatalogTable({
                     </button>
                   </td>
                   <td className="py-2 text-right">
-                    <button onClick={() => onEdit(item)} className="text-xs font-semibold text-indigo hover:underline">
-                      Edit
-                    </button>
+                    <div className="flex justify-end gap-3">
+                      <button onClick={() => onEdit(item)} className="text-xs font-semibold text-indigo hover:underline">
+                        Edit
+                      </button>
+                      <button onClick={() => deleteOne(item)} className="text-xs font-semibold text-red-600 hover:underline">
+                        Delete
+                      </button>
+                    </div>
                   </td>
                 </tr>
+                    );
+                  })}
+                </Fragment>
               );
             })}
           </tbody>

@@ -30,7 +30,7 @@ export function LiveChatBubble() {
       rel="noopener noreferrer"
       aria-label="Chat with support on WhatsApp"
       title="Live chat"
-      className="konek-tile fixed left-4 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-konek-green text-xl text-white shadow-lg active:scale-95"
+      className="konek-tile fixed right-4 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-konek-green text-xl text-white shadow-lg active:scale-95"
       style={{ bottom: "calc(env(safe-area-inset-bottom) + 84px)", touchAction: "manipulation" }}
     >
       💬
