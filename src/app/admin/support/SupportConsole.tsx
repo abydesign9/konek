@@ -168,6 +168,17 @@ export function SupportConsole() {
     setReplyText("");
     refreshAll();
   }
+  // Resolve directly. If the agent typed a reply, send it and resolve in one go;
+  // otherwise just mark the ticket resolved (never leaves it awaiting customer).
+  async function resolveTicket() {
+    if (!selectedId) return;
+    if (replyText.trim()) {
+      await sendReply(true);
+      return;
+    }
+    await fetch(`/api/admin/support/${selectedId}/resolve`, { method: "POST" });
+    refreshAll();
+  }
   async function addNote() {
     if (!selectedId || !noteText.trim()) return;
     await fetch(`/api/admin/support/${selectedId}/notes`, {
@@ -340,7 +351,7 @@ export function SupportConsole() {
                 <button onClick={() => sendReply(false)} className="rounded-lg bg-indigo px-3 text-xs font-semibold text-white">
                   Reply
                 </button>
-                <button onClick={() => sendReply(true)} className="rounded-lg bg-konek-green px-3 text-xs font-semibold text-white">
+                <button onClick={resolveTicket} className="rounded-lg bg-konek-green px-3 text-xs font-semibold text-white">
                   Resolve
                 </button>
               </div>

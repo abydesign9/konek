@@ -264,6 +264,28 @@ export async function closeTicket(messageId: string, actorId: string): Promise<v
   await logAudit(actorId, "support_ticket_closed", "support_message", messageId);
 }
 
+// Mark a ticket resolved without sending a reply. Lets an agent close out a
+// ticket they handled by phone/elsewhere, so "Resolve" never gets stuck leaving
+// the ticket waiting on the customer.
+export async function resolveTicket(messageId: string, actorId: string): Promise<void> {
+  const { rows } = await query<{ user_id: string; status: string }>(
+    `SELECT user_id, status FROM support_messages WHERE id = $1`,
+    [messageId]
+  );
+  if (!rows[0]) throw new NotFoundError();
+  if (rows[0].status === "resolved" || rows[0].status === "closed") return;
+
+  await query(
+    `UPDATE support_messages
+        SET status = 'resolved', resolved_at = now(), assigned_admin_id = COALESCE(assigned_admin_id, $2)
+      WHERE id = $1`,
+    [messageId, actorId]
+  );
+  await recordStatusEvent(messageId, rows[0].status, "resolved", "admin", actorId);
+  await logAudit(actorId, "support_ticket_resolved", "support_message", messageId);
+  await sendNotification(rows[0].user_id, "push", "support", "Support resolved", "Your support request has been resolved.");
+}
+
 export async function setCategoryAndPriority(
   messageId: string,
   category: string | null,

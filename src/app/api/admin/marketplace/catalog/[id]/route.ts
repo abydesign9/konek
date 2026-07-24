@@ -46,3 +46,23 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   await logAudit(admin.adminUserId, "marketplace_product_override", "catalog_product", params.id, b);
   return NextResponse.json({ ok: true });
 }
+
+// Permanently remove a product and its supplier links. Use for junk/mistaken
+// imports; to merely hide a live product prefer PATCH { active: false }.
+export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
+  const admin = getAdminSession();
+  if (!admin) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  try {
+    await assertPermission(admin.role, "rates.edit");
+  } catch (err) {
+    if (err instanceof ForbiddenError) return NextResponse.json({ error: err.message }, { status: 403 });
+    throw err;
+  }
+
+  await query(`DELETE FROM supplier_products WHERE catalog_product_id = $1`, [params.id]);
+  const { rowCount } = await query(`DELETE FROM catalog_products WHERE id = $1`, [params.id]);
+  if (!rowCount) return NextResponse.json({ error: "not found" }, { status: 404 });
+
+  await logAudit(admin.adminUserId, "marketplace_product_deleted", "catalog_product", params.id, {});
+  return NextResponse.json({ ok: true });
+}

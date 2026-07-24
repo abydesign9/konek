@@ -35,6 +35,8 @@ const NAV_GROUPS = [
     label: "Operations",
     items: [
       { label: "Rates", href: "/admin/rates", icon: RatesIcon },
+      { label: "Customers", href: "/admin/customers", icon: UsersIcon },
+      { label: "Funding", href: "/admin/funding", icon: RatesIcon },
       { label: "KYC review", href: "/admin/kyc", icon: UsersIcon },
       { label: "KYC config", href: "/admin/kyc-config", icon: SettingsIcon },
       { label: "Users & Roles", href: "/admin/users", icon: UsersIcon },

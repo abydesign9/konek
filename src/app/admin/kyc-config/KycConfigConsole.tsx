@@ -110,7 +110,7 @@ export function KycConfigConsole() {
     <>
       <PageHeader
         title="KYC configuration"
-        description="Konek is global: BVN/NIN apply only to Nigeria, and every country has its own accepted IDs. This matrix decides, per country and tier, which verification methods a customer must complete — no code change to add a country or provider."
+        description="Konek is global: BVN/NIN apply only to Nigeria, and every country has its own accepted IDs. This matrix decides, per country and tier, which verification methods a customer must complete. Adding a country or provider needs no code change."
       />
       {msg && <p className="mb-3 text-sm font-semibold text-konek-green">{msg}</p>}
 
@@ -127,7 +127,7 @@ export function KycConfigConsole() {
                         <div>
                           <p className="text-sm font-semibold text-indigo">
                             Tier {r.tier}
-                            {r.label ? ` — ${r.label}` : ""}
+                            {r.label ? `: ${r.label}` : ""}
                           </p>
                           <p className="mt-1 text-xs text-text-secondary">
                             {r.method_groups
@@ -174,7 +174,7 @@ export function KycConfigConsole() {
                 </label>
               </div>
               <label className="block text-xs text-text-secondary">
-                Method groups — comma = alternatives, <code>|</code> = AND
+                Method groups. Comma separates alternatives, <code>|</code> means AND
                 <input
                   value={groupsText}
                   onChange={(e) => setGroupsText(e.target.value)}

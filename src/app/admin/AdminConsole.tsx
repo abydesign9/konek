@@ -272,7 +272,20 @@ export function AdminConsole() {
       setMessage(`Refund failed: ${data.error}`);
       return;
     }
-    setMessage(`Refunded — reversal journal ${data.journalId}`);
+    setMessage(`Refunded. Reversal journal ${data.journalId}`);
+    loadTxns(query);
+  }
+
+  async function blockTxn(txnId: string) {
+    if (!confirm("Block this transaction as suspected fraud? If it is still open it will be failed before any value moves.")) return;
+    setMessage(null);
+    const res = await fetch(`/api/admin/transactions/${txnId}/block`, { method: "POST" });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      setMessage(`Block failed: ${data.error}`);
+      return;
+    }
+    setMessage(data.message ?? "Transaction blocked.");
     loadTxns(query);
   }
 
@@ -534,15 +547,22 @@ export function AdminConsole() {
                 {t.phone} · ₦{(Number(t.amount_minor) / 100).toLocaleString()} · {t.vendor ?? "—"}
               </p>
               <p className="text-[10px] text-indigo/40 font-mono mb-2">{t.id}</p>
-              {t.status === "delivered" && (
-                <button
-                  onClick={() => refund(t.id)}
-                  disabled={refunding === t.id}
-                  className="text-xs font-semibold text-red-600 underline disabled:opacity-50"
-                >
-                  {refunding === t.id ? "Refunding…" : "Refund"}
-                </button>
-              )}
+              <div className="flex gap-4">
+                {t.status === "delivered" && (
+                  <button
+                    onClick={() => refund(t.id)}
+                    disabled={refunding === t.id}
+                    className="text-xs font-semibold text-red-600 underline disabled:opacity-50"
+                  >
+                    {refunding === t.id ? "Refunding…" : "Refund"}
+                  </button>
+                )}
+                {t.status !== "refunded" && t.status !== "failed" && (
+                  <button onClick={() => blockTxn(t.id)} className="text-xs font-semibold text-gold underline">
+                    Block (fraud)
+                  </button>
+                )}
+              </div>
             </div>
           ))}
           {txns.length === 0 && <p className="text-sm text-indigo/50">No transactions found.</p>}

@@ -85,7 +85,7 @@ export default async function ConnectPage() {
 
   return (
     <main className="min-h-screen bg-background pb-28">
-      <header className="px-5 pb-3 pt-6">
+      <header className="sticky top-0 z-40 bg-background px-5 pb-3 pt-6">
         <h1 className="font-heading text-2xl font-bold text-indigo">Connect</h1>
         <p className="mt-0.5 text-sm text-indigo/55">Everything you can buy or manage on Konek, in one place.</p>
       </header>

@@ -8,7 +8,7 @@ export default async function ProfilePage() {
 
   return (
     <main className="min-h-screen bg-background pb-28">
-      <header className="px-5 pb-3 pt-6">
+      <header className="sticky top-0 z-40 bg-background px-5 pb-3 pt-6">
         <h1 className="font-heading text-2xl font-bold text-indigo">Profile</h1>
       </header>
       <ProfileClient />

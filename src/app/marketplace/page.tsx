@@ -97,7 +97,7 @@ export default function MarketplacePage() {
     }
     setDone(
       data.status === "delivered"
-        ? "Your eSIM is ready — find it in Connect → eSIM."
+        ? "Your eSIM is ready. Find it in Connect, then eSIM."
         : "Your order is processing. We'll notify you the moment it's ready."
     );
   }

@@ -176,6 +176,44 @@ export async function verifyMethod(input: VerifyMethodInput): Promise<VerifyMeth
 // What the customer sees: their country, verified methods, current tier, and —
 // per target tier — which method groups (with labels) are still missing and
 // which provider/method options they can use. Drives the country-aware UI.
+// Apply an async provider decision delivered by webhook (Sumsub, Smile ID,
+// Onfido... complete verification out-of-band). Records the per-method status
+// and recomputes the tier. A real integration re-fetches the decision from the
+// provider by reference before calling this; the webhook body is only a trigger.
+export async function applyKycWebhookResult(input: {
+  userId: string;
+  method: string;
+  decision: "verified" | "rejected";
+  provider?: string;
+  vendorRef?: string;
+}): Promise<{ tier: number }> {
+  const methods = await loadMethods();
+  if (!methods.some((m) => m.code === input.method)) throw new UnknownMethodError(input.method);
+
+  await query(
+    `INSERT INTO user_verifications (user_id, method, status, provider, vendor_ref, verified_at)
+     VALUES ($1, $2, $3, $4, $5, CASE WHEN $3 = 'verified' THEN now() ELSE NULL END)
+     ON CONFLICT (user_id, method) DO UPDATE
+       SET status = EXCLUDED.status, provider = EXCLUDED.provider, vendor_ref = EXCLUDED.vendor_ref,
+           verified_at = EXCLUDED.verified_at, updated_at = now()`,
+    [input.userId, input.method, input.decision, input.provider ?? null, input.vendorRef ?? null]
+  );
+
+  const legacy = LEGACY_COLUMN[input.method];
+  if (legacy && input.decision === "verified") {
+    await query(`UPDATE users SET ${legacy} = true, updated_at = now() WHERE id = $1`, [input.userId]);
+  }
+
+  const tier = await recomputeTier(input.userId);
+  await logAudit(input.userId, "kyc_webhook_applied", "user", input.userId, {
+    method: input.method,
+    decision: input.decision,
+    provider: input.provider,
+    tier,
+  });
+  return { tier };
+}
+
 export interface KycOverview {
   country: string;
   tier: number;

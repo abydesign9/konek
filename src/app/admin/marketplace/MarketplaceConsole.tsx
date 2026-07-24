@@ -252,10 +252,20 @@ function Catalog({
 }) {
   const [expanded, setExpanded] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  const [selected, setSelected] = useState<Set<string>>(new Set());
   const visible = useMemo(() => {
     const q = search.trim().toLowerCase();
     return products.filter((p) => !q || p.display_name.toLowerCase().includes(q) || (p.country ?? "").toLowerCase().includes(q));
   }, [products, search]);
+
+  function toggleSelect(id: string) {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
 
   async function override(id: string, body: Record<string, unknown>) {
     const res = await fetch(`/api/admin/marketplace/catalog/${id}`, {
@@ -264,6 +274,29 @@ function Catalog({
       body: JSON.stringify(body),
     });
     onMsg(res.ok ? "Saved." : "Save failed.");
+    if (res.ok) onReload();
+  }
+
+  async function bulk(action: "activate" | "deactivate" | "delete") {
+    if (selected.size === 0) return;
+    if (action === "delete" && !confirm(`Permanently delete ${selected.size} product(s) and their supplier links?`)) return;
+    const res = await fetch("/api/admin/marketplace/catalog/bulk", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ids: [...selected], action }),
+    });
+    const d = await res.json().catch(() => ({}));
+    onMsg(res.ok ? `${action}: ${d.affected} product(s).` : d.error ?? "Failed");
+    if (res.ok) {
+      setSelected(new Set());
+      onReload();
+    }
+  }
+
+  async function deleteOne(id: string) {
+    if (!confirm("Permanently delete this product and its supplier links?")) return;
+    const res = await fetch(`/api/admin/marketplace/catalog/${id}`, { method: "DELETE" });
+    onMsg(res.ok ? "Deleted." : "Delete failed.");
     if (res.ok) onReload();
   }
 
@@ -279,10 +312,20 @@ function Catalog({
         />
       }
     >
+      {selected.size > 0 && (
+        <div className="mb-3 flex items-center gap-2 rounded-lg bg-hover-tint px-3 py-2 text-xs">
+          <span className="font-semibold text-indigo">{selected.size} selected</span>
+          <button onClick={() => bulk("activate")} className="rounded bg-konek-green/10 px-2 py-1 font-semibold text-konek-green">Activate</button>
+          <button onClick={() => bulk("deactivate")} className="rounded bg-gold/10 px-2 py-1 font-semibold text-gold">Deactivate</button>
+          <button onClick={() => bulk("delete")} className="rounded bg-red-50 px-2 py-1 font-semibold text-red-600">Delete</button>
+          <button onClick={() => setSelected(new Set())} className="ml-auto text-text-secondary">Clear</button>
+        </div>
+      )}
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[820px] text-left text-sm">
+        <table className="w-full min-w-[860px] text-left text-sm">
           <thead className="border-b border-border-soft text-xs uppercase text-text-secondary">
             <tr>
+              <th className="py-2 pr-2"></th>
               <th className="py-2 pr-3">Product</th>
               <th className="py-2 pr-3 text-right">Lowest cost</th>
               <th className="py-2 pr-3 text-right">Price</th>
@@ -300,6 +343,9 @@ function Catalog({
               return (
                 <Fragment key={p.id}>
                   <tr className={`border-b border-border-soft ${p.active ? "" : "opacity-50"}`}>
+                    <td className="py-2 pr-2">
+                      <input type="checkbox" checked={selected.has(p.id)} onChange={() => toggleSelect(p.id)} />
+                    </td>
                     <td className="py-2 pr-3">
                       <button onClick={() => setExpanded(expanded === p.id ? null : p.id)} className="text-left font-medium text-indigo hover:underline">
                         {p.display_name}
@@ -325,17 +371,22 @@ function Catalog({
                       {inStock.length} / {p.suppliers.length}
                     </td>
                     <td className="py-2">
-                      <button
-                        onClick={() => override(p.id, { active: !p.active })}
-                        className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${p.active ? "bg-konek-green/10 text-konek-green" : "bg-red-50 text-red-600"}`}
-                      >
-                        {p.active ? "live" : "off"}
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => override(p.id, { active: !p.active })}
+                          className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${p.active ? "bg-konek-green/10 text-konek-green" : "bg-red-50 text-red-600"}`}
+                        >
+                          {p.active ? "live" : "off"}
+                        </button>
+                        <button onClick={() => deleteOne(p.id)} title="Delete product" className="text-[11px] font-semibold text-red-600">
+                          ✕
+                        </button>
+                      </div>
                     </td>
                   </tr>
                   {expanded === p.id && (
                     <tr className="bg-hover-tint">
-                      <td colSpan={6} className="px-3 py-3">
+                      <td colSpan={7} className="px-3 py-3">
                         <p className="mb-2 text-xs font-semibold text-indigo">Suppliers for this product</p>
                         <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
                           {p.suppliers.map((s) => (
@@ -371,7 +422,7 @@ function Catalog({
             })}
           </tbody>
         </table>
-        {visible.length === 0 && <p className="py-6 text-center text-sm text-text-secondary">No products yet — import a supplier price sheet.</p>}
+        {visible.length === 0 && <p className="py-6 text-center text-sm text-text-secondary">No products yet. Import a supplier price sheet.</p>}
       </div>
     </Card>
   );
@@ -528,7 +579,7 @@ function ImportPanel({
     setErrors([]);
     setRows(null);
     if (/\.(xlsx|xls|pdf)$/i.test(file.name)) {
-      setErrors(["Excel/PDF can't be read directly — export to CSV first."]);
+      setErrors(["Excel and PDF cannot be read directly. Export to CSV first."]);
       return;
     }
     const parsed = parsePlanSheet(await file.text());

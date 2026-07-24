@@ -62,7 +62,7 @@ export default function KycPage() {
       setError(d.error ?? "Verification failed");
       return;
     }
-    setNotice(`Verified — you're now ${d.tier >= 2 ? "fully verified" : "verified"}.`);
+    setNotice(`Verified. You are now ${d.tier >= 2 ? "fully verified" : "verified"}.`);
     setValues((v) => ({ ...v, [method]: "" }));
     load();
   }
@@ -97,7 +97,7 @@ export default function KycPage() {
 
         <div className="space-y-4">
           <div className="rounded-3xl border border-indigo/10 bg-white p-5">
-            <h2 className="font-bold text-indigo">Tier 0 — Browse</h2>
+            <h2 className="font-bold text-indigo">Tier 0 · Browse</h2>
             <p className="mt-1 text-sm text-indigo/60">Explore Konek and manage your account. No verification needed.</p>
           </div>
 
@@ -107,7 +107,7 @@ export default function KycPage() {
               <div key={req.tier} className="rounded-3xl border border-indigo/10 bg-white p-5">
                 <div className="flex items-center justify-between">
                   <h2 className="font-bold text-indigo">
-                    Tier {req.tier} — {req.label}
+                    Tier {req.tier} · {req.label}
                   </h2>
                   <span>{req.satisfied ? "✅" : "🔒"}</span>
                 </div>
@@ -144,7 +144,7 @@ export default function KycPage() {
         <div className="mt-6 rounded-3xl bg-indigo/5 p-5">
           <h3 className="font-bold text-indigo">Why we ask</h3>
           <p className="mt-1 text-sm text-indigo/60">
-            Konek operates across many countries. We only request the IDs your country&apos;s regulator requires — and only
+            Konek operates across many countries. We only request the IDs your country&apos;s regulator requires, and only
             when a feature needs them. Your details are encrypted.
           </p>
         </div>
