@@ -27,3 +27,28 @@ export interface KycAdapter {
   }): Promise<IdentityVerifyResult>;
   verifyLiveness(input: { userId: string; imageRef?: string }): Promise<LivenessVerifyResult>;
 }
+
+// Generalized, method-based verification used by the global KYC engine. A
+// provider is routed by (country, method); each real vendor (Smile ID, Sumsub,
+// Onfido...) implements this once and is registered as a kyc_providers row.
+export interface MethodVerifyInput {
+  method: string; // verification_methods.code
+  country: string; // ISO2
+  userId: string;
+  value?: string; // for number_lookup methods (BVN, NIN, SSN...)
+  imageRef?: string; // for biometric methods
+  documentRef?: string; // for document methods
+}
+
+export interface MethodVerifyResult {
+  result: "pass" | "fail";
+  vendorRef: string;
+  raw: Record<string, unknown>;
+  reason?: string;
+  duplicate?: boolean; // biometric 1:N dedupe hit
+}
+
+export interface MethodKycAdapter {
+  key: string; // matches kyc_providers.adapter_key
+  verify(input: MethodVerifyInput): Promise<MethodVerifyResult>;
+}
