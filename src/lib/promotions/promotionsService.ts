@@ -209,7 +209,6 @@ export async function recordSpend(userId: string, amountMinor: number, currency:
 
 // Instant cashback to the locked bonus wallet for active card_cashback promos.
 export async function cashbackOnCardSpend(userId: string, txnAmountMinor: number, currency: string): Promise<void> {
-  const country = await userCountry(userId);
   for (const row of await activePromosByType("card_cashback")) {
     const promo = toPromo(row);
     if (!isLive(promo) || promo.rewardCurrency !== currency) continue;
