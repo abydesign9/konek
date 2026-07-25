@@ -97,19 +97,16 @@ export async function issueCard(userId: string, productId: string): Promise<{ ca
   const product = await getCardProduct(productId);
   if (!product || !product.active) throw new CardProductUnavailableError();
 
-  // Currency-matched funding account is required: a USD card needs a USD virtual
-  // account, a Naira card needs an NGN account.
-  const { rows: vaRows } = await query<{ id: string }>(
-    `SELECT id FROM virtual_accounts WHERE user_id = $1 AND currency = $2`,
-    [userId, product.currency]
-  );
-  if (!vaRows[0]) throw new NoDollarAccountError();
+  // No separate receiving account required. The card spends from the user's
+  // wallet in the card currency, which they top up by converting from their NGN
+  // wallet (a USD/EUR/GBP card is funded by conversion, not by opening a foreign
+  // receiving account). Ensure the wallet exists so it can hold a balance.
+  const walletAccountId = await getUserWalletAccount(userId, product.currency);
 
   // Card creation fee from the product schedule, charged wallet -> platform
   // revenue in the product's currency before issuing.
   const feeMinor = product.creationFeeMinor;
   if (feeMinor > 0) {
-    const walletAccountId = await getUserWalletAccount(userId, product.currency);
     if ((await getBalance(walletAccountId)) < feeMinor) throw new CardCreationFeeUnpaidError(feeMinor);
     const revenueAccountId = await getOrCreateAccount("platform", null, product.currency, "revenue");
     await postJournal({
