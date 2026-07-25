@@ -299,6 +299,13 @@ written to the audit log with the admin's identity.
 - Launch checklist: the dev only mock payment endpoint
   (`/api/payments/mock/complete`) auto-disables as soon as a real
   `PAYSTACK_SECRET_KEY` is set. Set the live key before going live.
+- Logging policy: never log secrets, API keys, passwords, PINs, OTPs, BVN/NIN,
+  full card numbers, or raw amounts tied to a person. Log identifiers and status
+  instead. Mock OTP senders only print codes outside production.
+- Vendor spend routes are rate limited per user (or per partner key), spend calls
+  are idempotent (a unique reference per transaction, replays rejected), and API
+  errors return generic messages while typed, user safe errors carry a specific
+  message. Set daily spend caps and low balance alerts in each vendor dashboard.
 
 ---
 
