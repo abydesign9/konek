@@ -4,6 +4,7 @@ import { createSession } from "@/lib/auth/session";
 import { verifyEmailOtp } from "@/lib/auth/emailOtp";
 import { logAudit } from "@/lib/audit";
 import { checkRateLimit, clientIp, RateLimitExceededError } from "@/lib/rateLimit";
+import { grantSignupPromos } from "@/lib/promotions/promotionsService";
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
@@ -45,6 +46,8 @@ export async function POST(req: NextRequest) {
     const { userId } = await signUpWithPassword(fullName, email, password, referralCode);
     await createSession(userId, { userAgent: req.headers.get("user-agent"), ip: clientIp(req) });
     await logAudit(userId, "signup", "user", userId, { method: "email_password" });
+    // Grant any active signup promos. Never let a promo failure break signup.
+    await grantSignupPromos(userId).catch(() => {});
     return NextResponse.json({ ok: true });
   } catch (err) {
     if (err instanceof InvalidEmailError) return NextResponse.json({ error: err.message }, { status: 400 });

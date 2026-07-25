@@ -13,7 +13,9 @@ export type JournalType =
   | "funding"
   | "reward"
   | "adjustment"
-  | "purchase";
+  | "purchase"
+  | "promo_bonus"
+  | "promo_unlock";
 
 export interface PostJournalInput {
   txnId?: string;

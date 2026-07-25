@@ -5,6 +5,7 @@ import { withIdempotency } from "@/lib/idempotency";
 import { paymentGateway } from "@/lib/payments";
 import { logAudit } from "@/lib/audit";
 import { sendNotification } from "@/lib/notifications/send";
+import { recordDeposit } from "@/lib/promotions/promotionsService";
 
 interface Transaction {
   id: string;
@@ -74,6 +75,10 @@ export async function creditFromPayment(reference: string): Promise<void> {
       "Wallet funded",
       `₦${(verified.amountMinor / 100).toLocaleString()} was added to your wallet.`
     );
+
+    // Progress any deposit-based promos (first-deposit grant + unlock progress).
+    // Non-blocking: a promo error must never affect the funding credit.
+    await recordDeposit(txn.user_id, verified.amountMinor, verified.currency, "funding").catch(() => {});
 
     return { journalId };
   });
