@@ -1,5 +1,6 @@
 import { query } from "@/lib/db";
 import { sendExternalAlert } from "@/lib/alerts/externalAlert";
+import { agentLimitMultiplier } from "@/lib/agents/agentProgram";
 
 export class LimitExceededError extends Error {
   constructor(metric: string, maxMinor: number) {
@@ -35,6 +36,12 @@ export async function checkVelocityLimits(
   if (limitRows.length === 0) return;
 
   const limitsByMetric = new Map(limitRows.map((r) => [r.metric, Number(r.max_minor)]));
+
+  // Agents get higher limits (admin-configurable multiplier); 1 for everyone else.
+  const multiplier = await agentLimitMultiplier(userId);
+  if (multiplier !== 1) {
+    for (const [metric, max] of limitsByMetric) limitsByMetric.set(metric, Math.round(max * multiplier));
+  }
 
   const singleTxnMax = limitsByMetric.get("single_txn");
   if (singleTxnMax !== undefined && amountMinor > singleTxnMax) {

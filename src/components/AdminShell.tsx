@@ -41,6 +41,7 @@ const NAV_GROUPS = [
       { label: "KYC config", href: "/admin/kyc-config", icon: SettingsIcon },
       { label: "Users & Roles", href: "/admin/users", icon: UsersIcon },
       { label: "Agents", href: "/admin/agents", icon: UsersIcon },
+      { label: "Agent program", href: "/admin/agent-program", icon: ReferralsIcon },
       { label: "Referrals", href: "/admin/referrals", icon: ReferralsIcon },
       { label: "Support", href: "/admin/support", icon: SupportIcon },
       { label: "Providers", href: "/admin/providers", icon: ProvidersIcon },

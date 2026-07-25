@@ -5,7 +5,7 @@ covers what the app is, how to run it, how money and verification work, every
 module (M1 to M12) plus the newer additions, and a day to day operations
 runbook for the admin console.
 
-Last updated: 2026-07-25. Database is on migration 0044.
+Last updated: 2026-07-25. Database is on migration 0047.
 
 ---
 
@@ -342,3 +342,49 @@ Konek installs to the Home Screen and runs full screen, no app store needed.
   security-sensitive piece still to build; do not treat the current feature as a
   standalone login factor.
 - App store version later: wrap this same app with Capacitor and keep one backend.
+
+---
+
+## 14. Financial layer (built for the September launch)
+
+All of the following is live and admin-editable. Provider integrations run on
+mocks until their sandbox keys are set, then flip to live with no code change.
+
+- Promotions engine (migration 0045): configurable promos (signup, first
+  deposit, VA activation, card cashback, milestone) that credit a locked bonus
+  wallet which unlocks to the main wallet once the deposit + spend conditions are
+  met. Admin: `/admin/promotions`. Triggers are wired across signup, funding,
+  VTU/eSIM spend, card spend and virtual-account inflows.
+- NGN virtual accounts via Monnify (adapter + mock, no migration; reuses
+  `virtual_accounts`): a reserved account number that credits the NGN wallet.
+  Webhook `/api/webhooks/monnify`. Customer page `/wallet/naira-account`.
+  Production Monnify needs the user's BVN captured at provisioning.
+- Financial config (`/admin/financial-config`): transaction limits (read live by
+  the spend checks), fees, account KYC tiers, provider status, live stats. Keys
+  are never stored in the DB.
+- Card products + fee schedule (migration 0046): `card_products` catalogue with
+  a full fee schedule (creation, authorization, funding, decline, dispute,
+  international), currency, and virtual/physical form factor. Admin:
+  `/admin/card-products`. The customer card flow is `/cards` (your cards only,
+  tap for detail), `/cards/new` (Global/Domestic catalogue) and
+  `/cards/new/[id]` (fee schedule + Get). Creation and dispute fees are charged
+  live; the rest are displayed and admin-editable but not yet charged (need the
+  acquirer's per-transaction data). A foreign-currency card needs no separate
+  receiving account: it spends from the wallet in that currency, topped up by
+  converting from the Naira wallet.
+- SmileID KYC + fraud auto-freeze (migration 0047): SmileID plugs into the global
+  KYC framework, disabled until enabled in `/admin/kyc-config` with keys set. A
+  fraud/mismatch verdict (sync or via `/api/webhooks/kyc`) freezes the account
+  (suspend + revoke sessions), raises a risk flag + fraud-queue item, and alerts
+  admin. Reversible from `/admin/customers`.
+- Agent programme (`/admin/agent-program`): affiliates, campus ambassadors and
+  marketing partners refer customers and earn an admin-set commission on those
+  customers' purchases across the catalogue (VTU, cards, eSIM), plus perks
+  (card-fee waiver/discount, a limits multiplier, priority). The whole programme
+  has a master on/off switch; every value is editable, nothing hardcoded.
+  Individual agents (approve, per-agent rate, pay commissions) stay under
+  `/admin/agents`.
+- International KYC: requirements are per country. Non-Nigerian customers verify
+  with their own government ID (passport / national ID), never BVN/NIN, so
+  diaspora and international users are not blocked by Nigerian rules. Set the
+  user's country of residence at signup so the right matrix applies.

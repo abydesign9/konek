@@ -7,6 +7,7 @@ import { logAudit } from "@/lib/audit";
 import { sendNotification } from "@/lib/notifications/send";
 import { cashbackOnCardSpend, recordSpend as recordPromoSpend } from "@/lib/promotions/promotionsService";
 import { getCardProduct } from "@/lib/cards/cardProducts";
+import { recordAffiliateCommission, agentAdjustedFeeMinor } from "@/lib/agents/agentProgram";
 import { mockSudoAdapter } from "@/vendors/cards/mockSudo";
 import { CardIssuerAdapter, SensitiveCardDetails } from "@/vendors/cards/types";
 
@@ -103,9 +104,9 @@ export async function issueCard(userId: string, productId: string): Promise<{ ca
   // receiving account). Ensure the wallet exists so it can hold a balance.
   const walletAccountId = await getUserWalletAccount(userId, product.currency);
 
-  // Card creation fee from the product schedule, charged wallet -> platform
-  // revenue in the product's currency before issuing.
-  const feeMinor = product.creationFeeMinor;
+  // Card creation fee from the product schedule, after any agent-programme waiver
+  // or discount, charged wallet -> platform revenue before issuing.
+  const feeMinor = await agentAdjustedFeeMinor(userId, product.creationFeeMinor);
   if (feeMinor > 0) {
     if ((await getBalance(walletAccountId)) < feeMinor) throw new CardCreationFeeUnpaidError(feeMinor);
     const revenueAccountId = await getOrCreateAccount("platform", null, product.currency, "revenue");
@@ -260,6 +261,7 @@ export async function completeThreeDsAndSettle(
   const issuerFloatId = await getOrCreateAccount("vendor", null, txn.currency, "float");
 
   let journalId = "";
+  let mainTransactionId = "";
   try {
     await withTransaction(async (client) => {
       // Atomic claim: only the first concurrent settle flips authorized→settled.
@@ -274,6 +276,7 @@ export async function completeThreeDsAndSettle(
          VALUES ($1, $2, 'card_purchase', 'delivered', $3, $4, $5) RETURNING id`,
         [userId, `card_purchase:${cardTransactionId}`, txn.currency, amountMinor, JSON.stringify({ cardTransactionId })]
       );
+      mainTransactionId = (mainRes.rows[0] as { id: string }).id;
       const mainTxnId = (mainRes.rows[0] as { id: string }).id;
 
       const posted = await postJournal(
@@ -318,6 +321,7 @@ export async function completeThreeDsAndSettle(
     // unlock thresholds.
     await cashbackOnCardSpend(userId, amountMinor, txn.currency);
     await recordPromoSpend(userId, amountMinor, txn.currency, "card_spend");
+    if (mainTransactionId) await recordAffiliateCommission(userId, mainTransactionId, amountMinor, txn.currency);
   } catch {
     // settlement is committed; notification/audit hiccups must not undo it
   }

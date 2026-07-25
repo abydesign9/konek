@@ -20,6 +20,7 @@ import { logAudit } from "@/lib/audit";
 import { sendNotification } from "@/lib/notifications/send";
 import { sendExternalAlert } from "@/lib/alerts/externalAlert";
 import { recordCommissionIfAgent } from "@/lib/agents/agentService";
+import { recordAffiliateCommission } from "@/lib/agents/agentProgram";
 import { updateStreak } from "@/lib/gamification/streaks";
 import { computeAndUpdateLevel } from "@/lib/gamification/levels";
 import { checkMissions } from "@/lib/gamification/missions";
@@ -200,6 +201,7 @@ export async function purchaseVtu(input: PurchaseInput) {
         await recordPromoSpend(input.userId, input.amountMinor, CURRENCY, input.serviceType);
         await awardReferralBonusIfEligible(input.userId);
         await recordCommissionIfAgent(input.userId, txnId, input.amountMinor, CURRENCY);
+        await recordAffiliateCommission(input.userId, txnId, input.amountMinor, CURRENCY);
         await updateStreak(input.userId);
         await computeAndUpdateLevel(input.userId);
         await checkMissions(input.userId, input.serviceType);

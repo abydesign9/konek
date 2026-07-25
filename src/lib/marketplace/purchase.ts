@@ -16,6 +16,7 @@ import { getAdapterById } from "@/vendors/registry";
 import { getEsimProvider } from "@/vendors/esim/registry";
 import { defaultSmdpAddress } from "@/vendors/esim/lpa";
 import { logAudit } from "@/lib/audit";
+import { recordAffiliateCommission } from "@/lib/agents/agentProgram";
 import { selectSuppliers, type SupplierOption } from "./selection";
 import { runFailover, type AttemptRecord } from "./failover";
 
@@ -268,6 +269,8 @@ export async function marketplacePurchase(input: MarketplacePurchaseInput): Prom
       supplierId: winner.supplierId,
       attempts: result.attempts.length,
     });
+    // Agents earn affiliate commission on their referred customers' eSIM buys.
+    await recordAffiliateCommission(input.userId, txnId, chargeMinorNgn, CURRENCY).catch(() => {});
     return { txnId, status: "delivered", supplierId: winner.supplierId };
   });
 }
