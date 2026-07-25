@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { PageHeader } from "@/components/PageHeader";
 
 interface CardProduct {
   id: string;
@@ -89,7 +88,9 @@ export default function CardProductDetailPage() {
   if (!product) {
     return (
       <main className="min-h-screen bg-background">
-        <PageHeader title="Card" backHref="/cards/new" />
+        <div className="mx-auto max-w-lg px-5 py-4">
+          <Link href="/cards/new" className="text-sm font-semibold text-indigo">← Back</Link>
+        </div>
         <p className="px-5 py-10 text-center text-sm text-indigo/55">That card type is not available.</p>
       </main>
     );
@@ -110,20 +111,25 @@ export default function CardProductDetailPage() {
 
   return (
     <main className="min-h-screen bg-background pb-40">
-      <div className={`${product.currency === "NGN" ? "bg-indigo" : "bg-slate-900"} px-5 pb-10 pt-2 text-white`}>
-        <PageHeader
-          title=""
-          backHref="/cards/new"
-          right={
-            <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-indigo">
-              {product.currency} {product.formFactor === "physical" ? "Physical" : "Virtual"} Card
-            </span>
-          }
-        />
-        <h1 className="mt-2 font-heading text-2xl font-bold">{product.name}</h1>
-        <p className="mt-1 text-sm text-white/70">
-          {product.brand.toUpperCase()} · {product.currency} {product.formFactor}
-        </p>
+      <div className={`${product.currency === "NGN" ? "bg-indigo" : "bg-slate-900"} px-5 pb-14 pt-4 text-white`}>
+        <div className="mx-auto flex max-w-lg items-center justify-between gap-3">
+          <Link
+            href="/cards/new"
+            aria-label="Back"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 text-white"
+          >
+            ←
+          </Link>
+          <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-indigo">
+            {product.currency} {product.formFactor === "physical" ? "Physical" : "Virtual"} Card
+          </span>
+        </div>
+        <div className="mx-auto mt-4 max-w-lg">
+          <h1 className="font-heading text-2xl font-bold">{product.name}</h1>
+          <p className="mt-1 text-sm text-white/70">
+            {product.brand.toUpperCase()} · {product.currency} {product.formFactor}
+          </p>
+        </div>
       </div>
 
       <div className="mx-auto -mt-6 max-w-lg px-5">
