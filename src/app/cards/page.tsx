@@ -34,6 +34,28 @@ interface CardDetails {
   cvv?: string;
 }
 
+interface CardProduct {
+  id: string;
+  name: string;
+  currency: string;
+  formFactor: "virtual" | "physical";
+  brand: string;
+  description: string | null;
+  creationFeeMinor: number;
+  authorizationFeeMinor: number;
+  fundingFeePct: number;
+  fundingFeeMinMinor: number;
+  fundingFeeMaxMinor: number | null;
+  declineFeeMinor: number;
+  disputeFeeMinor: number;
+  intlFeePct: number;
+  intlFeeFixedMinor: number;
+}
+
+function fx(minor: number, ccy: string) {
+  return `${ccy === "USD" ? "$" : "₦"}${(minor / 100).toLocaleString(undefined, { minimumFractionDigits: minor % 100 ? 2 : 0 })}`;
+}
+
 
 export default function CardsPage(){
 
@@ -52,14 +74,23 @@ useState<string|null>(null);
 const [verified,setVerified] =
 useState<boolean|null>(null);
 
+const [products,setProducts] = useState<CardProduct[]>([]);
+const [selectedId,setSelectedId] = useState<string|null>(null);
+
 
 async function issueCard(){
+
+if(!selectedId){ setError("Choose a card type first."); return; }
 
 setLoading(true);
 setError(null);
 
 const res =
-await fetch("/api/cards/issue",{ method:"POST" });
+await fetch("/api/cards/issue",{
+method:"POST",
+headers:{ "Content-Type":"application/json" },
+body: JSON.stringify({ productId: selectedId }),
+});
 
 const json =
 await res.json().catch(()=>({}));
@@ -69,7 +100,12 @@ setLoading(false);
 if(!res.ok){
 
 if(json.code==="no_dollar_account"){
-setError("Create your USD account first, then come back to add a card.");
+setError("Create the matching account first (USD or Naira), then come back.");
+return;
+}
+
+if(json.code==="fee_unpaid"){
+setError("Your wallet balance can't cover the card creation fee.");
 return;
 }
 
@@ -109,6 +145,15 @@ fetch("/api/verification/status")
 .then((r)=>r.json())
 .then((d)=>setVerified((d.tier ?? 0) >= 2))
 .catch(()=>setVerified(false));
+
+fetch("/api/cards/products")
+.then((r)=>r.json())
+.then((d)=>{
+const list: CardProduct[] = d.products ?? [];
+setProducts(list);
+setSelectedId((cur)=> cur ?? list[0]?.id ?? null);
+})
+.catch(()=>{});
 
 },[]);
 
@@ -182,6 +227,8 @@ Loading cards...
 const card =
 data.cards[0];
 
+const selected = products.find((p)=>p.id===selectedId) ?? null;
+
 
 
 
@@ -206,26 +253,46 @@ backHref="/wallet"
 
 <div className="text-center">
 <div className="text-5xl mb-3">💳</div>
-<h2 className="font-bold text-indigo text-xl">Create a virtual card</h2>
-<p className="text-sm text-indigo/60 mt-2">Spend online worldwide from your USD wallet.</p>
+<h2 className="font-bold text-indigo text-xl">Create a card</h2>
+<p className="text-sm text-indigo/60 mt-2">Choose a card type. Fees are shown up front.</p>
 </div>
 
-
-{/* Fee + KYC notice */}
-<div className="mt-5 rounded-2xl bg-indigo/5 px-4 py-3 text-sm text-indigo/70">
-You must be <span className="font-semibold text-indigo">verified (finance tier)</span> and have a
-funded USD wallet to create a virtual card.
+{/* Card type picker */}
+<div className="konek-scrollbar-none mt-5 flex gap-2 overflow-x-auto">
+{products.map((p)=>(
+<button
+key={p.id}
+onClick={()=>setSelectedId(p.id)}
+className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold ${selectedId===p.id?"bg-indigo text-white":"border border-indigo/15 bg-white text-indigo"}`}
+>
+{p.name}
+</button>
+))}
 </div>
 
+{/* Fee schedule for the selected product */}
+{selected && (
+<div className="mt-4 rounded-2xl border border-indigo/10 bg-white">
+<div className="border-b border-indigo/10 px-4 py-3">
+<p className="font-bold text-indigo">{selected.name}</p>
+<p className="text-xs text-indigo/55">{selected.currency} · {selected.formFactor} · {selected.brand}{selected.description?` · ${selected.description}`:""}</p>
+</div>
+<div className="divide-y divide-indigo/5 text-sm">
+<FeeLine label="Card creation fee" value={fx(selected.creationFeeMinor,selected.currency)} />
+<FeeLine label="Card authorization fee" hint="Applies on every card transaction" value={fx(selected.authorizationFeeMinor,selected.currency)} />
+<FeeLine label="Card funding fee" hint={selected.fundingFeePct?undefined:"No fee — the card is linked to your wallet"} value={selected.fundingFeePct?`${selected.fundingFeePct}%${selected.fundingFeeMinMinor?` · min ${fx(selected.fundingFeeMinMinor,selected.currency)}`:""}${selected.fundingFeeMaxMinor?` · max ${fx(selected.fundingFeeMaxMinor,selected.currency)}`:""}`:fx(0,selected.currency)} />
+<FeeLine label="Card decline fee" hint="Applies on declines due to insufficient balance" value={fx(selected.declineFeeMinor,selected.currency)} />
+<FeeLine label="Dispute fee" hint="Applies when you file a card dispute" value={fx(selected.disputeFeeMinor,selected.currency)} />
+<FeeLine label="International transaction fee" hint="Applies on non-US / international websites" value={`${selected.intlFeePct?`${selected.intlFeePct}%`:""}${selected.intlFeePct&&selected.intlFeeFixedMinor?" + ":""}${selected.intlFeeFixedMinor?fx(selected.intlFeeFixedMinor,selected.currency):(!selected.intlFeePct?fx(0,selected.currency):"")}`} />
+</div>
+</div>
+)}
 
-{/* Balance */}
+{/* Wallet balance + verification */}
 <div className="mt-3 flex items-center justify-between rounded-2xl border border-indigo/10 px-4 py-3">
-<span className="text-sm text-indigo/60">USD wallet balance</span>
+<span className="text-sm text-indigo/60">Wallet balance</span>
 <span className="text-sm font-bold text-indigo">${(data.balanceMinor/100).toLocaleString()}</span>
 </div>
-
-
-{/* User verification badge */}
 <div className="mt-3 rounded-2xl border border-indigo/10 px-4 py-3">
 <p className="mb-1.5 text-xs text-indigo/50">User verification</p>
 {verified === null ? (
@@ -237,15 +304,13 @@ funded USD wallet to create a virtual card.
 )}
 </div>
 
-
 <button
 onClick={issueCard}
-disabled={loading || verified === false}
+disabled={loading || verified === false || !selected}
 className="mt-5 w-full rounded-2xl bg-indigo text-white py-3.5 font-semibold disabled:opacity-50"
 >
-{loading ? "Creating…" : verified === false ? "Verify to create a card" : "Create Card"}
+{loading ? "Creating…" : verified === false ? "Verify to create a card" : selected ? `Create ${selected.name}` : "Create Card"}
 </button>
-
 
 {error && (
 <p className="mt-4 text-sm text-red-600">
@@ -253,13 +318,9 @@ className="mt-5 w-full rounded-2xl bg-indigo text-white py-3.5 font-semibold dis
 </p>
 )}
 
-
-{error && error.startsWith("Create your USD") && (
-<a
-href="/wallet/dollar-account"
-className="mt-3 inline-block text-sm font-semibold text-konek-green"
->
-Open USD account →
+{error && error.includes("account first") && (
+<a href={selected?.currency==="NGN"?"/wallet/naira-account":"/wallet/dollar-account"} className="mt-3 inline-block text-sm font-semibold text-konek-green">
+Open {selected?.currency==="NGN"?"Naira":"USD"} account →
 </a>
 )}
 
@@ -476,4 +537,16 @@ CVV: {details.cvv}
 
 );
 
+}
+
+function FeeLine({ label, hint, value }: { label: string; hint?: string; value: string }) {
+  return (
+    <div className="flex items-start justify-between gap-3 px-4 py-3">
+      <div className="min-w-0">
+        <p className="text-sm text-indigo">{label}</p>
+        {hint && <p className="mt-0.5 text-xs text-indigo/45">{hint}</p>}
+      </div>
+      <p className="shrink-0 text-sm font-semibold text-indigo">{value}</p>
+    </div>
+  );
 }

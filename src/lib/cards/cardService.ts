@@ -6,7 +6,7 @@ import { isWalletInsufficientError } from "@/lib/ledger/reservations";
 import { logAudit } from "@/lib/audit";
 import { sendNotification } from "@/lib/notifications/send";
 import { cashbackOnCardSpend, recordSpend as recordPromoSpend } from "@/lib/promotions/promotionsService";
-import { getFinancialConfig } from "@/lib/config/financialConfig";
+import { getCardProduct } from "@/lib/cards/cardProducts";
 import { mockSudoAdapter } from "@/vendors/cards/mockSudo";
 import { CardIssuerAdapter, SensitiveCardDetails } from "@/vendors/cards/types";
 
@@ -25,6 +25,13 @@ export class CardCreationFeeUnpaidError extends Error {
   constructor(readonly feeMinor: number) {
     super("Insufficient wallet balance to cover the card creation fee");
     this.name = "CardCreationFeeUnpaidError";
+  }
+}
+
+export class CardProductUnavailableError extends Error {
+  constructor() {
+    super("That card type is not available");
+    this.name = "CardProductUnavailableError";
   }
 }
 
@@ -86,23 +93,31 @@ export async function revealCardDetails(cardId: string, userId: string): Promise
   return details;
 }
 
-export async function issueCard(userId: string): Promise<{ cardId: string }> {
-  const { rows: vaRows } = await query<{ id: string }>(`SELECT id FROM virtual_accounts WHERE user_id = $1`, [userId]);
+export async function issueCard(userId: string, productId: string): Promise<{ cardId: string }> {
+  const product = await getCardProduct(productId);
+  if (!product || !product.active) throw new CardProductUnavailableError();
+
+  // Currency-matched funding account is required: a USD card needs a USD virtual
+  // account, a Naira card needs an NGN account.
+  const { rows: vaRows } = await query<{ id: string }>(
+    `SELECT id FROM virtual_accounts WHERE user_id = $1 AND currency = $2`,
+    [userId, product.currency]
+  );
   if (!vaRows[0]) throw new NoDollarAccountError();
 
-  // Admin-configurable card creation fee (default 0). Charged from the wallet to
-  // platform revenue before issuing; if the wallet can't cover it, we don't issue.
-  const feeMinor = (await getFinancialConfig()).cardCreationFeeMinorUSD;
+  // Card creation fee from the product schedule, charged wallet -> platform
+  // revenue in the product's currency before issuing.
+  const feeMinor = product.creationFeeMinor;
   if (feeMinor > 0) {
-    const walletAccountId = await getUserWalletAccount(userId, CURRENCY);
+    const walletAccountId = await getUserWalletAccount(userId, product.currency);
     if ((await getBalance(walletAccountId)) < feeMinor) throw new CardCreationFeeUnpaidError(feeMinor);
-    const revenueAccountId = await getOrCreateAccount("platform", null, CURRENCY, "revenue");
+    const revenueAccountId = await getOrCreateAccount("platform", null, product.currency, "revenue");
     await postJournal({
       journalType: "purchase",
-      description: "Card creation fee",
+      description: `Card creation fee (${product.name})`,
       entries: [
-        { accountId: walletAccountId, amountMinor: -feeMinor, currency: CURRENCY },
-        { accountId: revenueAccountId, amountMinor: feeMinor, currency: CURRENCY },
+        { accountId: walletAccountId, amountMinor: -feeMinor, currency: product.currency },
+        { accountId: revenueAccountId, amountMinor: feeMinor, currency: product.currency },
       ],
     });
   }
@@ -110,11 +125,11 @@ export async function issueCard(userId: string): Promise<{ cardId: string }> {
   const issued = await adapter.issueCard(userId);
 
   const { rows } = await query<{ id: string }>(
-    `INSERT INTO cards (user_id, provider, provider_card_id, brand, last4, currency)
-     VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
-    [userId, adapter.id, issued.providerCardId, issued.brand, issued.last4, CURRENCY]
+    `INSERT INTO cards (user_id, provider, provider_card_id, card_type, brand, last4, currency, product_id)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`,
+    [userId, adapter.id, issued.providerCardId, product.formFactor, product.brand, issued.last4, product.currency, product.id]
   );
-  await logAudit(userId, "card_issued", "card", rows[0].id, { brand: issued.brand, last4: issued.last4 });
+  await logAudit(userId, "card_issued", "card", rows[0].id, { product: product.name, formFactor: product.formFactor });
   return { cardId: rows[0].id };
 }
 
@@ -314,8 +329,8 @@ export async function completeThreeDsAndSettle(
 }
 
 export async function fileDispute(cardTransactionId: string, userId: string, reason: string): Promise<{ disputeId: string; feeMinor: number }> {
-  const { rows: txnRows } = await query<{ id: string; amount_minor: string; currency: string; card_id: string }>(
-    `SELECT ct.id, ct.amount_minor, ct.currency, ct.card_id FROM card_transactions ct
+  const { rows: txnRows } = await query<{ id: string; amount_minor: string; currency: string; card_id: string; product_id: string | null }>(
+    `SELECT ct.id, ct.amount_minor, ct.currency, ct.card_id, c.product_id FROM card_transactions ct
      JOIN cards c ON c.id = ct.card_id
      WHERE ct.id = $1 AND c.user_id = $2 AND ct.status = 'settled'`,
     [cardTransactionId, userId]
@@ -323,7 +338,10 @@ export async function fileDispute(cardTransactionId: string, userId: string, rea
   const txn = txnRows[0];
   if (!txn) throw new Error("Transaction not found or not eligible for dispute");
 
-  const feeMinor = Math.round(Number(txn.amount_minor) * DISPUTE_FEE_PCT);
+  // Flat dispute fee from the card's product schedule; legacy cards without a
+  // product fall back to the original percentage deterrent.
+  const product = txn.product_id ? await getCardProduct(txn.product_id) : null;
+  const feeMinor = product ? product.disputeFeeMinor : Math.round(Number(txn.amount_minor) * DISPUTE_FEE_PCT);
   const walletAccountId = await getUserWalletAccount(userId, txn.currency);
   const revenueAccountId = await getOrCreateAccount("platform", null, txn.currency, "revenue");
 

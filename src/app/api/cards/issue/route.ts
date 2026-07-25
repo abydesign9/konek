@@ -1,9 +1,9 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getSessionUserId } from "@/lib/auth/session";
-import { issueCard, NoDollarAccountError, CardCreationFeeUnpaidError } from "@/lib/cards/cardService";
+import { issueCard, NoDollarAccountError, CardCreationFeeUnpaidError, CardProductUnavailableError } from "@/lib/cards/cardService";
 import { assertKycTier, KYC_TIER, KycGateError } from "@/lib/kyc/tiers";
 
-export async function POST() {
+export async function POST(req: NextRequest) {
   const userId = await getSessionUserId();
 
   if (!userId) {
@@ -44,10 +44,16 @@ export async function POST() {
 
 
 
+  const body = await req.json().catch(() => null);
+  const productId = typeof body?.productId === "string" ? body.productId : "";
+  if (!productId) {
+    return NextResponse.json({ error: "productId is required" }, { status: 400 });
+  }
+
   try {
 
     const result =
-      await issueCard(userId);
+      await issueCard(userId, productId);
 
     return NextResponse.json(result);
 
@@ -71,6 +77,10 @@ export async function POST() {
 
     if (err instanceof CardCreationFeeUnpaidError) {
       return NextResponse.json({ error: err.message, code: "fee_unpaid", feeMinor: err.feeMinor }, { status: 402 });
+    }
+
+    if (err instanceof CardProductUnavailableError) {
+      return NextResponse.json({ error: err.message, code: "product_unavailable" }, { status: 400 });
     }
 
 
