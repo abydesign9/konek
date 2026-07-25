@@ -5,6 +5,7 @@ import { getBalance } from "@/lib/ledger/balance";
 import { isWalletInsufficientError } from "@/lib/ledger/reservations";
 import { logAudit } from "@/lib/audit";
 import { sendNotification } from "@/lib/notifications/send";
+import { cashbackOnCardSpend, recordSpend as recordPromoSpend } from "@/lib/promotions/promotionsService";
 import { mockSudoAdapter } from "@/vendors/cards/mockSudo";
 import { CardIssuerAdapter, SensitiveCardDetails } from "@/vendors/cards/types";
 
@@ -276,6 +277,10 @@ export async function completeThreeDsAndSettle(
       "Card purchase",
       `$${(amountMinor / 100).toLocaleString()} at the merchant was approved.`
     );
+    // Card spend feeds promos: pay any active cashback, and count it toward
+    // unlock thresholds.
+    await cashbackOnCardSpend(userId, amountMinor, txn.currency);
+    await recordPromoSpend(userId, amountMinor, txn.currency, "card_spend");
   } catch {
     // settlement is committed; notification/audit hiccups must not undo it
   }

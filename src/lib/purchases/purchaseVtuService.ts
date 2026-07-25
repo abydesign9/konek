@@ -15,6 +15,7 @@ import { checkVelocityLimits } from "@/lib/limits/checkLimits";
 // reservation ledger logic that raises it.
 export { InsufficientBalanceError } from "@/lib/ledger/reservations";
 import { awardPurchaseCoins, awardReferralBonusIfEligible } from "@/lib/rewards/awardCoins";
+import { recordSpend as recordPromoSpend } from "@/lib/promotions/promotionsService";
 import { logAudit } from "@/lib/audit";
 import { sendNotification } from "@/lib/notifications/send";
 import { sendExternalAlert } from "@/lib/alerts/externalAlert";
@@ -196,6 +197,7 @@ export async function purchaseVtu(input: PurchaseInput) {
       // purchase. So they are isolated and, on failure, alerted for follow-up.
       try {
         await awardPurchaseCoins(input.userId, txnId, input.amountMinor);
+        await recordPromoSpend(input.userId, input.amountMinor, CURRENCY, input.serviceType);
         await awardReferralBonusIfEligible(input.userId);
         await recordCommissionIfAgent(input.userId, txnId, input.amountMinor, CURRENCY);
         await updateStreak(input.userId);

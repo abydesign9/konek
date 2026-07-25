@@ -4,6 +4,7 @@ import { postJournal } from "@/lib/ledger/postJournal";
 import { getOrCreateAccount, getUserWalletAccount } from "@/lib/ledger/accounts";
 import { logAudit } from "@/lib/audit";
 import { sendNotification } from "@/lib/notifications/send";
+import { recordDeposit } from "@/lib/promotions/promotionsService";
 import { mockFincraAdapter } from "@/vendors/dollarAccount/mockFincra";
 import { DollarAccountAdapter } from "@/vendors/dollarAccount/types";
 
@@ -140,6 +141,9 @@ export async function creditDollarInflow(inflowRef: string): Promise<void> {
         "Dollar account credited",
         `$${(verified.amountMinor / 100).toLocaleString()} received from ${verified.senderName}.`
       );
+      // Virtual-account inflow counts as a deposit for promos (grants VA-activation
+      // promos + progresses deposit-based unlocks).
+      await recordDeposit(virtualAccount.user_id, verified.amountMinor, "USD", "va_inflow");
     } catch {
       // credit is committed; notification/audit hiccups must not mark the webhook failed
     }
