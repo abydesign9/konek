@@ -5,7 +5,7 @@ covers what the app is, how to run it, how money and verification work, every
 module (M1 to M12) plus the newer additions, and a day to day operations
 runbook for the admin console.
 
-Last updated: 2026-07-25. Database is on migration 0043.
+Last updated: 2026-07-25. Database is on migration 0044.
 
 ---
 
@@ -317,3 +317,28 @@ written to the audit log with the admin's identity.
 - Optional service worker caching pass for faster loads and no stale content.
 - Optional: a self service "request admin access" flow (today a super admin
   approves by adding the email under Users and Roles).
+
+---
+
+## 13. PWA (installable app)
+
+Konek installs to the Home Screen and runs full screen, no app store needed.
+
+- Install experience: launched as an installed app (standalone), it opens at
+  `/home` (which redirects to `/login` when signed out), so it shows a splash
+  then login/signup and never the marketing landing page. In a normal browser
+  tab the landing page still shows. A brief branded splash plays once per launch
+  on both Android and iOS.
+- Push notifications: real Web Push is wired (VAPID keys, a custom service
+  worker, `push_subscriptions` table, subscribe/unsubscribe routes, delivery
+  through the notification path). Customers turn it on under Preferences. To
+  enable it set `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, and
+  `VAPID_SUBJECT` (generate with `npx web-push generate-vapid-keys`); without
+  them push simply no-ops. iOS caveat: push works only from the installed app on
+  iOS 16.4 or newer, which the toggle explains to the user.
+- Biometric: today's biometric is an on-device app unlock (Face ID / Touch ID /
+  fingerprint gates re-entry on that device). A full server-verified passwordless
+  biometric LOGIN (a WebAuthn assertion verified on the server) is a separate,
+  security-sensitive piece still to build; do not treat the current feature as a
+  standalone login factor.
+- App store version later: wrap this same app with Capacitor and keep one backend.
