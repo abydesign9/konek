@@ -4,9 +4,11 @@ import { checkRateLimit, clientIp, RateLimitExceededError } from "@/lib/rateLimi
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
-  const { email, secret } = body ?? {};
-  if (typeof secret !== "string") {
-    return NextResponse.json({ error: "secret is required" }, { status: 400 });
+  const email = body?.email;
+  // Accept either field name: "password" (per-admin) or legacy "secret".
+  const credential = typeof body?.password === "string" ? body.password : body?.secret;
+  if (typeof credential !== "string" || credential.length === 0) {
+    return NextResponse.json({ error: "password is required" }, { status: 400 });
   }
   if (typeof email !== "string" || !email.includes("@")) {
     return NextResponse.json({ error: "a valid email is required" }, { status: 400 });
@@ -21,8 +23,8 @@ export async function POST(req: NextRequest) {
     throw err;
   }
 
-  const ok = await createAdminSession(email, secret);
-  if (!ok) return NextResponse.json({ error: "invalid email or secret" }, { status: 401 });
+  const ok = await createAdminSession(email, credential);
+  if (!ok) return NextResponse.json({ error: "invalid email or password" }, { status: 401 });
 
   return NextResponse.json({ ok: true });
 }

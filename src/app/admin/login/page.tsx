@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 export default function AdminLoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
-  const [secret, setSecret] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -17,12 +17,12 @@ export default function AdminLoginPage() {
     const res = await fetch("/api/admin/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, secret }),
+      body: JSON.stringify({ email, password }),
     });
     setLoading(false);
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
-      setError(data.error ?? "Invalid email or secret");
+      setError(data.error ?? "Invalid email or password");
       return;
     }
     router.push("/admin/dashboard");
@@ -43,9 +43,9 @@ export default function AdminLoginPage() {
         />
         <input
           type="password"
-          placeholder="Admin secret"
-          value={secret}
-          onChange={(e) => setSecret(e.target.value)}
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
           required
           className="w-full rounded-xl border border-indigo/20 px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-konek-green"
         />

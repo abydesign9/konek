@@ -2,6 +2,7 @@ import crypto from "node:crypto";
 import { cookies } from "next/headers";
 import { findActiveAdminByEmail } from "./adminUsers";
 import { verifyAdminSecret } from "./adminSecret";
+import { adminHasPassword, verifyAdminPassword } from "./adminPassword";
 
 const ADMIN_COOKIE = "konek_admin";
 const ADMIN_TTL_HOURS = 12;
@@ -19,16 +20,22 @@ function sign(payload: string): string {
   return crypto.createHmac("sha256", secret).update(payload).digest("hex");
 }
 
-// Auth is two-factor in spirit: a shared site secret (gate #1) plus an
-// email that must match an active admin_users row (gate #2, and the
-// source of truth for who did what in the audit log — no more generic
-// "admin" actor string). The secret itself may have been rotated in the DB
-// (see lib/admin/adminSecret) — falls back to the env var if never rotated.
-export async function createAdminSession(email: string, providedSecret: string): Promise<boolean> {
-  if (!(await verifyAdminSecret(providedSecret))) return false;
-
-  const admin = await findActiveAdminByEmail(email);
-  if (!admin) return false;
+// Login credential is per-admin: if the admin has set a password we verify that,
+// otherwise we fall back to the shared secret (bootstrap, and until each admin
+// sets a password). The email must match an active admin_users row, which is
+// also the audit-log actor. ADMIN_SECRET stays in use only as the cookie
+// signing key below, never printed and never a login credential once passwords
+// are set.
+export async function createAdminSession(email: string, credential: string): Promise<boolean> {
+  let admin;
+  if (await adminHasPassword(email)) {
+    admin = await verifyAdminPassword(email, credential);
+    if (!admin) return false;
+  } else {
+    if (!(await verifyAdminSecret(credential))) return false;
+    admin = await findActiveAdminByEmail(email);
+    if (!admin) return false;
+  }
 
   const exp = Date.now() + ADMIN_TTL_HOURS * 60 * 60 * 1000;
   const payload: AdminSessionPayload = { adminUserId: admin.id, email: admin.email, role: admin.role, exp };

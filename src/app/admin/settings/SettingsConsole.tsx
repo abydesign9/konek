@@ -10,9 +10,34 @@ export function SettingsConsole() {
   const [secretSaving, setSecretSaving] = useState(false);
   const [secretMsg, setSecretMsg] = useState<string | null>(null);
 
+  const [curPw, setCurPw] = useState("");
+  const [newPw, setNewPw] = useState("");
+  const [confirmPw, setConfirmPw] = useState("");
+  const [pwSaving, setPwSaving] = useState(false);
+  const [pwMsg, setPwMsg] = useState<string | null>(null);
+
   const [resetPhone, setResetPhone] = useState("");
   const [resetting, setResetting] = useState(false);
   const [resetMsg, setResetMsg] = useState<string | null>(null);
+
+  async function changePassword() {
+    setPwMsg(null);
+    if (newPw.length < 10) return setPwMsg("New password must be at least 10 characters");
+    if (newPw !== confirmPw) return setPwMsg("New password and confirmation don't match");
+    setPwSaving(true);
+    const res = await fetch("/api/admin/settings/password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ current: curPw, newPassword: newPw }),
+    });
+    setPwSaving(false);
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) return setPwMsg(body.error ?? "Failed to change password");
+    setPwMsg("Password updated. Use it to log in from now on.");
+    setCurPw("");
+    setNewPw("");
+    setConfirmPw("");
+  }
 
   async function rotateSecret() {
     setSecretMsg(null);
@@ -72,12 +97,48 @@ export function SettingsConsole() {
     <>
       <PageHeader
         title="Settings"
-        description="Konek admins share one secret (plus an allowlisted email) rather than individual passwords — this is where you rotate it. Customers authenticate with a transaction PIN, not a password, so “reset customer password” resets that PIN instead."
+        description="Each admin now signs in with their own password. Set or change yours below. The shared secret still works only until you set a password, and stays as the server key that signs admin sessions. Customers authenticate with a transaction PIN, so 'reset customer password' resets that PIN instead."
       />
 
       <Grid>
         <div className="col-span-1 lg:col-span-6">
-          <Card title="Change admin secret" description="Requires the current secret. Every admin will need the new one to log in afterwards.">
+          <Card title="Change my password" description="Your personal admin login. If you have not set one yet, enter the shared secret as the current credential.">
+            <div className="flex flex-col gap-3">
+              <input
+                type="password"
+                value={curPw}
+                onChange={(e) => setCurPw(e.target.value)}
+                placeholder="Current password (or shared secret)"
+                className="w-full rounded-xl border border-border-soft px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-indigo"
+              />
+              <input
+                type="password"
+                value={newPw}
+                onChange={(e) => setNewPw(e.target.value)}
+                placeholder="New password (min 10 characters)"
+                className="w-full rounded-xl border border-border-soft px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-indigo"
+              />
+              <input
+                type="password"
+                value={confirmPw}
+                onChange={(e) => setConfirmPw(e.target.value)}
+                placeholder="Confirm new password"
+                className="w-full rounded-xl border border-border-soft px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-indigo"
+              />
+              <button
+                onClick={changePassword}
+                disabled={pwSaving}
+                className="self-start rounded-xl bg-indigo px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
+              >
+                {pwSaving ? "Saving…" : "Update password"}
+              </button>
+              {pwMsg && <p className="text-xs text-text-secondary">{pwMsg}</p>}
+            </div>
+          </Card>
+        </div>
+
+        <div className="col-span-1 lg:col-span-6">
+          <Card title="Change shared secret" description="The bootstrap/fallback credential and the session-signing key. Requires the current secret.">
             <div className="flex flex-col gap-3">
               <input
                 type="password"
