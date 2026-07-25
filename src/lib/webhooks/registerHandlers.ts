@@ -41,6 +41,10 @@ export const kycHandler = async (ctx: WebhookContext) => {
   const userId = typeof data.userId === "string" ? data.userId : null;
   const method = typeof data.method === "string" ? data.method : null;
   const decision = data.decision === "verified" || data.decision === "rejected" ? data.decision : null;
+  // A provider can flag fraud/mismatch either with an explicit flag or a reason.
+  const fraud =
+    data.fraud === true ||
+    (typeof data.reason === "string" && /fraud|mismatch|forged|tamper/i.test(data.reason));
   if (ctx.eventType === "verification.completed" && userId && method && decision) {
     const { tier } = await applyKycWebhookResult({
       userId,
@@ -48,8 +52,9 @@ export const kycHandler = async (ctx: WebhookContext) => {
       decision,
       provider: typeof data.provider === "string" ? data.provider : undefined,
       vendorRef: ctx.reference ?? undefined,
+      fraud,
     });
-    return { applied: true, userId, method, decision, tier };
+    return { applied: true, userId, method, decision, fraud, tier };
   }
   return { ignored: true, eventType: ctx.eventType };
 };

@@ -1,6 +1,7 @@
 import { query } from "@/lib/db";
 import { logAudit } from "@/lib/audit";
 import { encryptJson } from "@/lib/crypto/pii";
+import { sendExternalAlert } from "@/lib/alerts/externalAlert";
 import { getMethodAdapter } from "@/vendors/kyc/methodAdapters";
 import { loadMethods, loadProviders, loadRequirements, selectProvider } from "./config";
 import { computeTier, missingForTier } from "./tierEngine";
@@ -150,6 +151,8 @@ export async function verifyMethod(input: VerifyMethodInput): Promise<VerifyMeth
 
   if (check.result !== "pass") {
     await logAudit(userId, "kyc_method_failed", "user", userId, { method, vendorRef: check.vendorRef });
+    // A provider fraud/mismatch verdict freezes the account for review.
+    if (check.fraud) await freezeUserForFraud(userId, check.reason ?? `Provider flagged ${method} as fraudulent/mismatched`);
     throw new MethodVerificationFailedError(check.reason ?? `${meta.label} verification failed`);
   }
 
@@ -180,12 +183,28 @@ export async function verifyMethod(input: VerifyMethodInput): Promise<VerifyMeth
 // Onfido... complete verification out-of-band). Records the per-method status
 // and recomputes the tier. A real integration re-fetches the decision from the
 // provider by reference before calling this; the webhook body is only a trigger.
+// A provider flagged the identity as fraudulent or mismatched. Freeze the
+// account (suspend + revoke sessions so no money can move), raise a high-priority
+// risk flag + fraud-queue item, and alert admin. Reversible from Admin > Customers.
+export async function freezeUserForFraud(userId: string, reason: string): Promise<void> {
+  await query(`UPDATE users SET status = 'suspended', updated_at = now() WHERE id = $1 AND status = 'active'`, [userId]);
+  await query(`DELETE FROM sessions WHERE user_id = $1`, [userId]);
+  const { rows } = await query<{ id: string }>(
+    `INSERT INTO risk_flags (user_id, flag, detail) VALUES ($1, 'kyc_fraud', $2) RETURNING id`,
+    [userId, JSON.stringify({ reason })]
+  );
+  await query(`INSERT INTO fraud_queue (risk_flag_id, priority) VALUES ($1, 'high')`, [rows[0].id]);
+  await logAudit(userId, "kyc_fraud_freeze", "user", userId, { reason });
+  await sendExternalAlert("fraud_score_high", `KYC fraud/mismatch — account ${userId} frozen: ${reason}`, { userId });
+}
+
 export async function applyKycWebhookResult(input: {
   userId: string;
   method: string;
   decision: "verified" | "rejected";
   provider?: string;
   vendorRef?: string;
+  fraud?: boolean;
 }): Promise<{ tier: number }> {
   const methods = await loadMethods();
   if (!methods.some((m) => m.code === input.method)) throw new UnknownMethodError(input.method);
@@ -211,6 +230,10 @@ export async function applyKycWebhookResult(input: {
     provider: input.provider,
     tier,
   });
+
+  // A fraud/mismatch verdict freezes the account for review.
+  if (input.fraud) await freezeUserForFraud(input.userId, `Provider flagged ${input.method} as fraudulent/mismatched`);
+
   return { tier };
 }
 

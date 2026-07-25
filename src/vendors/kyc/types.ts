@@ -46,6 +46,7 @@ export interface MethodVerifyResult {
   raw: Record<string, unknown>;
   reason?: string;
   duplicate?: boolean; // biometric 1:N dedupe hit
+  fraud?: boolean; // provider flagged the identity as fraudulent/mismatched
 }
 
 export interface MethodKycAdapter {

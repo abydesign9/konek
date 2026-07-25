@@ -1,5 +1,6 @@
 import crypto from "node:crypto";
 import type { MethodKycAdapter, MethodVerifyInput, MethodVerifyResult } from "./types";
+import { smileIdAdapter } from "./smileId";
 
 // Method-based KYC adapters, keyed by kyc_providers.adapter_key. Mocks ship so
 // the global flow works end-to-end before any real vendor key exists; a real
@@ -78,6 +79,7 @@ const mockGlobal: MethodKycAdapter = {
 const ADAPTERS: Record<string, MethodKycAdapter> = {
   mock_dojah: mockDojah,
   mock_global: mockGlobal,
+  smile_id: smileIdAdapter,
 };
 
 export function getMethodAdapter(adapterKey: string): MethodKycAdapter | null {
