@@ -54,6 +54,7 @@ const NAV_GROUPS = [
       { label: "Notifications", href: "/admin/notifications", icon: BellIcon },
       { label: "Promotions", href: "/admin/promotions", icon: ReferralsIcon },
       { label: "Onboarding tour", href: "/admin/onboarding", icon: CompassIcon },
+      { label: "Public pages", href: "/admin/pages", icon: CompassIcon },
     ],
   },
   {
