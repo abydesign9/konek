@@ -290,6 +290,15 @@ written to the audit log with the admin's identity.
 - All PII is encrypted; the ledger is the source of truth for money.
 - Product boundaries stay enforced: no P2P transfers, no remittance to others, no
   airtime to cash. Gift cards are buy only.
+- The browser only ever calls our own backend. Every third party call (Paystack,
+  eSIM, KYC) happens server side in an API route; no secret or vendor key is in
+  the client bundle. This is enforced structurally by a Content Security Policy
+  with `connect-src 'self'` (see `next.config.mjs`), alongside HSTS,
+  X-Frame-Options DENY, nosniff, a locked down Permissions-Policy, and
+  httpOnly + secure + sameSite session cookies.
+- Launch checklist: the dev only mock payment endpoint
+  (`/api/payments/mock/complete`) auto-disables as soon as a real
+  `PAYSTACK_SECRET_KEY` is set. Set the live key before going live.
 
 ---
 
