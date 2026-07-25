@@ -1,8 +1,8 @@
 import crypto from "node:crypto";
 import { cookies } from "next/headers";
+import { query } from "@/lib/db";
 import { findActiveAdminByEmail } from "./adminUsers";
-import { verifyAdminSecret } from "./adminSecret";
-import { adminHasPassword, verifyAdminPassword } from "./adminPassword";
+import { verifyPasswordLogin, InvalidCredentialsError } from "@/lib/auth/password";
 
 const ADMIN_COOKIE = "konek_admin";
 const ADMIN_TTL_HOURS = 12;
@@ -20,22 +20,29 @@ function sign(payload: string): string {
   return crypto.createHmac("sha256", secret).update(payload).digest("hex");
 }
 
-// Login credential is per-admin: if the admin has set a password we verify that,
-// otherwise we fall back to the shared secret (bootstrap, and until each admin
-// sets a password). The email must match an active admin_users row, which is
-// also the audit-log actor. ADMIN_SECRET stays in use only as the cookie
-// signing key below, never printed and never a login credential once passwords
-// are set.
-export async function createAdminSession(email: string, credential: string): Promise<boolean> {
-  let admin;
-  if (await adminHasPassword(email)) {
-    admin = await verifyAdminPassword(email, credential);
-    if (!admin) return false;
-  } else {
-    if (!(await verifyAdminSecret(credential))) return false;
-    admin = await findActiveAdminByEmail(email);
-    if (!admin) return false;
+// Admins sign in with their own Konek account credentials: the same email +
+// password as their customer account (verified against the users table). Being
+// an admin is a separate GRANT — an active admin_users row for that email, which
+// also names the audit-log actor. So onboarding an admin is just: they have a
+// Konek account, then a super_admin approves/invites their email. ADMIN_SECRET
+// is used only as the cookie-signing key below, never as a login credential.
+export async function createAdminSession(email: string, password: string): Promise<boolean> {
+  // 1. Authenticate the Konek (customer) credentials.
+  let userId: string;
+  try {
+    ({ userId } = await verifyPasswordLogin(email, password));
+  } catch (err) {
+    if (err instanceof InvalidCredentialsError) return false;
+    throw err;
   }
+
+  // 2. The account must be active (a suspended/closed user can't hold admin).
+  const { rows: statusRows } = await query<{ status: string }>(`SELECT status FROM users WHERE id = $1`, [userId]);
+  if (statusRows[0]?.status !== "active") return false;
+
+  // 3. The email must carry an admin grant (or bootstrap the first one).
+  const admin = await findActiveAdminByEmail(email);
+  if (!admin) return false;
 
   const exp = Date.now() + ADMIN_TTL_HOURS * 60 * 60 * 1000;
   const payload: AdminSessionPayload = { adminUserId: admin.id, email: admin.email, role: admin.role, exp };

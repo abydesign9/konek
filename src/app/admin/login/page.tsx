@@ -31,7 +31,7 @@ export default function AdminLoginPage() {
   return (
     <main className="min-h-screen flex flex-col items-center justify-center px-6 bg-background">
       <h1 className="font-heading text-xl font-bold text-indigo mb-1">Konek Admin</h1>
-      <p className="text-sm text-indigo/60 mb-8">Internal use only — first login from an allowlisted email becomes super admin</p>
+      <p className="text-sm text-indigo/60 mb-8">Sign in with your Konek account email and password. Admin access is granted separately.</p>
       <form onSubmit={submit} className="w-full max-w-xs flex flex-col gap-3">
         <input
           type="email"
