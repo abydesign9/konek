@@ -3,6 +3,7 @@ import { Sora, Inter } from "next/font/google";
 import { InstallPrompt } from "@/components/InstallPrompt";
 import { BottomNavGate } from "@/components/BottomNavGate";
 import { LiveChatBubble } from "@/components/LiveChatBubble";
+import { SplashGate } from "@/components/SplashGate";
 import "./globals.css";
 
 const sora = Sora({ subsets: ["latin"], variable: "--font-sora" });
@@ -57,6 +58,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${sora.variable} ${inter.variable} font-body antialiased`}>
+        <SplashGate />
         {children}
         {/* One persistent tab bar for the whole app — never re-rendered per page. */}
         <BottomNavGate />

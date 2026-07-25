@@ -2,7 +2,7 @@
   "name": "Konek",
   "short_name": "Konek",
   "description": "Airtime, data, bills, eSIM & international top-up.",
-  "start_url": "/",
+  "start_url": "/home",
   "display": "standalone",
   "background_color": "#F7F8FA",
   "theme_color": "#1F3864",
