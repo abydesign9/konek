@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { PageHeader } from "@/components/PageHeader";
 import { IconChevronRight } from "@/components/icons";
+import { PushToggle } from "@/components/PushToggle";
 
 const THEMES = [
   { value: "light", label: "Light" },
@@ -60,6 +61,9 @@ export function PreferencesClient() {
       <div className="mx-auto flex max-w-lg flex-col gap-6 px-5 py-6">
         <section>
           <p className="mb-3 text-xs font-bold uppercase tracking-wide text-indigo/40">Notifications</p>
+          <div className="mb-2.5">
+            <PushToggle />
+          </div>
           <Link
             href="/notifications"
             className="flex items-center justify-between rounded-2xl bg-white px-4 py-3.5 konek-card-shadow konek-tile"

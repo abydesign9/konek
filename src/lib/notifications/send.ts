@@ -1,4 +1,5 @@
 import { query } from "@/lib/db";
+import { sendPushToUser } from "@/lib/push/webPush";
 
 export type NotificationChannel = "push" | "sms" | "email" | "whatsapp";
 export type NotificationKind = "txn_receipt" | "price_alert" | "streak_reminder" | "support";
@@ -32,7 +33,17 @@ function channelEnabled(prefs: Preferences, channel: NotificationChannel): boole
 // app. Swap for real push/SMS/email providers behind this same function
 // signature when those vendors are wired up; callers never change.
 async function deliver(channel: NotificationChannel, userId: string, title: string, body: string) {
-  console.log(`[mock-notify:${channel}] to user ${userId}: ${title} — ${body}`);
+  // Push is real: deliver to the user's subscribed devices via Web Push. It
+  // fails soft (no VAPID keys, or no subscriptions = nothing sent) so callers
+  // are never blocked. SMS/email/WhatsApp still route through their own
+  // senders elsewhere; here they are logged only outside production.
+  if (channel === "push") {
+    await sendPushToUser(userId, { title, body, url: "/notifications" }).catch(() => {});
+    return;
+  }
+  if (process.env.NODE_ENV !== "production") {
+    console.log(`[mock-notify:${channel}] to user ${userId}: ${title}: ${body}`);
+  }
 }
 
 // Returns whether it actually queued a notification (false = skipped by
