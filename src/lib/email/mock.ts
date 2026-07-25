@@ -6,11 +6,12 @@ import { EmailSender } from "./types";
 export const mockEmailSender: EmailSender = {
   id: "mock_email",
   async send(to, subject) {
-    console.log(`[mock-email] to ${to}: ${subject}`);
+    if (process.env.NODE_ENV !== "production") console.log(`[mock-email] to ${to}: ${subject}`);
     return { vendorRef: "mock" };
   },
   async sendOtp(to, code) {
-    console.log(`[mock-email:otp] to ${to}: ${code}`);
+    // Never print the code or recipient in production logs.
+    if (process.env.NODE_ENV !== "production") console.log(`[mock-email:otp] to ${to}: ${code}`);
     return { vendorRef: "mock" };
   },
 };

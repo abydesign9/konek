@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authenticatePartner } from "@/lib/partners/partnerService";
+import { checkRateLimit, RateLimitExceededError } from "@/lib/rateLimit";
 import { InsufficientBalanceError, purchaseVtu } from "@/lib/purchases/purchaseVtuService";
 import { postJournal } from "@/lib/ledger/postJournal";
 import { getOrCreateAccount } from "@/lib/ledger/accounts";
@@ -20,6 +21,16 @@ export async function POST(req: NextRequest) {
 
   const partner = await authenticatePartner(apiKey);
   if (!partner) return NextResponse.json({ error: "invalid or inactive API key" }, { status: 401 });
+
+  // Per-partner throttle so one key cannot flood vendor purchases.
+  try {
+    await checkRateLimit(`whitelabel:${partner.id}`, 60, 60 * 1000);
+  } catch (err) {
+    if (err instanceof RateLimitExceededError) {
+      return NextResponse.json({ error: "rate limit exceeded" }, { status: 429 });
+    }
+    throw err;
+  }
 
   const body = await req.json().catch(() => null);
   const { serviceType, network, phone, amountMinor, externalReference } = body ?? {};

@@ -4,6 +4,7 @@ import { query } from "@/lib/db";
 import { withIdempotency } from "@/lib/idempotency";
 import { assertKycTier, KYC_TIER, KycGateError } from "@/lib/kyc/tiers";
 import { paymentGateway } from "@/lib/payments";
+import { checkRateLimit, RateLimitExceededError } from "@/lib/rateLimit";
 
 const CURRENCY = "NGN";
 const MIN_AMOUNT_MINOR = 10000; // ₦100
@@ -11,6 +12,18 @@ const MIN_AMOUNT_MINOR = 10000; // ₦100
 export async function POST(req: NextRequest) {
   const userId = await getSessionUserId();
   if (!userId) return NextResponse.json({ error: "unauthenticated" }, { status: 401 });
+
+  // Each funding attempt initializes a Paystack charge (a paid vendor call).
+  // Cap attempts per user so the endpoint can't be hammered into runaway
+  // gateway calls or a flood of pending transactions.
+  try {
+    await checkRateLimit(`wallet_fund:${userId}`, 10, 60 * 1000);
+  } catch (err) {
+    if (err instanceof RateLimitExceededError) {
+      return NextResponse.json({ error: "Too many attempts. Please try again shortly." }, { status: 429 });
+    }
+    throw err;
+  }
 
   const body = await req.json().catch(() => null);
   const amountMinor = body?.amountMinor;

@@ -4,6 +4,7 @@ import { query } from "@/lib/db";
 import { purchaseVtu, InsufficientBalanceError } from "@/lib/purchases/purchaseVtuService";
 import { NoHealthyVendorError } from "@/vendors/registry";
 import { usdMinorToNgnMinor } from "@/lib/fx";
+import { checkRateLimit, RateLimitExceededError } from "@/lib/rateLimit";
 
 export async function GET() {
   const userId = await getSessionUserId();
@@ -23,6 +24,15 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   const userId = await getSessionUserId();
   if (!userId) return NextResponse.json({ error: "unauthenticated" }, { status: 401 });
+
+  try {
+    await checkRateLimit(`corp_travel:${userId}`, 20, 60 * 1000);
+  } catch (err) {
+    if (err instanceof RateLimitExceededError) {
+      return NextResponse.json({ error: "Too many attempts. Please try again shortly." }, { status: 429 });
+    }
+    throw err;
+  }
 
   const { rows: biz } = await query<{ id: string; kyb_status: string }>(
     `SELECT id, kyb_status FROM business_accounts WHERE owner_user_id = $1`,
