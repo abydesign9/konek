@@ -42,8 +42,8 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# claude code runtime state
-.claude/scheduled_tasks.lock
+# local editor/agent runtime state
+.claude/
 .env*
 
 # local dev postgres (embedded-postgres)

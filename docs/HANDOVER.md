@@ -301,8 +301,3 @@ written to the audit log with the admin's identity.
 - Optional service worker caching pass for faster loads and no stale content.
 - Optional: a self service "request admin access" flow (today a super admin
   approves by adding the email under Users and Roles).
-
----
-
-For deeper engineering detail see `docs/ENGINEERING_OVERVIEW.md`,
-`docs/PROVIDER_INTEGRATION.md`, and `docs/PHASE2_ROADMAP.md`.
