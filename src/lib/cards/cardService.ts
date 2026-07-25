@@ -6,6 +6,7 @@ import { isWalletInsufficientError } from "@/lib/ledger/reservations";
 import { logAudit } from "@/lib/audit";
 import { sendNotification } from "@/lib/notifications/send";
 import { cashbackOnCardSpend, recordSpend as recordPromoSpend } from "@/lib/promotions/promotionsService";
+import { getFinancialConfig } from "@/lib/config/financialConfig";
 import { mockSudoAdapter } from "@/vendors/cards/mockSudo";
 import { CardIssuerAdapter, SensitiveCardDetails } from "@/vendors/cards/types";
 
@@ -17,6 +18,13 @@ export class NoDollarAccountError extends Error {
   constructor() {
     super("A virtual dollar account is required before a card can be issued");
     this.name = "NoDollarAccountError";
+  }
+}
+
+export class CardCreationFeeUnpaidError extends Error {
+  constructor(readonly feeMinor: number) {
+    super("Insufficient wallet balance to cover the card creation fee");
+    this.name = "CardCreationFeeUnpaidError";
   }
 }
 
@@ -81,6 +89,23 @@ export async function revealCardDetails(cardId: string, userId: string): Promise
 export async function issueCard(userId: string): Promise<{ cardId: string }> {
   const { rows: vaRows } = await query<{ id: string }>(`SELECT id FROM virtual_accounts WHERE user_id = $1`, [userId]);
   if (!vaRows[0]) throw new NoDollarAccountError();
+
+  // Admin-configurable card creation fee (default 0). Charged from the wallet to
+  // platform revenue before issuing; if the wallet can't cover it, we don't issue.
+  const feeMinor = (await getFinancialConfig()).cardCreationFeeMinorUSD;
+  if (feeMinor > 0) {
+    const walletAccountId = await getUserWalletAccount(userId, CURRENCY);
+    if ((await getBalance(walletAccountId)) < feeMinor) throw new CardCreationFeeUnpaidError(feeMinor);
+    const revenueAccountId = await getOrCreateAccount("platform", null, CURRENCY, "revenue");
+    await postJournal({
+      journalType: "purchase",
+      description: "Card creation fee",
+      entries: [
+        { accountId: walletAccountId, amountMinor: -feeMinor, currency: CURRENCY },
+        { accountId: revenueAccountId, amountMinor: feeMinor, currency: CURRENCY },
+      ],
+    });
+  }
 
   const issued = await adapter.issueCard(userId);
 

@@ -57,7 +57,10 @@ const NAV_GROUPS = [
   },
   {
     label: "Configuration",
-    items: [{ label: "Settings", href: "/admin/settings", icon: SettingsIcon }],
+    items: [
+      { label: "Financial config", href: "/admin/financial-config", icon: RatesIcon },
+      { label: "Settings", href: "/admin/settings", icon: SettingsIcon },
+    ],
   },
 ];
 

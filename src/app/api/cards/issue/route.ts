@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSessionUserId } from "@/lib/auth/session";
-import { issueCard, NoDollarAccountError } from "@/lib/cards/cardService";
+import { issueCard, NoDollarAccountError, CardCreationFeeUnpaidError } from "@/lib/cards/cardService";
 import { assertKycTier, KYC_TIER, KycGateError } from "@/lib/kyc/tiers";
 
 export async function POST() {
@@ -67,6 +67,10 @@ export async function POST() {
         }
       );
 
+    }
+
+    if (err instanceof CardCreationFeeUnpaidError) {
+      return NextResponse.json({ error: err.message, code: "fee_unpaid", feeMinor: err.feeMinor }, { status: 402 });
     }
 
 
