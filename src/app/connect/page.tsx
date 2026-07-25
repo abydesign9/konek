@@ -40,6 +40,7 @@ const CONNECTIVITY: { key: string; label: string; sub: string; Icon: typeof Icon
 ];
 
 const FINANCE = [
+  { key: "naira", label: "Naira Account", sub: "Your account number to get paid", Icon: IconWallet, href: "/wallet/naira-account" },
   { key: "dollar", label: "USD Account", sub: "Receive and hold dollars", Icon: IconGlobe, href: "/wallet/dollar-account" },
   { key: "cards", label: "Cards", sub: "Virtual card for online spend", Icon: IconWallet, href: "/cards" },
   { key: "wallet", label: "Wallet", sub: "Fund, balance & history", Icon: IconWallet, href: "/wallet" },

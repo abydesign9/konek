@@ -2,6 +2,7 @@ import { registerWebhookHandler, WebhookContext } from "./webhookFramework";
 import { creditFromPayment } from "@/lib/wallet/creditFromPayment";
 import { creditDollarInflow } from "@/lib/dollarAccount/dollarAccountService";
 import { applyKycWebhookResult } from "@/lib/kyc/verificationService";
+import { creditNgnInflow } from "@/lib/ngnAccount/ngnAccountService";
 
 // Central registration of every provider's webhook handler. Imported by both the
 // webhook routes (live delivery) and the cron replay worker, so a failed event
@@ -53,6 +54,18 @@ export const kycHandler = async (ctx: WebhookContext) => {
   return { ignored: true, eventType: ctx.eventType };
 };
 registerWebhookHandler("kyc", kycHandler);
+
+// Monnify: a successful transfer to a reserved NGN account. creditNgnInflow
+// re-fetches the authoritative transaction from Monnify — the callback body is
+// never trusted — and credits the NGN wallet exactly once per reference.
+export const monnifyHandler = async (ctx: WebhookContext) => {
+  if (ctx.eventType === "SUCCESSFUL_TRANSACTION" && ctx.reference) {
+    await creditNgnInflow(ctx.reference);
+    return { credited: true, reference: ctx.reference };
+  }
+  return { ignored: true, eventType: ctx.eventType };
+};
+registerWebhookHandler("monnify", monnifyHandler);
 
 // Import side-effect registers all handlers; call this to make the dependency
 // explicit where needed (e.g. before running the replay worker).
