@@ -4,7 +4,7 @@ import { findOrCreateUserByPhone } from "@/lib/auth/users";
 import { createSession } from "@/lib/auth/session";
 import { logAudit } from "@/lib/audit";
 import { query } from "@/lib/db";
-import { clientIp } from "@/lib/rateLimit";
+import { checkRateLimit, clientIp, RateLimitExceededError } from "@/lib/rateLimit";
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
@@ -17,6 +17,17 @@ export async function POST(req: NextRequest) {
   }
   if (typeof code !== "string" || !/^\d{6}$/.test(code)) {
     return NextResponse.json({ error: "invalid code" }, { status: 400 });
+  }
+
+  // Throttle so a 6-digit OTP can't be brute forced (per phone and per IP).
+  try {
+    await checkRateLimit(`otp_verify:${phone}`, 10, 15 * 60 * 1000);
+    await checkRateLimit(`otp_verify:ip:${clientIp(req)}`, 30, 15 * 60 * 1000);
+  } catch (err) {
+    if (err instanceof RateLimitExceededError) {
+      return NextResponse.json({ error: "Too many attempts. Please try again shortly." }, { status: 429 });
+    }
+    throw err;
   }
 
   const valid = await verifyOtp(phone, code);

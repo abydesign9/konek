@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSessionUserId } from "@/lib/auth/session";
 import { issueCard, NoDollarAccountError, CardCreationFeeUnpaidError, CardProductUnavailableError } from "@/lib/cards/cardService";
 import { assertKycTier, KYC_TIER, KycGateError } from "@/lib/kyc/tiers";
+import { checkRateLimit, RateLimitExceededError } from "@/lib/rateLimit";
 
 export async function POST(req: NextRequest) {
   const userId = await getSessionUserId();
@@ -11,6 +12,16 @@ export async function POST(req: NextRequest) {
       { error: "unauthenticated" },
       { status: 401 }
     );
+  }
+
+  // Issuing a card calls the provider and can charge a creation fee — cap attempts.
+  try {
+    await checkRateLimit(`card_issue:${userId}`, 5, 60 * 1000);
+  } catch (err) {
+    if (err instanceof RateLimitExceededError) {
+      return NextResponse.json({ error: "Too many attempts. Please try again shortly." }, { status: 429 });
+    }
+    throw err;
   }
 
 
