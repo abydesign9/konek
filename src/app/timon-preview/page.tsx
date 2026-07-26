@@ -1141,7 +1141,8 @@ export default function TimonPreviewPage() {
             <p>
               Global payment receiving and digital connectivity
               for individuals, travellers, professionals and
-              modern businesses.
+              modern businesses. Konek is a product of Topton
+              Global Consult.
             </p>
 
             <div className={styles.footerAppButtons}>
@@ -1276,7 +1277,7 @@ export default function TimonPreviewPage() {
         <div className={styles.footerBottom}>
           <p>
             © 2026 KONEK. Global connectivity for people and
-            businesses.
+            businesses. Konek is a product of Topton Global Consult.
           </p>
 
           <div>
