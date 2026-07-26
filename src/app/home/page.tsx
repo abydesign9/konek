@@ -10,6 +10,7 @@ import { listActiveInAppMessages } from "@/lib/notifications/inAppMessages";
 import { NetworkLogo } from "@/components/NetworkLogo";
 import PromoCarousel from "@/components/PromoCarousel";
 import { SetupCard } from "@/components/SetupCard";
+import { BalanceHero } from "@/components/BalanceHero";
 import { OnboardingWrapper } from "@/components/OnboardingWrapper";
 import {
   IconAirtime,
@@ -19,7 +20,6 @@ import {
   IconGlobe,
   IconDollar,
   IconCard,
-  IconWallet,
   IconGift,
   IconBell,
   IconChevronRight,
@@ -195,6 +195,18 @@ export default async function HomeDashboard() {
 
   // Identity is verified via BVN OR NIN — either reaches the transact tier.
   const walletAllowed = kyc.bvnVerified || kyc.ninVerified || kyc.tier >= 1;
+
+  // Multi-currency wallet balances for the dashboard balance card (NGN already
+  // fetched above as balanceMinor). USD/GBP/EUR wallets are created on demand.
+  const [usdMinor, gbpMinor, eurMinor] = await Promise.all(
+    (["USD", "GBP", "EUR"] as const).map((c) => getUserWalletAccount(userId, c).then(getBalance))
+  );
+  const walletBalances = [
+    { currency: "NGN" as const, flag: "🇳🇬", minor: balanceMinor },
+    { currency: "USD" as const, flag: "🇺🇸", minor: usdMinor },
+    { currency: "GBP" as const, flag: "🇬🇧", minor: gbpMinor },
+    { currency: "EUR" as const, flag: "🇪🇺", minor: eurMinor },
+  ];
 
 
 
@@ -394,89 +406,7 @@ export default async function HomeDashboard() {
 
 
       <section className="mt-3 px-5">
-
-
-        <Link
-
-          href={
-            walletAllowed
-            ? "/wallet/fund"
-            : "/kyc"
-          }
-
-
-          className="konek-hero konek-card-shadow konek-tile block rounded-3xl px-6 py-6 text-white"
-
-        >
-
-
-          <div className="relative z-10 flex items-start justify-between">
-
-
-            <div>
-
-              <p className="mb-1 font-body text-xs uppercase tracking-wide text-white/60">
-                Wallet Balance
-              </p>
-
-
-              <p className="font-heading text-[2.1rem] font-bold leading-none">
-
-                ₦{(balanceMinor / 100).toLocaleString()}
-
-              </p>
-
-
-            </div>
-
-
-
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-konek-green/25">
-
-              <IconWallet className="h-6 w-6 text-konek-green" />
-
-            </div>
-
-
-          </div>
-
-
-
-
-
-          <div className="relative z-10 mt-5 flex items-center justify-between">
-
-
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/12 px-3 py-1.5 text-xs font-semibold">
-
-              {
-                walletAllowed
-                ? "Tap to fund →"
-                : "Verify BVN to fund →"
-              }
-
-            </span>
-
-
-
-
-            {streak > 0 && (
-
-              <span className="inline-flex items-center gap-1 rounded-full bg-gold/25 px-3 py-1.5 text-xs font-semibold text-gold">
-
-                🔥 {streak}-day streak
-
-              </span>
-
-            )}
-
-
-          </div>
-
-
-        </Link>
-
-
+        <BalanceHero balances={walletBalances} walletAllowed={walletAllowed} streak={streak} />
       </section>
 
 
