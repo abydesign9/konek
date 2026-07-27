@@ -15,6 +15,14 @@ interface ProfileData {
   date_of_birth: string | null;
   address: string | null;
   kyc_status: string;
+  kyc_tier: number;
+}
+
+// Mirrors src/lib/kyc/tiers.ts TIER_LABEL (kept inline so this client component
+// doesn't pull in the server-only tiers module). Tier 0 = not yet verified.
+const TIER_LABEL: Record<number, string> = { 0: "Unverified", 1: "Verified", 2: "Finance", 9: "Business" };
+function verificationBadge(p: ProfileData): string {
+  return (p.kyc_tier ?? 0) >= 1 ? TIER_LABEL[p.kyc_tier] ?? "Verified" : "Verify now";
 }
 
 // Non-vanity completeness: each item is a real thing the user benefits from
@@ -27,7 +35,7 @@ function completeness(p: ProfileData): { pct: number; nextHref: string; nextLabe
     { done: !!p.email, href: "/profile/account", label: "Add your email" },
     { done: !!p.date_of_birth, href: "/profile/account", label: "Add your date of birth" },
     { done: !!p.address, href: "/profile/account", label: "Add your address" },
-    { done: p.kyc_status === "verified", href: "/profile/verification", label: "Verify your identity" },
+    { done: (p.kyc_tier ?? 0) >= 1, href: "/kyc", label: "Verify your identity" },
   ];
   const done = items.filter((i) => i.done).length;
   const pct = Math.round((done / items.length) * 100);
@@ -48,8 +56,8 @@ const GROUPS: { title: string; rows: { icon: string; label: string; sub?: string
       {
         icon: "🛡️",
         label: "Account verification",
-        href: "/profile/verification",
-        badge: (p) => (p.kyc_status === "verified" ? "Verified" : "Action needed"),
+        href: "/kyc",
+        badge: verificationBadge,
       },
     ],
   },
@@ -162,7 +170,7 @@ export function ProfileClient() {
                   {badge && (
                     <span
                       className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold ${
-                        badge === "Verified" ? "bg-konek-green/15 text-konek-green" : "bg-gold/15 text-gold"
+                        badge === "Verify now" ? "bg-gold/15 text-gold" : "bg-konek-green/15 text-konek-green"
                       }`}
                     >
                       {badge}

@@ -21,6 +21,10 @@ import {
   IconDollar,
   IconCard,
   IconGift,
+  IconCable,
+  IconExam,
+  IconBetting,
+  IconLink,
   IconBell,
   IconChevronRight,
   SERVICE_COLORS,
@@ -29,17 +33,23 @@ import {
 
 const GLOBAL_ACTIONS = [
   { key: "esim", label: "eSIM", Icon: IconEsim, href: "/buy/esim" },
+  { key: "marketplace", label: "eSIM Store", Icon: IconGlobe, href: "/marketplace" },
   { key: "intl", label: "Int'l Top-Up", Icon: IconGlobe, href: "/buy/intl-topup" },
+  { key: "global-data", label: "Data Top-Up", Icon: IconData, href: "/buy/data-topup" },
   { key: "dollar", label: "Global Accounts", Icon: IconDollar, href: "/wallet/dollar-account" },
   { key: "card", label: "Card", Icon: IconCard, href: "/cards" },
-  { key: "global-data", label: "Data Top-Up", Icon: IconData, href: "/buy/data-topup" },
 ];
 
 
 const LOCAL_ACTIONS = [
   { key: "airtime", label: "Airtime", Icon: IconAirtime, href: "/buy/airtime" },
   { key: "data", label: "Data", Icon: IconData, href: "/buy/data" },
-  { key: "electricity", label: "Bills", Icon: IconElectricity, href: "/buy/electricity" },
+  { key: "cable", label: "Cable TV", Icon: IconCable, href: "/buy/cable" },
+  { key: "electricity", label: "Electricity", Icon: IconElectricity, href: "/buy/electricity" },
+  { key: "router", label: "Router / MiFi", Icon: IconLink, href: "/buy/router-mifi" },
+  { key: "exam", label: "Exam Pins", Icon: IconExam, href: "/buy/exam-pin" },
+  { key: "betting", label: "Betting", Icon: IconBetting, href: "/buy/betting" },
+  { key: "gift", label: "Gift Cards", Icon: IconGift, href: "/buy/gift-card" },
 ];
 
 
