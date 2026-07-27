@@ -32,8 +32,7 @@ import {
 
 
 const GLOBAL_ACTIONS = [
-  { key: "esim", label: "eSIM", Icon: IconEsim, href: "/buy/esim" },
-  { key: "marketplace", label: "eSIM Store", Icon: IconGlobe, href: "/marketplace" },
+  { key: "esim", label: "eSIM", Icon: IconEsim, href: "/marketplace" },
   { key: "intl", label: "Int'l Top-Up", Icon: IconGlobe, href: "/buy/intl-topup" },
   { key: "global-data", label: "Data Top-Up", Icon: IconData, href: "/buy/data-topup" },
   { key: "dollar", label: "Global Accounts", Icon: IconDollar, href: "/wallet/dollar-account" },
@@ -391,13 +390,13 @@ export default async function HomeDashboard() {
           >
 
             <p className="mb-0.5 font-heading font-semibold text-indigo">
-              Verify your BVN to get started
+              Verify your identity to get started
             </p>
 
 
             <p className="text-sm text-indigo/70">
 
-              Confirm your BVN before funding your wallet.
+              A quick verification unlocks funding, payments and eSIMs.
               Takes under a minute →
 
             </p>

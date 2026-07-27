@@ -1,5 +1,7 @@
 "use client";
 
+import { redirectIfKycGate } from "@/lib/kyc/gateRedirect";
+
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/PageHeader";
@@ -120,6 +122,7 @@ export default function WithdrawPage() {
       router.push(`/settings/pin?next=${encodeURIComponent("/wallet/withdraw")}`);
       return;
     }
+    if (redirectIfKycGate(res, data)) return;
     if (res.status === 403) {
       setError("Withdrawals require approved Tier 2 verification.");
       setPin("");

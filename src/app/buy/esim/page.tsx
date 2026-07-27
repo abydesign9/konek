@@ -1,5 +1,7 @@
 "use client";
 
+import { redirectIfKycGate } from "@/lib/kyc/gateRedirect";
+
 import { Suspense, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { PageHeader } from "@/components/PageHeader";
@@ -162,6 +164,7 @@ setLoading(false);
 
 
 
+if(redirectIfKycGate(res,data))return;
 if(!res.ok){
 
 setError(data.error ?? "Purchase failed");

@@ -1,5 +1,7 @@
 "use client";
 
+import { redirectIfKycGate } from "@/lib/kyc/gateRedirect";
+
 import { Suspense, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -128,6 +130,7 @@ function BuyDataTopup() {
       router.push(`/settings/pin?next=${encodeURIComponent(window.location.pathname + window.location.search)}`);
       return;
     }
+    if (redirectIfKycGate(res, data)) return;
     if (!res.ok) {
       setError(data.error ?? "Something went wrong");
       setPin("");

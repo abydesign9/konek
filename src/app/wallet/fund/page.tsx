@@ -1,5 +1,7 @@
 "use client";
 
+import { redirectIfKycGate } from "@/lib/kyc/gateRedirect";
+
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { PageHeader } from "@/components/PageHeader";
@@ -76,6 +78,7 @@ export default function FundWalletPage() {
 
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
+      if (redirectIfKycGate(res, data)) return;
       setError(data.error ?? "Something went wrong");
       return;
     }

@@ -1,5 +1,7 @@
 "use client";
 
+import { redirectIfKycGate } from "@/lib/kyc/gateRedirect";
+
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/PageHeader";
@@ -81,6 +83,7 @@ function BuyRouterMifi() {
       router.push(`/settings/pin?next=${encodeURIComponent("/buy/router-mifi")}`);
       return;
     }
+    if (redirectIfKycGate(res, data)) return;
     if (!res.ok) {
       setError(data.error ?? "Something went wrong");
       setPin("");

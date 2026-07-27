@@ -1,5 +1,7 @@
 "use client";
 
+import { redirectIfKycGate } from "@/lib/kyc/gateRedirect";
+
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/PageHeader";
@@ -73,6 +75,7 @@ export default function ExamPinPage() {
         router.push(`/settings/pin?next=${encodeURIComponent("/buy/exam-pin")}`);
         return;
       }
+      if (redirectIfKycGate(res, data)) return;
       if (!res.ok || data.status === "failed") {
         setLoading(false);
         if (codes.length === 0) {

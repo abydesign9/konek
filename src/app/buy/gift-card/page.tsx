@@ -1,5 +1,7 @@
 "use client";
 
+import { redirectIfKycGate } from "@/lib/kyc/gateRedirect";
+
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/PageHeader";
@@ -89,6 +91,7 @@ export default function GiftCardPage() {
       router.push(`/settings/pin?next=${encodeURIComponent("/buy/gift-card")}`);
       return;
     }
+    if (redirectIfKycGate(res, data)) return;
     if (!res.ok) {
       setError(data.error ?? "Purchase failed");
       setShowPin(false);

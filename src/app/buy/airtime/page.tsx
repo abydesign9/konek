@@ -1,5 +1,7 @@
 "use client";
 
+import { redirectIfKycGate } from "@/lib/kyc/gateRedirect";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/PageHeader";
@@ -50,6 +52,7 @@ export default function AirtimePage() {
     });
     const data = await res.json().catch(() => ({}));
     setLoading(false);
+    if (redirectIfKycGate(res, data)) return;
     if (!res.ok) {
       setError(data.error ?? "Purchase failed");
       setShowPin(false);
