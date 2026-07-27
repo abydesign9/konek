@@ -38,34 +38,36 @@ function completeness(p: ProfileData): { pct: number; nextHref: string; nextLabe
 
 // Grouped-list menu: one card per group with hairline dividers — quieter and
 // more scannable than a stack of separate cards.
+// Simple, scannable list in the 1App style — icon + label + chevron, grouped
+// lightly. No busy subtitles.
 const GROUPS: { title: string; rows: { icon: string; label: string; sub?: string; href: string; badge?: (p: ProfileData) => string | null }[] }[] = [
   {
     title: "Account",
     rows: [
-      { icon: "👤", label: "Account information", sub: "Name, username, avatar, address", href: "/profile/account" },
+      { icon: "👤", label: "Account information", href: "/profile/account" },
       {
-        icon: "✅",
-        label: "Verification",
-        sub: "Unlock accounts, cards & withdrawals",
+        icon: "🛡️",
+        label: "Account verification",
         href: "/profile/verification",
         badge: (p) => (p.kyc_status === "verified" ? "Verified" : "Action needed"),
       },
     ],
   },
   {
-    title: "Security & app",
+    title: "Money",
     rows: [
-      { icon: "🔐", label: "Privacy and security", sub: "PIN, password, biometrics, sessions", href: "/settings" },
-      { icon: "🏦", label: "Payout account", sub: "Manage your withdrawal bank", href: "/settings/payout" },
-      { icon: "⚙️", label: "Preferences", sub: "Notifications, appearance, language", href: "/settings/preferences" },
-      { icon: "🔗", label: "Connected accounts", sub: "Cards and linked services", href: "/settings/connected-accounts" },
+      { icon: "💳", label: "Cards", href: "/cards" },
+      { icon: "🧾", label: "Transactions", href: "/wallet/history" },
+      { icon: "🏦", label: "Payout account", href: "/settings/payout" },
     ],
   },
   {
     title: "More",
     rows: [
-      { icon: "💬", label: "Get help", sub: "Message support, browse FAQs", href: "/support" },
-      { icon: "ℹ️", label: "About Konek", sub: "Terms, privacy and contact", href: "/profile/about" },
+      { icon: "🤝", label: "Partner with Konek", href: "/agent" },
+      { icon: "⚙️", label: "Settings", href: "/settings" },
+      { icon: "💬", label: "Support", href: "/support" },
+      { icon: "ℹ️", label: "About Konek", href: "/profile/about" },
     ],
   },
 ];

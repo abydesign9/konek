@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { IconHome, IconWallet, IconMore, IconHistory, IconProfile } from "./icons";
+import { IconHome, IconWallet, IconMore, IconCard, IconProfile } from "./icons";
 import type { ComponentType, SVGProps } from "react";
 
-// The five real tabs: Home / Wallet / Connect / History / Profile. Rendered once
+// The five real tabs: Home / Connect / Wallets / Cards / Profile. Rendered once
 // from the root layout (see BottomNavGate) so it's a fixed, persistent tab bar.
 // Each tab has its OWN accent colour when active, so the current section is
-// instantly readable at a glance (not just "some indigo one is bold").
+// instantly readable at a glance.
 interface Tab {
   label: string;
   href: string;
@@ -21,14 +21,6 @@ interface Tab {
 const TABS: Tab[] = [
   { label: "Home", href: "/home", icon: IconHome, color: "#1F3864", tint: "rgba(31,56,100,0.12)", match: (p) => p === "/home" },
   {
-    label: "Wallet",
-    href: "/wallet",
-    icon: IconWallet,
-    color: "#00C48C",
-    tint: "rgba(0,196,140,0.15)",
-    match: (p) => p.startsWith("/wallet") && !p.startsWith("/wallet/history") && !p.startsWith("/wallet/receipt"),
-  },
-  {
     label: "Connect",
     href: "/connect",
     icon: IconMore,
@@ -38,17 +30,25 @@ const TABS: Tab[] = [
       p.startsWith("/connect") ||
       p.startsWith("/buy") ||
       p === "/esim" ||
-      p.startsWith("/cards") ||
+      p === "/marketplace" ||
       p.startsWith("/business") ||
       p === "/agent",
   },
   {
-    label: "History",
-    href: "/wallet/history",
-    icon: IconHistory,
+    label: "Wallets",
+    href: "/wallet",
+    icon: IconWallet,
+    color: "#00C48C",
+    tint: "rgba(0,196,140,0.15)",
+    match: (p) => p.startsWith("/wallet"),
+  },
+  {
+    label: "Cards",
+    href: "/cards",
+    icon: IconCard,
     color: "#3B82F6",
     tint: "rgba(59,130,246,0.14)",
-    match: (p) => p.startsWith("/wallet/history") || p.startsWith("/wallet/receipt"),
+    match: (p) => p.startsWith("/cards"),
   },
   {
     label: "Profile",

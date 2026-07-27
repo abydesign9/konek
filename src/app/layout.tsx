@@ -4,6 +4,7 @@ import { InstallPrompt } from "@/components/InstallPrompt";
 import { BottomNavGate } from "@/components/BottomNavGate";
 import { LiveChatBubble } from "@/components/LiveChatBubble";
 import { SplashGate } from "@/components/SplashGate";
+import { NavProgress } from "@/components/NavProgress";
 import "./globals.css";
 
 const sora = Sora({ subsets: ["latin"], variable: "--font-sora" });
@@ -59,6 +60,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${sora.variable} ${inter.variable} font-body antialiased`}>
         <SplashGate />
+        <NavProgress />
         {children}
         {/* One persistent tab bar for the whole app — never re-rendered per page. */}
         <BottomNavGate />
