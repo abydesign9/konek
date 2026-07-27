@@ -389,7 +389,7 @@ How to activate
 
 <Link
 
-href="/buy/esim"
+href="/marketplace"
 
 className="block rounded-2xl bg-indigo text-white text-center py-4 font-semibold"
 

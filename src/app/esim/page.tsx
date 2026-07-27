@@ -75,7 +75,7 @@ backHref="/home"
 right={
 
 <Link
-href="/buy/esim"
+href="/marketplace"
 className="text-sm font-semibold text-konek-green"
 >
 Buy
@@ -137,7 +137,7 @@ Buy a travel data pack and connect instantly.
 
 <Link
 
-href="/buy/esim"
+href="/marketplace"
 
 className="inline-block rounded-xl bg-indigo text-white px-6 py-3 font-semibold"
 
@@ -301,7 +301,7 @@ Get another travel pack instantly.
 
 <Link
 
-href="/buy/esim"
+href="/marketplace"
 
 className="block text-center rounded-xl bg-indigo text-white py-3 font-semibold"
 

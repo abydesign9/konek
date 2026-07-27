@@ -5,8 +5,8 @@ import { useState } from "react";
 import type { ReactNode } from "react";
 
 // Balance hero with the four quick-actions living INSIDE the card (Flyspeed-style
-// tab-bar-in-a-card): Add money / Withdraw / History / Earn. Replaces the separate
-// WalletActions row so the wallet reads as one native module.
+// tab-bar-in-a-card): Add money / Withdraw / History / Earn, so the wallet reads
+// as one native module.
 function QuickAction({ href, label, icon }: { href: string; label: string; icon: ReactNode }) {
   return (
     <Link href={href} className="konek-tile flex flex-1 flex-col items-center gap-1.5">

@@ -34,7 +34,7 @@ const SLIDES: Slide[] = [
     cta: "Get started",
   },
   {
-    href: "/buy/esim",
+    href: "/marketplace",
     gradient: "from-gold to-indigo",
     eyebrow: "Travel",
     title: "Get a global eSIM",
