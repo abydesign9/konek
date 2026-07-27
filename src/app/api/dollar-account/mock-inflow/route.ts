@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSessionUserId } from "@/lib/auth/session";
 import { query } from "@/lib/db";
 import { registerMockInflow } from "@/vendors/dollarAccount/mockFincra";
+import { mockDisabledResponse } from "@/lib/security/mockGuard";
 
 // Dev-only stand-in for a real wire landing on the account and Fincra
 // firing its webhook. Registers the "vendor-side" inflow under its own
@@ -12,6 +13,9 @@ import { registerMockInflow } from "@/vendors/dollarAccount/mockFincra";
 // (signature verify -> re-fetch -> credit) is exercised end to end, same
 // as the mock Paystack checkout.
 export async function POST(req: NextRequest) {
+  const blocked = mockDisabledResponse();
+  if (blocked) return blocked;
+
   const userId = await getSessionUserId();
   if (!userId) return NextResponse.json({ error: "unauthenticated" }, { status: 401 });
 

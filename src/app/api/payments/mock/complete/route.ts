@@ -1,12 +1,16 @@
 import crypto from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { query } from "@/lib/db";
+import { mockDisabledResponse } from "@/lib/security/mockGuard";
 
 // Dev-only stand-in for Paystack's checkout completing and firing its
 // webhook. Marks the mock "vendor side" as completed, then delivers a
 // real, correctly-signed webhook call to /api/webhooks/paystack so the
 // production code path is exercised end to end.
 export async function POST(req: NextRequest) {
+  const blocked = mockDisabledResponse();
+  if (blocked) return blocked;
+
   if (process.env.PAYSTACK_SECRET_KEY && process.env.PAYSTACK_SECRET_KEY !== "sk_test_...") {
     return NextResponse.json({ error: "mock endpoint disabled once a live Paystack key is set" }, { status: 403 });
   }

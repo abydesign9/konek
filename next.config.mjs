@@ -3,6 +3,18 @@ import withPWAInit from "next-pwa";
 const withPWA = withPWAInit({
   dest: "public",
   disable: process.env.NODE_ENV === "development",
+  // Don't let the precache manifest enumerate the app's route map — especially
+  // the admin console. Precaching those chunks both leaks the surface and serves
+  // no offline value (admin/api are online-only). App-shell/public assets still
+  // precache normally.
+  buildExcludes: [
+    /app-build-manifest\.json$/,
+    /middleware-manifest\.json$/,
+    /_buildManifest\.js$/,
+    /_ssgManifest\.js$/,
+    /\/admin\//,
+    /server\/.*$/,
+  ],
 });
 
 const isDev = process.env.NODE_ENV === "development";
@@ -42,7 +54,15 @@ const securityHeaders = [
 const nextConfig = {
   poweredByHeader: false, // don't advertise the framework
   async headers() {
-    return [{ source: "/:path*", headers: securityHeaders }];
+    return [
+      { source: "/:path*", headers: securityHeaders },
+      {
+        // Sensitive JSON (balances, PII, tokens) must never be cached by the
+        // browser, a shared CDN, or the service worker.
+        source: "/api/:path*",
+        headers: [{ key: "Cache-Control", value: "no-store, no-cache, must-revalidate" }],
+      },
+    ];
   },
 };
 

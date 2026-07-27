@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSessionUserId } from "@/lib/auth/session";
 import { query } from "@/lib/db";
 import { registerMockNgnInflow } from "@/vendors/ngnAccount/mockMonnify";
+import { mockDisabledResponse } from "@/lib/security/mockGuard";
 
 // Dev-only stand-in for a real transfer landing on the reserved account and
 // Monnify firing its webhook. Disabled once the live Monnify keys are set.
@@ -10,6 +11,9 @@ import { registerMockNgnInflow } from "@/vendors/ngnAccount/mockMonnify";
 // /api/webhooks/monnify so the production path (verify -> re-fetch -> credit)
 // runs end to end.
 export async function POST(req: NextRequest) {
+  const blocked = mockDisabledResponse();
+  if (blocked) return blocked;
+
   if (process.env.MONNIFY_API_KEY) {
     return NextResponse.json({ error: "mock disabled once Monnify is live" }, { status: 403 });
   }
