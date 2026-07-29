@@ -339,11 +339,12 @@ export default function TimonPreviewPage() {
         </Link>
 
         <div className={styles.desktopLinks}>
-          <a href="#experience">Personal</a>
-          <a href="#business">Business</a>
-          <a href="#connectivity">Connectivity</a>
-          <a href="#coverage">Coverage</a>
-          <a href="#about">About</a>
+          <Link href="/personal">Personal</Link>
+          <Link href="/business-solutions">Business</Link>
+          <Link href="/connectivity">Connectivity</Link>
+          <Link href="/pricing">Pricing</Link>
+          <Link href="/faq">Support</Link>
+          <Link href="/about">Company</Link>
         </div>
 
         <div className={styles.navActions}>
@@ -369,41 +370,12 @@ export default function TimonPreviewPage() {
 
         {menuOpen ? (
           <div className={styles.mobileMenu}>
-            <a
-              href="#experience"
-              onClick={() => setMenuOpen(false)}
-            >
-              Personal
-            </a>
-
-            <a
-              href="#business"
-              onClick={() => setMenuOpen(false)}
-            >
-              Business
-            </a>
-
-            <a
-              href="#connectivity"
-              onClick={() => setMenuOpen(false)}
-            >
-              Connectivity
-            </a>
-
-            <a
-              href="#coverage"
-              onClick={() => setMenuOpen(false)}
-            >
-              Global coverage
-            </a>
-
-            <a
-              href="#about"
-              onClick={() => setMenuOpen(false)}
-            >
-              About KONEK
-            </a>
-
+            <Link href="/personal" onClick={() => setMenuOpen(false)}>Personal</Link>
+            <Link href="/business-solutions" onClick={() => setMenuOpen(false)}>Business</Link>
+            <Link href="/connectivity" onClick={() => setMenuOpen(false)}>Connectivity</Link>
+            <Link href="/pricing" onClick={() => setMenuOpen(false)}>Pricing</Link>
+            <Link href="/faq" onClick={() => setMenuOpen(false)}>Support</Link>
+            <Link href="/about" onClick={() => setMenuOpen(false)}>Company</Link>
             <Link href="/login">Log in</Link>
             <Link href="/signup">Create account</Link>
           </div>
