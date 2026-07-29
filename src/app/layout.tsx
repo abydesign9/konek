@@ -34,6 +34,13 @@ export const metadata: Metadata = {
   },
 };
 
+// Nonce-based CSP (see src/middleware.ts) requires per-request rendering: Next
+// only stamps the request's nonce onto its <script> tags when a route is
+// rendered dynamically. Statically prerendered pages ship script tags with no
+// nonce, which 'strict-dynamic' then blocks. Forcing dynamic rendering app-wide
+// is the tradeoff that lets us drop 'unsafe-inline' from script-src.
+export const dynamic = "force-dynamic";
+
 export const viewport: Viewport = {
   themeColor: "#22315C",
   width: "device-width",

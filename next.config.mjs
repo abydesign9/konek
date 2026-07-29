@@ -17,31 +17,10 @@ const withPWA = withPWAInit({
   ],
 });
 
-const isDev = process.env.NODE_ENV === "development";
-
-// Content Security Policy. connect-src 'self' is the structural guarantee that
-// the browser can only talk to our own backend (our /api routes) and never a
-// third party directly. All vendor calls (Paystack, eSIM, KYC...) happen
-// server-side. In development we relax script/connect so Next's HMR websocket
-// and eval-based fast refresh keep working; production stays strict.
-const csp = [
-  "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
-  "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob:",
-  "font-src 'self' data:",
-  `connect-src 'self'${isDev ? " ws: wss:" : ""}`,
-  "worker-src 'self' blob:",
-  "manifest-src 'self'",
-  "frame-ancestors 'none'",
-  "base-uri 'self'",
-  "form-action 'self'",
-  "object-src 'none'",
-  ...(isDev ? [] : ["upgrade-insecure-requests"]),
-].join("; ");
-
+// The Content-Security-Policy is set per-request in src/middleware.ts because it
+// carries a nonce (see that file). Everything below is request-independent and
+// stays here as static headers applied to every route.
 const securityHeaders = [
-  { key: "Content-Security-Policy", value: csp },
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "X-Frame-Options", value: "DENY" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
