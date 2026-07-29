@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
-import { MarketingPage, Hero, Section, FeatureGrid, CTA } from "@/components/marketing/ui";
+import Link from "next/link";
+import { MarketingPage, Hero, Section, CTA } from "@/components/marketing/ui";
+import { BLOG_POSTS, formatDate } from "@/lib/marketing/blogPosts";
 
 export const metadata: Metadata = {
   title: "Konek Blog — product updates, news & money tips",
   description:
-    "The Konek blog: product updates, company news, and practical guides on multi-currency accounts, cards, eSIM and getting paid globally as an African at home or abroad.",
+    "The Konek blog: practical guides on receiving USD, using eSIM, virtual cards and staying secure — plus product updates and news for Africans at home and abroad.",
   keywords: ["Konek blog", "fintech tips Africa", "how to receive USD", "eSIM guide", "diaspora money tips"],
   alternates: { canonical: "/company/blog" },
   openGraph: {
@@ -26,31 +28,26 @@ export default function BlogPage() {
         secondary={{ label: "About Konek", href: "/about" }}
       />
 
-      <Section eyebrow="What we write about" title="Topics we cover">
-        <FeatureGrid
-          items={[
-            { icon: "💵", title: "Getting paid globally", body: "How to receive USD, GBP and EUR as an African freelancer, creator or business — and keep more of it." },
-            { icon: "✈️", title: "Travel & eSIM", body: "Staying connected abroad without roaming bills: how eSIM works and how to pick the right plan." },
-            { icon: "💳", title: "Cards & spending", body: "Using virtual cards safely for subscriptions, ads and online shopping anywhere." },
-            { icon: "🛡️", title: "Security & trust", body: "How we protect your money and data — and simple habits to keep your account safe." },
-            { icon: "🧾", title: "Everyday money", body: "Airtime, data and bills tips to save time and money for you and your family." },
-            { icon: "📣", title: "Product updates", body: "New features, currencies and countries as Konek grows." },
-          ]}
-        />
-      </Section>
-
-      <Section tint eyebrow="Coming soon" title="Fresh posts are on the way">
-        <div className="max-w-2xl space-y-4 text-lg leading-relaxed text-indigo/70">
-          <p>
-            We&apos;re publishing our first guides and product stories now. In the meantime, create your account to
-            get updates first — and to start using the tools we write about.
-          </p>
+      <Section eyebrow="Latest" title="Fresh from the Konek blog">
+        <div className="grid gap-5 md:grid-cols-3">
+          {BLOG_POSTS.map((p) => (
+            <Link
+              key={p.slug}
+              href={`/company/blog/${p.slug}`}
+              className="konek-card-shadow flex flex-col rounded-2xl border border-indigo/5 bg-white p-6 transition-transform hover:-translate-y-0.5"
+            >
+              <span className="text-xs font-bold uppercase tracking-wide text-konek-green">{p.category}</span>
+              <h3 className="mt-2 font-heading text-lg font-bold leading-snug text-indigo">{p.title}</h3>
+              <p className="mt-2 flex-1 text-sm leading-relaxed text-indigo/60">{p.excerpt}</p>
+              <span className="mt-4 text-xs text-indigo/45">{formatDate(p.date)} · {p.readMinutes} min read</span>
+            </Link>
+          ))}
         </div>
       </Section>
 
       <CTA
-        title="Be first to read what's next"
-        subtitle="Join Konek and get product news and guides as soon as they land."
+        title="Put the ideas to work"
+        subtitle="Create your Konek account and start using the tools we write about."
         primary={{ label: "Create account", href: "/signup" }}
         secondary={{ label: "Explore products", href: "/personal" }}
       />

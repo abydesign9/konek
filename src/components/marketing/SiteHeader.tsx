@@ -31,6 +31,19 @@ const COMPANY: Item[] = [
   { label: "Blog", href: "/company/blog", desc: "Product updates, news and money tips" },
 ];
 
+const COMMUNITY: Item[] = [
+  { label: "Referrals", href: "/referrals", desc: "Invite friends and earn rewards" },
+  { label: "Campus Ambassadors", href: "/ambassadors", desc: "Represent Konek on campus and get paid" },
+  { label: "Influencers", href: "/influencers", desc: "Create content for Konek and earn" },
+  { label: "Creator Club", href: "/creator-club", desc: "Perks and tools for creators paid globally" },
+];
+
+const SUPPORT: Item[] = [
+  { label: "Help Center", href: "/help", desc: "Get help anytime — our team is here 24/7" },
+  { label: "FAQs", href: "/faq", desc: "Answers to common questions about Konek" },
+  { label: "Video Guides", href: "/help/videos", desc: "Step-by-step videos showing how to use Konek" },
+];
+
 function Chevron() {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden className="transition-transform group-hover:rotate-180">
@@ -85,9 +98,9 @@ export function SiteHeader() {
 
         <nav className="hidden items-center gap-7 md:flex">
           <Dropdown title="Products" items={PRODUCTS} links={PRODUCT_LINKS} />
-          <Dropdown title="Company" items={COMPANY} />
+          <Dropdown title="Company" items={COMPANY} links={COMMUNITY} />
           <Link href="/pricing" className="py-2 text-sm font-semibold text-indigo/80 hover:text-indigo">Pricing</Link>
-          <Link href="/faq" className="py-2 text-sm font-semibold text-indigo/80 hover:text-indigo">Support</Link>
+          <Dropdown title="Support" items={SUPPORT} />
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
@@ -115,11 +128,14 @@ export function SiteHeader() {
             <Link key={it.href} href={it.href} className="block rounded-xl px-1 py-2.5 text-sm font-semibold text-indigo">{it.label}</Link>
           ))}
           <p className="mb-1 mt-3 px-1 text-[11px] font-bold uppercase tracking-wide text-indigo/40">Company</p>
-          {COMPANY.map((it) => (
+          {[...COMPANY, ...COMMUNITY].map((it) => (
             <Link key={it.href} href={it.href} className="block rounded-xl px-1 py-2.5 text-sm font-semibold text-indigo">{it.label}</Link>
           ))}
           <Link href="/pricing" className="block rounded-xl px-1 py-2.5 text-sm font-semibold text-indigo">Pricing</Link>
-          <Link href="/faq" className="block rounded-xl px-1 py-2.5 text-sm font-semibold text-indigo">Support</Link>
+          <p className="mb-1 mt-3 px-1 text-[11px] font-bold uppercase tracking-wide text-indigo/40">Support</p>
+          {SUPPORT.map((it) => (
+            <Link key={it.href} href={it.href} className="block rounded-xl px-1 py-2.5 text-sm font-semibold text-indigo">{it.label}</Link>
+          ))}
           <div className="mt-4 flex gap-3">
             <Link href="/login" className="flex-1 rounded-full border border-indigo/20 py-2.5 text-center text-sm font-semibold text-indigo">Log in</Link>
             <Link href="/signup" className="flex-1 rounded-full bg-indigo py-2.5 text-center text-sm font-semibold text-white">Get started</Link>

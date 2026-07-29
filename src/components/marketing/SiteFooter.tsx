@@ -21,12 +21,21 @@ const COLS: { title: string; links: { label: string; href: string }[] }[] = [
     ],
   },
   {
+    title: "Community",
+    links: [
+      { label: "Referrals", href: "/referrals" },
+      { label: "Campus Ambassadors", href: "/ambassadors" },
+      { label: "Influencers", href: "/influencers" },
+      { label: "Creator Club", href: "/creator-club" },
+    ],
+  },
+  {
     title: "Support",
     links: [
-      { label: "Help & FAQ", href: "/faq" },
-      { label: "Contact support", href: "/support" },
+      { label: "Help Center", href: "/help" },
+      { label: "FAQs", href: "/faq" },
+      { label: "Video Guides", href: "/help/videos" },
       { label: "Get started", href: "/signup" },
-      { label: "Log in", href: "/login" },
     ],
   },
   {
@@ -42,7 +51,7 @@ export function SiteFooter() {
   return (
     <footer className="border-t border-indigo/10 bg-white">
       <div className="mx-auto max-w-6xl px-5 py-14">
-        <div className="grid grid-cols-2 gap-8 md:grid-cols-5">
+        <div className="grid grid-cols-2 gap-8 md:grid-cols-6">
           <div className="col-span-2 md:col-span-1">
             <span className="font-heading text-lg font-bold text-indigo">KONEK</span>
             <p className="mt-3 max-w-xs text-sm text-indigo/60">

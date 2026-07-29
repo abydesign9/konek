@@ -343,7 +343,7 @@ export default function TimonPreviewPage() {
           <Link href="/business-solutions">Business</Link>
           <Link href="/connectivity">Connectivity</Link>
           <Link href="/pricing">Pricing</Link>
-          <Link href="/faq">Support</Link>
+          <Link href="/help">Support</Link>
           <Link href="/about">Company</Link>
         </div>
 
@@ -374,7 +374,7 @@ export default function TimonPreviewPage() {
             <Link href="/business-solutions" onClick={() => setMenuOpen(false)}>Business</Link>
             <Link href="/connectivity" onClick={() => setMenuOpen(false)}>Connectivity</Link>
             <Link href="/pricing" onClick={() => setMenuOpen(false)}>Pricing</Link>
-            <Link href="/faq" onClick={() => setMenuOpen(false)}>Support</Link>
+            <Link href="/help" onClick={() => setMenuOpen(false)}>Support</Link>
             <Link href="/about" onClick={() => setMenuOpen(false)}>Company</Link>
             <Link href="/login">Log in</Link>
             <Link href="/signup">Create account</Link>
