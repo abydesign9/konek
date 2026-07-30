@@ -29,7 +29,6 @@ const SHOW_PREFIXES = [
   "/voice",
   "/transactions",
   "/business",
-  "/faq",
 ];
 
 export function BottomNavGate() {

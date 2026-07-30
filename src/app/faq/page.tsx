@@ -1,76 +1,42 @@
-"use client";
+import type { Metadata } from "next";
+import { MarketingPage, Hero, Section, CTA } from "@/components/marketing/ui";
+import { FaqList } from "./FaqList";
 
-import { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
-import { PageHeader } from "@/components/PageHeader";
-
-interface Faq {
-  id: string;
-  category: string;
-  question: string;
-  answer: string;
-}
-
-const CATEGORY_LABEL: Record<string, string> = {
-  general: "General",
-  kyc: "Verification",
-  payments: "Payments",
-  vtu: "Airtime & Bills",
-  esim: "eSIM",
-  card: "Cards",
-  dollar_account: "Dollar Account",
+export const metadata: Metadata = {
+  title: "Konek FAQs — answers to common questions",
+  description:
+    "Answers to common questions about Konek: accounts, cards, eSIM, funding, verification, security and more. Public help you can browse without signing in.",
+  keywords: ["Konek FAQ", "Konek help", "how does Konek work", "Konek questions"],
+  alternates: { canonical: "/faq" },
+  openGraph: {
+    title: "Konek FAQs",
+    description: "Answers to common questions about Konek.",
+    url: "/faq",
+    type: "website",
+  },
 };
 
 export default function FaqPage() {
-  const [faqs, setFaqs] = useState<Faq[] | null>(null);
-
-  useEffect(() => {
-    fetch("/api/faqs")
-      .then((res) => res.json())
-      .then((data) => setFaqs(data.faqs ?? []));
-  }, []);
-
-  const grouped = useMemo(() => {
-    const g: Record<string, Faq[]> = {};
-    for (const f of faqs ?? []) (g[f.category] ??= []).push(f);
-    return g;
-  }, [faqs]);
-
   return (
-    <main className="min-h-screen bg-background">
-      <PageHeader title="Help center" backHref="/support" backLabel="Support" />
-      <div className="max-w-lg mx-auto px-4 sm:px-6 py-6">
-        <p className="text-sm text-indigo/60 mb-6">
-          Quick answers before you contact support. Still stuck?{" "}
-          <Link href="/support" className="text-indigo underline">Open a ticket</Link>.
-        </p>
+    <MarketingPage>
+      <Hero
+        eyebrow="FAQs"
+        title={<>Questions? <span className="text-konek-green">We&apos;ve got answers.</span></>}
+        subtitle="Quick answers about accounts, cards, eSIM, funding, verification and staying secure. Browse freely — no sign-in needed."
+        primary={{ label: "Visit Help Center", href: "/help" }}
+        secondary={{ label: "Watch video guides", href: "/help/videos" }}
+      />
 
-        {faqs === null && <p className="text-sm text-indigo/50">Loading…</p>}
-        {faqs !== null && faqs.length === 0 && (
-          <p className="text-sm text-indigo/50">No help articles published yet.</p>
-        )}
+      <Section>
+        <FaqList />
+      </Section>
 
-        {Object.entries(grouped).map(([category, items]) => (
-          <section key={category} className="mb-6">
-            <p className="text-xs font-semibold uppercase tracking-wide text-indigo/40 mb-2">
-              {CATEGORY_LABEL[category] ?? category}
-            </p>
-            <div className="flex flex-col gap-2">
-              {items.map((f) => (
-                <details key={f.id} className="group rounded-xl bg-white border border-indigo/10 px-4 py-3">
-                  <summary className="flex items-center justify-between cursor-pointer list-none text-sm font-medium text-indigo">
-                    {f.question}
-                    <span className="ml-3 text-konek-green transition-transform group-open:rotate-45 text-lg leading-none">
-                      +
-                    </span>
-                  </summary>
-                  <p className="text-sm text-indigo/70 leading-relaxed pt-2">{f.answer}</p>
-                </details>
-              ))}
-            </div>
-          </section>
-        ))}
-      </div>
-    </main>
+      <CTA
+        title="Still need a hand?"
+        subtitle="Our support team is available 24/7 in the app. Log in and start a chat, and we'll take it from there."
+        primary={{ label: "Get started", href: "/signup" }}
+        secondary={{ label: "Help Center", href: "/help" }}
+      />
+    </MarketingPage>
   );
 }
