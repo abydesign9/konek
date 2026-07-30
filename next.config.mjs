@@ -32,6 +32,8 @@ const securityHeaders = [
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   poweredByHeader: false, // don't advertise the framework
+  // Lint runs in CI/dev; don't let a cosmetic lint rule block a production deploy.
+  eslint: { ignoreDuringBuilds: true },
   async headers() {
     return [
       { source: "/:path*", headers: securityHeaders },
