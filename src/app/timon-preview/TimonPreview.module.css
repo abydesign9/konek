@@ -1713,19 +1713,19 @@
     clamp(100px, 13vw, 180px)
     clamp(20px, 6vw, 96px);
   overflow: hidden;
-  color: #ffffff;
+  color: var(--konek-ink);
   background:
     radial-gradient(
       circle at 12% 20%,
-      rgba(212, 163, 58, 0.17),
-      transparent 31%
+      rgba(212, 163, 58, 0.1),
+      transparent 34%
     ),
     radial-gradient(
       circle at 89% 70%,
-      rgba(0, 103, 71, 0.26),
-      transparent 36%
+      rgba(0, 103, 71, 0.09),
+      transparent 38%
     ),
-    var(--konek-dark);
+    var(--konek-cream, #faf6ef);
 }
 
 .coverageGlowOne,
@@ -1795,10 +1795,10 @@
 .coverageSummary {
   flex: 0 0 285px;
   padding: 23px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(17, 24, 32, 0.08);
   border-radius: 22px;
-  background: rgba(255, 255, 255, 0.055);
-  backdrop-filter: blur(16px);
+  background: #ffffff;
+  box-shadow: 0 18px 50px rgba(17, 24, 32, 0.06);
 }
 
 .coverageSummary strong,
@@ -1814,7 +1814,7 @@
 
 .coverageSummary span {
   margin-top: 8px;
-  color: rgba(255, 255, 255, 0.54);
+  color: rgba(17, 24, 32, 0.55);
   font-size: 12px;
   line-height: 1.6;
 }
@@ -1859,7 +1859,7 @@
 .worldCircle::after {
   content: "";
   position: absolute;
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(17, 24, 32, 0.08);
   border-radius: 50%;
 }
 
@@ -1876,15 +1876,15 @@
   inset: 7%;
   overflow: hidden;
   border-radius: 50%;
-  opacity: 0.32;
+  opacity: 0.5;
   background-image:
     linear-gradient(
-      rgba(255, 255, 255, 0.14) 1px,
+      rgba(17, 24, 32, 0.07) 1px,
       transparent 1px
     ),
     linear-gradient(
       90deg,
-      rgba(255, 255, 255, 0.14) 1px,
+      rgba(17, 24, 32, 0.07) 1px,
       transparent 1px
     );
   background-size: 33px 33px;
@@ -1974,12 +1974,11 @@
   align-items: center;
   gap: 11px;
   padding: 13px 15px;
-  border: 1px solid rgba(255, 255, 255, 0.68);
+  border: 1px solid rgba(17, 24, 32, 0.06);
   border-radius: 16px;
   color: var(--konek-ink);
-  background: rgba(255, 255, 255, 0.93);
-  box-shadow: 0 24px 54px rgba(0, 0, 0, 0.26);
-  backdrop-filter: blur(17px);
+  background: #ffffff;
+  box-shadow: 0 20px 46px rgba(17, 24, 32, 0.12);
 }
 
 .coverageFloatingOne {
@@ -2030,11 +2029,10 @@
 
 .countryPanel {
   padding: clamp(22px, 3vw, 36px);
-  border: 1px solid rgba(255, 255, 255, 0.11);
+  border: 1px solid rgba(17, 24, 32, 0.07);
   border-radius: 29px;
-  background: rgba(255, 255, 255, 0.055);
-  box-shadow: 0 38px 90px rgba(0, 0, 0, 0.18);
-  backdrop-filter: blur(18px);
+  background: #ffffff;
+  box-shadow: 0 30px 70px rgba(17, 24, 32, 0.08);
 }
 
 .countryPanelHeading {
@@ -2046,7 +2044,7 @@
 
 .countryPanelHeading p {
   margin: 0;
-  color: #ffffff;
+  color: var(--konek-ink);
   font-size: 18px;
   font-weight: 780;
 }
@@ -2054,7 +2052,7 @@
 .countryPanelHeading > div > span {
   display: block;
   margin-top: 5px;
-  color: rgba(255, 255, 255, 0.43);
+  color: rgba(17, 24, 32, 0.5);
   font-size: 10px;
 }
 
@@ -2071,71 +2069,96 @@
   text-decoration: none;
 }
 
-.countryGrid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 9px;
+.countryMarquee {
   margin-top: 28px;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 7%,
+    #000 93%,
+    transparent
+  );
+  mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 7%,
+    #000 93%,
+    transparent
+  );
 }
 
-.countryGrid article {
-  min-width: 0;
+.countryTrack {
+  display: flex;
+  gap: 12px;
+  width: max-content;
+  animation: countrySlide 44s linear infinite;
+}
+
+.countryTrack:hover {
+  animation-play-state: paused;
+}
+
+.countryTrack article {
+  flex: 0 0 auto;
+  width: 172px;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 13px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 13px;
-  background: rgba(255, 255, 255, 0.047);
-  transition:
-    transform 180ms ease,
-    background 180ms ease;
-}
-
-.countryGrid article:hover {
-  transform: translateY(-3px);
-  background: rgba(255, 255, 255, 0.09);
+  gap: 11px;
+  padding: 12px 14px;
+  border: 1px solid rgba(17, 24, 32, 0.07);
+  border-radius: 14px;
+  background: var(--konek-cream, #faf6ef);
 }
 
 .countryFlag {
   flex: 0 0 auto;
-  width: 33px;
-  height: 33px;
+  width: 34px;
+  height: 34px;
   display: grid;
   place-items: center;
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.08);
-  font-size: 18px;
+  background: rgba(17, 24, 32, 0.05);
+  font-size: 19px;
 }
 
-.countryGrid article > div {
+.countryTrack article > div {
   min-width: 0;
 }
 
-.countryGrid strong,
-.countryGrid small {
+.countryTrack strong,
+.countryTrack small {
   display: block;
 }
 
-.countryGrid strong {
+.countryTrack strong {
   overflow: hidden;
-  color: #ffffff;
-  font-size: 9px;
+  color: var(--konek-ink);
+  font-size: 13px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.countryGrid small {
-  margin-top: 3px;
-  color: rgba(255, 255, 255, 0.36);
-  font-size: 7px;
+.countryTrack small {
+  margin-top: 2px;
+  color: rgba(17, 24, 32, 0.45);
+  font-size: 10px;
 }
 
-.countryGrid i {
-  margin-left: auto;
-  color: var(--konek-gold);
-  font-size: 10px;
-  font-style: normal;
+@keyframes countrySlide {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .countryTrack {
+    animation: none;
+    flex-wrap: wrap;
+  }
 }
 
 .regionTicker {
@@ -2148,9 +2171,9 @@
   margin-top: 64px;
   padding: 22px;
   overflow: hidden;
-  border-top: 1px solid rgba(255, 255, 255, 0.09);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
-  color: rgba(255, 255, 255, 0.54);
+  border-top: 1px solid rgba(17, 24, 32, 0.09);
+  border-bottom: 1px solid rgba(17, 24, 32, 0.09);
+  color: rgba(17, 24, 32, 0.55);
   font-size: 10px;
   font-weight: 750;
   letter-spacing: 0.08em;
@@ -2917,10 +2940,6 @@
 }
 
 @media (max-width: 1180px) {
-  .countryGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
   .capabilityGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }

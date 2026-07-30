@@ -758,21 +758,21 @@ export default function TimonPreviewPage() {
               </Link>
             </div>
 
-            <div className={styles.countryGrid}>
-              {COVERAGE_COUNTRIES.map((country) => (
-                <article key={country.name}>
-                  <span className={styles.countryFlag}>
-                    {country.flag}
-                  </span>
+            <div className={styles.countryMarquee}>
+              <div className={styles.countryTrack}>
+                {[...COVERAGE_COUNTRIES, ...COVERAGE_COUNTRIES].map((country, i) => (
+                  <article key={`${country.name}-${i}`}>
+                    <span className={styles.countryFlag}>
+                      {country.flag}
+                    </span>
 
-                  <div>
-                    <strong>{country.name}</strong>
-                    <small>{country.region}</small>
-                  </div>
-
-                  <i>→</i>
-                </article>
-              ))}
+                    <div>
+                      <strong>{country.name}</strong>
+                      <small>{country.region}</small>
+                    </div>
+                  </article>
+                ))}
+              </div>
             </div>
           </div>
         </div>
