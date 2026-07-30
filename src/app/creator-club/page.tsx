@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { MarketingPage, Hero, Section, FeatureGrid, Stats, CTA } from "@/components/marketing/ui";
+import { ApplicationForm } from "@/components/marketing/ApplicationForm";
 
 export const metadata: Metadata = {
   title: "Konek Creator Club — the home for creators paid globally",
@@ -22,7 +23,7 @@ export default function CreatorClubPage() {
         eyebrow="Creator Club"
         title={<>Built for creators <span className="text-konek-green">paid globally.</span></>}
         subtitle="If you earn from brands, platforms and fans around the world, the Konek Creator Club gives you the accounts, cards, perks and community to get paid globally — and keep more of what you make."
-        primary={{ label: "Join the club", href: "/signup" }}
+        primary={{ label: "Join the club", href: "#apply" }}
         secondary={{ label: "Influencer program", href: "/influencers" }}
       />
 
@@ -60,10 +61,14 @@ export default function CreatorClubPage() {
         />
       </Section>
 
+      <Section id="apply" tint eyebrow="Apply" title="Join the Creator Club">
+        <ApplicationForm program="creator_club" />
+      </Section>
+
       <CTA
         title="Your creativity is global. Your money should be too."
-        subtitle="Join the Konek Creator Club and get the tools, perks and people to help you earn worldwide."
-        primary={{ label: "Join the club", href: "/signup" }}
+        subtitle="Questions before you apply? Our Help Center has answers, or explore how referrals work."
+        primary={{ label: "Visit Help Center", href: "/help" }}
         secondary={{ label: "Refer & earn", href: "/referrals" }}
       />
     </MarketingPage>

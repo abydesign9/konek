@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { MarketingPage, Hero, Section, FeatureGrid, CTA } from "@/components/marketing/ui";
+import { ApplicationForm } from "@/components/marketing/ApplicationForm";
 
 export const metadata: Metadata = {
   title: "Konek Influencers — get paid to create content for Konek",
@@ -22,7 +23,7 @@ export default function InfluencersPage() {
         eyebrow="Influencers"
         title={<>Get paid to create <span className="text-konek-green">for Konek.</span></>}
         subtitle="If your audience trusts your voice, we want to work with you. Join the Konek Influencer program, create content you're proud of, and get paid for the impact you drive."
-        primary={{ label: "Apply to join", href: "/signup" }}
+        primary={{ label: "Apply now", href: "#apply" }}
         secondary={{ label: "Creator Club", href: "/creator-club" }}
       />
 
@@ -51,10 +52,14 @@ export default function InfluencersPage() {
         </div>
       </Section>
 
+      <Section id="apply" tint eyebrow="Apply" title="Start your influencer application">
+        <ApplicationForm program="influencer" />
+      </Section>
+
       <CTA
-        title="Let's create something together"
-        subtitle="Apply to the Konek Influencer program and start earning from the content you already love making."
-        primary={{ label: "Apply now", href: "/signup" }}
+        title="Prefer to explore first?"
+        subtitle="Check out the Creator Club or Campus Ambassador program to find your best fit."
+        primary={{ label: "Creator Club", href: "/creator-club" }}
         secondary={{ label: "Campus Ambassadors", href: "/ambassadors" }}
       />
     </MarketingPage>
