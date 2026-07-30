@@ -112,19 +112,104 @@
 .desktopLinks {
   display: flex;
   align-items: center;
-  gap: clamp(20px, 3vw, 38px);
+  gap: clamp(18px, 2.6vw, 34px);
 }
 
-.desktopLinks a {
+.navItem {
+  position: relative;
+}
+
+.navTrigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
   color: rgba(255, 255, 255, 0.7);
   font-size: 12px;
   font-weight: 700;
+  font-family: inherit;
   text-decoration: none;
   transition: color 180ms ease;
 }
 
-.desktopLinks a:hover {
+.navTrigger svg {
+  transition: transform 180ms ease;
+}
+
+.navItem:hover .navTrigger,
+.navTrigger:hover {
   color: #ffffff;
+}
+
+.navItem:hover .navTrigger svg {
+  transform: rotate(180deg);
+}
+
+.navDropdown {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  min-width: 250px;
+  padding: 20px 8px 8px;
+  transform: translateX(-50%) translateY(6px);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease;
+}
+
+.navItem:hover .navDropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.navDropdown a {
+  display: block;
+  padding: 9px 12px;
+  border-radius: 11px;
+  color: rgba(255, 255, 255, 0.82);
+  text-decoration: none;
+  transition:
+    background 150ms ease,
+    color 150ms ease;
+}
+
+/* The visual panel is painted on the first link's container via a wrapper,
+   but we keep it simple: give the group a shared card using a pseudo backdrop. */
+.navDropdown::before {
+  content: "";
+  position: absolute;
+  inset: 12px 0 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 17px;
+  background: rgba(7, 17, 54, 0.97);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.32);
+  z-index: -1;
+}
+
+.navDropdown a:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.navDropdown a strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.navDropdown a span {
+  display: block;
+  margin-top: 2px;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 11px;
+  font-weight: 500;
 }
 
 .navActions {
@@ -200,6 +285,19 @@
 .mobileMenu a:hover {
   color: var(--konek-dark);
   background: var(--konek-gold);
+}
+
+.mobileLabel {
+  margin: 13px 12px 3px;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.mobileLabel:first-child {
+  margin-top: 4px;
 }
 
 .hero {

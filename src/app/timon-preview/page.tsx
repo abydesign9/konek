@@ -340,12 +340,47 @@ export default function TimonPreviewPage() {
         </Link>
 
         <div className={styles.desktopLinks}>
-          <Link href="/personal">Personal</Link>
-          <Link href="/business-solutions">Business</Link>
-          <Link href="/connectivity">Connectivity</Link>
-          <Link href="/pricing">Pricing</Link>
-          <Link href="/help">Support</Link>
-          <Link href="/about">Company</Link>
+          <div className={styles.navItem}>
+            <button type="button" className={styles.navTrigger}>
+              Products
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" aria-hidden><path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            </button>
+            <div className={styles.navDropdown}>
+              <Link href="/personal"><strong>Personal</strong><span>Accounts, cards &amp; connectivity</span></Link>
+              <Link href="/business-solutions"><strong>Business</strong><span>Collect globally, pay your team</span></Link>
+              <Link href="/connectivity"><strong>Connectivity</strong><span>eSIM, airtime, data, bills &amp; TV</span></Link>
+            </div>
+          </div>
+
+          <div className={styles.navItem}>
+            <button type="button" className={styles.navTrigger}>
+              Company
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" aria-hidden><path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            </button>
+            <div className={styles.navDropdown}>
+              <Link href="/about"><strong>About us</strong></Link>
+              <Link href="/company/careers"><strong>Careers</strong></Link>
+              <Link href="/company/blog"><strong>Blog</strong></Link>
+              <Link href="/referrals"><strong>Referrals</strong></Link>
+              <Link href="/ambassadors"><strong>Campus Ambassadors</strong></Link>
+              <Link href="/influencers"><strong>Influencers</strong></Link>
+              <Link href="/creator-club"><strong>Creator Club</strong></Link>
+            </div>
+          </div>
+
+          <Link href="/pricing" className={styles.navTrigger}>Pricing</Link>
+
+          <div className={styles.navItem}>
+            <button type="button" className={styles.navTrigger}>
+              Support
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" aria-hidden><path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            </button>
+            <div className={styles.navDropdown}>
+              <Link href="/help"><strong>Help Center</strong><span>We&apos;re here 24/7</span></Link>
+              <Link href="/faq"><strong>FAQs</strong><span>Answers to common questions</span></Link>
+              <Link href="/help/videos"><strong>Video Guides</strong><span>Step-by-step how-tos</span></Link>
+            </div>
+          </div>
         </div>
 
         <div className={styles.navActions}>
@@ -371,12 +406,23 @@ export default function TimonPreviewPage() {
 
         {menuOpen ? (
           <div className={styles.mobileMenu}>
+            <p className={styles.mobileLabel}>Products</p>
             <Link href="/personal" onClick={() => setMenuOpen(false)}>Personal</Link>
             <Link href="/business-solutions" onClick={() => setMenuOpen(false)}>Business</Link>
             <Link href="/connectivity" onClick={() => setMenuOpen(false)}>Connectivity</Link>
+            <p className={styles.mobileLabel}>Company</p>
+            <Link href="/about" onClick={() => setMenuOpen(false)}>About us</Link>
+            <Link href="/company/careers" onClick={() => setMenuOpen(false)}>Careers</Link>
+            <Link href="/company/blog" onClick={() => setMenuOpen(false)}>Blog</Link>
+            <Link href="/referrals" onClick={() => setMenuOpen(false)}>Referrals</Link>
+            <Link href="/ambassadors" onClick={() => setMenuOpen(false)}>Campus Ambassadors</Link>
+            <Link href="/influencers" onClick={() => setMenuOpen(false)}>Influencers</Link>
+            <Link href="/creator-club" onClick={() => setMenuOpen(false)}>Creator Club</Link>
+            <p className={styles.mobileLabel}>Support</p>
+            <Link href="/help" onClick={() => setMenuOpen(false)}>Help Center</Link>
+            <Link href="/faq" onClick={() => setMenuOpen(false)}>FAQs</Link>
+            <Link href="/help/videos" onClick={() => setMenuOpen(false)}>Video Guides</Link>
             <Link href="/pricing" onClick={() => setMenuOpen(false)}>Pricing</Link>
-            <Link href="/help" onClick={() => setMenuOpen(false)}>Support</Link>
-            <Link href="/about" onClick={() => setMenuOpen(false)}>Company</Link>
             <Link href="/login">Log in</Link>
             <Link href="/signup">Create account</Link>
           </div>
