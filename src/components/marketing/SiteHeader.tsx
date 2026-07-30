@@ -92,7 +92,7 @@ export function SiteHeader() {
     <header className="sticky top-0 z-40 border-b border-indigo/10 bg-background/85 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3.5">
         <Link href="/" className="flex items-center gap-2">
-          <Image src="/brand/konek-logo.png" alt="Konek" width={32} height={32} className="h-8 w-8" />
+          <Image src="/brand/konek-logo.svg" alt="Konek" width={32} height={32} className="h-8 w-8" unoptimized />
           <span className="font-heading text-lg font-bold tracking-tight text-indigo">KONEK</span>
         </Link>
 

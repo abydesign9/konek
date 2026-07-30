@@ -327,7 +327,8 @@ export default function TimonPreviewPage() {
         <Link href="/" className={styles.brand}>
           <span className={styles.logoWrap}>
             <Image
-              src="/brand/konek-logo.png"
+              src="/brand/konek-logo.svg"
+              unoptimized
               alt="KONEK logo"
               fill
               sizes="42px"
@@ -447,7 +448,8 @@ export default function TimonPreviewPage() {
             <div className={styles.phoneBrand}>
               <span className={styles.phoneLogo}>
                 <Image
-                  src="/brand/konek-logo.png"
+                  src="/brand/konek-logo.svg"
+                  unoptimized
                   alt=""
                   fill
                   sizes="30px"
@@ -708,7 +710,8 @@ export default function TimonPreviewPage() {
               <div className={styles.worldCenter}>
                 <span className={styles.logoWrap}>
                   <Image
-                    src="/brand/konek-logo.png"
+                    src="/brand/konek-logo.svg"
+                    unoptimized
                     alt=""
                     fill
                     sizes="56px"
@@ -882,7 +885,8 @@ export default function TimonPreviewPage() {
             <div>
               <span className={styles.logoWrap}>
                 <Image
-                  src="/brand/konek-logo.png"
+                  src="/brand/konek-logo.svg"
+                  unoptimized
                   alt=""
                   fill
                   sizes="40px"
@@ -1096,7 +1100,8 @@ export default function TimonPreviewPage() {
             <Link href="/" className={styles.footerLogo}>
               <span className={styles.footerLogoImage}>
                 <Image
-                  src="/brand/konek-logo.png"
+                  src="/brand/konek-logo.svg"
+                  unoptimized
                   alt="KONEK logo"
                   fill
                   sizes="58px"
