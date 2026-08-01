@@ -96,18 +96,6 @@ export default function CardProductDetailPage() {
     );
   }
 
-  const funding =
-    product.fundingFeePct > 0
-      ? `${product.fundingFeePct}%${product.fundingFeeMinMinor ? ` · min ${fx(product.fundingFeeMinMinor, product.currency)}` : ""}${
-          product.fundingFeeMaxMinor ? ` · max ${fx(product.fundingFeeMaxMinor, product.currency)}` : ""
-        }`
-      : "No fee. This card is linked to your wallet balance.";
-  const intl =
-    product.intlFeePct || product.intlFeeFixedMinor
-      ? `${product.intlFeePct ? `${product.intlFeePct}%` : ""}${product.intlFeePct && product.intlFeeFixedMinor ? " + " : ""}${
-          product.intlFeeFixedMinor ? fx(product.intlFeeFixedMinor, product.currency) : ""
-        }`
-      : fx(0, product.currency);
 
   return (
     <main className="min-h-screen bg-background pb-40">
@@ -137,14 +125,8 @@ export default function CardProductDetailPage() {
           <p className="mb-3 font-bold text-indigo">Details and description</p>
           {product.description && <p className="mb-4 text-sm text-indigo/70">{product.description}</p>}
 
-          <p className="mb-2 text-xs font-bold uppercase tracking-wide text-indigo/40">Fees</p>
           <div className="divide-y divide-indigo/5 rounded-2xl border border-indigo/10">
-            <FeeLine label="Card creation fee" value={fx(product.creationFeeMinor, product.currency)} />
-            <FeeLine label="Authorization fee" hint="Per card transaction" value={fx(product.authorizationFeeMinor, product.currency)} />
-            <FeeLine label="Funding fee" value={funding} />
-            <FeeLine label="Decline fee" hint="On declines due to low balance" value={fx(product.declineFeeMinor, product.currency)} />
-            <FeeLine label="Dispute fee" hint="When you file a dispute" value={fx(product.disputeFeeMinor, product.currency)} />
-            <FeeLine label="International fee" hint="On non-local websites" value={intl} />
+            <FeeLine label="Card creation fee" hint="One-time, charged when you create the card" value={fx(product.creationFeeMinor, product.currency)} />
           </div>
 
           <div className="mt-4 rounded-2xl bg-indigo/5 px-4 py-3 text-xs text-indigo/60">

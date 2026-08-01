@@ -85,8 +85,20 @@ function Dropdown({ title, items, links }: { title: string; items: Item[]; links
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const [authed, setAuthed] = useState(false);
   const pathname = usePathname();
   useEffect(() => setOpen(false), [pathname]);
+
+  // Detect an existing session so we don't show "Log in / Get started" to a
+  // signed-in user browsing public pages — show "Go to app" instead.
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/session/status")
+      .then((r) => r.json())
+      .then((d) => { if (!cancelled) setAuthed(!!d.authed); })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, []);
 
   return (
     <header className="sticky top-0 z-40 border-b border-indigo/10 bg-background/85 backdrop-blur">
@@ -104,10 +116,18 @@ export function SiteHeader() {
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
-          <Link href="/login" className="text-sm font-semibold text-indigo hover:text-konek-green">Log in</Link>
-          <Link href="/signup" className="rounded-full bg-indigo px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-konek-green">
-            Get started
-          </Link>
+          {authed ? (
+            <Link href="/home" className="rounded-full bg-indigo px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-konek-green">
+              Go to app
+            </Link>
+          ) : (
+            <>
+              <Link href="/login" className="text-sm font-semibold text-indigo hover:text-konek-green">Log in</Link>
+              <Link href="/signup" className="rounded-full bg-indigo px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-konek-green">
+                Get started
+              </Link>
+            </>
+          )}
         </div>
 
         <button
@@ -137,8 +157,14 @@ export function SiteHeader() {
             <Link key={it.href} href={it.href} className="block rounded-xl px-1 py-2.5 text-sm font-semibold text-indigo">{it.label}</Link>
           ))}
           <div className="mt-4 flex gap-3">
-            <Link href="/login" className="flex-1 rounded-full border border-indigo/20 py-2.5 text-center text-sm font-semibold text-indigo">Log in</Link>
-            <Link href="/signup" className="flex-1 rounded-full bg-indigo py-2.5 text-center text-sm font-semibold text-white">Get started</Link>
+            {authed ? (
+              <Link href="/home" className="flex-1 rounded-full bg-indigo py-2.5 text-center text-sm font-semibold text-white">Go to app</Link>
+            ) : (
+              <>
+                <Link href="/login" className="flex-1 rounded-full border border-indigo/20 py-2.5 text-center text-sm font-semibold text-indigo">Log in</Link>
+                <Link href="/signup" className="flex-1 rounded-full bg-indigo py-2.5 text-center text-sm font-semibold text-white">Get started</Link>
+              </>
+            )}
           </div>
         </div>
       )}
