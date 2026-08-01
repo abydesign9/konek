@@ -67,6 +67,94 @@ export interface PlanParseResult {
   errors: string[];
 }
 
+// ---- Manual column mapping (email-marketing-style import) ----------------
+// When a supplier's sheet uses column names we don't recognise, the admin maps
+// each field to a column by hand. These helpers power that flow.
+
+export const MAP_FIELDS = [
+  { key: "sku", label: "Plan code / SKU", required: true },
+  { key: "cost", label: "Cost price", required: true },
+  { key: "data", label: "Data amount", required: true },
+  { key: "validity", label: "Validity", required: true },
+  { key: "name", label: "Plan name", required: false },
+  { key: "country", label: "Country", required: false },
+  { key: "region", label: "Region", required: false },
+  { key: "operator", label: "Operator", required: false },
+  { key: "dataUnit", label: "Data unit (GB/MB)", required: false },
+  { key: "networkType", label: "Network type", required: false },
+  { key: "currency", label: "Currency", required: false },
+  { key: "stock", label: "Stock status", required: false },
+] as const;
+
+export type MapField = (typeof MAP_FIELDS)[number]["key"];
+export type ColumnMapping = Record<MapField, number>; // -1 = unmapped
+
+export interface RawSheet {
+  headers: string[];
+  rows: string[][];
+}
+
+// Split a sheet into original headers + raw rows without requiring any known
+// columns — so the mapping UI can show whatever the supplier gave us.
+export function parseRawSheet(text: string): RawSheet {
+  const lines = text.split(/\r?\n/).filter((l) => l.trim());
+  if (lines.length < 2) return { headers: [], rows: [] };
+  const delim = lines[0].includes("\t") ? "\t" : ",";
+  const headers = split(lines[0], delim);
+  const rows = lines.slice(1).map((l) => split(l, delim));
+  return { headers, rows };
+}
+
+// Best-guess mapping from header names, used to pre-fill the mapping UI.
+export function suggestMapping(headers: string[]): ColumnMapping {
+  const normed = headers.map(norm);
+  const m = {} as ColumnMapping;
+  for (const f of MAP_FIELDS) {
+    m[f.key] = normed.findIndex((h) => (ALIASES[f.key] ?? []).includes(h));
+  }
+  return m;
+}
+
+// Build plan rows from an explicit column mapping.
+export function buildPlansFromMapping(
+  sheet: RawSheet,
+  map: ColumnMapping,
+  defaults: { currency?: string } = {}
+): PlanParseResult {
+  const errors: string[] = [];
+  const at = (row: string[], key: MapField) => (map[key] >= 0 ? (row[map[key]] ?? "").trim() : "");
+  const rows: SupplierPlanInput[] = [];
+
+  sheet.rows.forEach((c, i) => {
+    const line = i + 2;
+    const sku = at(c, "sku");
+    if (!sku) return;
+    const cost = costToCents(at(c, "cost"));
+    if (cost == null || cost <= 0) {
+      errors.push(`Line ${line}: invalid cost`);
+      return;
+    }
+    rows.push({
+      sku,
+      costMinor: cost,
+      currency: at(c, "currency") || defaults.currency || "USD",
+      stockStatus: map.stock >= 0 ? (/(out|0|no)/i.test(at(c, "stock")) ? "out_of_stock" : "in_stock") : "in_stock",
+      country: map.country >= 0 ? at(c, "country") : null,
+      region: map.region >= 0 ? at(c, "region") : null,
+      operator: map.operator >= 0 ? at(c, "operator") : null,
+      data: map.data >= 0 ? at(c, "data") : undefined,
+      dataUnit: map.dataUnit >= 0 ? at(c, "dataUnit") : undefined,
+      validity: map.validity >= 0 ? at(c, "validity") : undefined,
+      validityUnit: "DAY",
+      networkType: map.networkType >= 0 ? at(c, "networkType") : null,
+      category: "esim",
+      raw: { line: c },
+    });
+  });
+
+  return { rows, errors };
+}
+
 export function parsePlanSheet(text: string, defaults: { currency?: string } = {}): PlanParseResult {
   const errors: string[] = [];
   const lines = text.split(/\r?\n/).filter((l) => l.trim());

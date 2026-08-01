@@ -2,7 +2,15 @@
 
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { Card, Grid, PageHeader } from "@/components/adminUi";
-import { parsePlanSheet } from "@/lib/marketplace/planSheet";
+import {
+  parseRawSheet,
+  suggestMapping,
+  buildPlansFromMapping,
+  MAP_FIELDS,
+  type RawSheet,
+  type ColumnMapping,
+  type MapField,
+} from "@/lib/marketplace/planSheet";
 import type { SupplierPlanInput } from "@/lib/marketplace/import";
 
 interface Supplier {
@@ -569,7 +577,8 @@ function ImportPanel({
   onMsg: (m: string) => void;
 }) {
   const [supplierId, setSupplierId] = useState("");
-  const [rows, setRows] = useState<SupplierPlanInput[] | null>(null);
+  const [sheet, setSheet] = useState<RawSheet | null>(null);
+  const [map, setMap] = useState<ColumnMapping | null>(null);
   const [errors, setErrors] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
   const [replace, setReplace] = useState(false);
@@ -577,14 +586,33 @@ function ImportPanel({
 
   async function onFile(file: File) {
     setErrors([]);
-    setRows(null);
+    setSheet(null);
+    setMap(null);
     if (/\.(xlsx|xls|pdf)$/i.test(file.name)) {
-      setErrors(["Excel and PDF cannot be read directly. Export to CSV first."]);
+      setErrors(["Excel and PDF can't be read directly — export the sheet to CSV first."]);
       return;
     }
-    const parsed = parsePlanSheet(await file.text());
-    setErrors(parsed.errors);
-    setRows(parsed.rows.length ? parsed.rows : null);
+    const raw = parseRawSheet(await file.text());
+    if (raw.headers.length === 0) {
+      setErrors(["Couldn't read the file. Need a header row and at least one data row."]);
+      return;
+    }
+    setSheet(raw);
+    setMap(suggestMapping(raw.headers)); // pre-fill best guesses; admin adjusts
+  }
+
+  // Live-build the plan rows from the current column mapping.
+  const built = useMemo(
+    () => (sheet && map ? buildPlansFromMapping(sheet, map) : { rows: [], errors: [] }),
+    [sheet, map]
+  );
+  const missingRequired = map
+    ? MAP_FIELDS.filter((f) => f.required && map[f.key] < 0).map((f) => f.label)
+    : [];
+  const rows = built.rows.length ? built.rows : null;
+
+  function setField(key: MapField, colIndex: number) {
+    setMap((m) => (m ? { ...m, [key]: colIndex } : m));
   }
 
   async function runCsv() {
@@ -599,7 +627,8 @@ function ImportPanel({
     const d = await res.json().catch(() => ({}));
     onMsg(res.ok ? `Imported: ${d.imported} new, ${d.updated} updated, ${d.failed} failed.` : d.error ?? "Import failed");
     if (res.ok) {
-      setRows(null);
+      setSheet(null);
+      setMap(null);
       if (fileRef.current) fileRef.current.value = "";
       onDone();
     }
@@ -638,9 +667,9 @@ function ImportPanel({
           </div>
 
           <p className="mb-2 text-xs text-text-secondary">
-            …or upload a CSV: <code>sku, country, operator, data, validity, cost</code> (aliases like package_code / buying_price work). Cost in dollars.
+            …or upload the supplier&apos;s price sheet (CSV/TSV). Any column names work — you&apos;ll map them below. Cost in dollars.
           </p>
-          <input ref={fileRef} type="file" accept=".csv,.tsv,.xlsx,.xls,.pdf" onChange={(e) => e.target.files?.[0] && onFile(e.target.files[0])} className="text-xs" />
+          <input ref={fileRef} type="file" accept=".csv,.tsv" onChange={(e) => e.target.files?.[0] && onFile(e.target.files[0])} className="text-xs" />
           <label className="ml-3 text-xs text-text-secondary">
             <input type="checkbox" checked={replace} onChange={(e) => setReplace(e.target.checked)} className="mr-1" />
             Retire SKUs missing from this sheet
@@ -653,12 +682,79 @@ function ImportPanel({
               ))}
             </ul>
           )}
-          {rows && (
-            <div className="mt-3">
-              <p className="mb-2 text-xs text-text-secondary">Parsed {rows.length} plans.</p>
-              <button onClick={runCsv} disabled={!supplierId || busy} className="rounded-lg bg-konek-green px-4 py-2 text-xs font-semibold text-white disabled:opacity-50">
-                {busy ? "Importing…" : `Import ${rows.length} plans`}
-              </button>
+
+          {sheet && map && (
+            <div className="mt-4 rounded-xl border border-border-soft p-3">
+              <p className="mb-1 text-xs font-semibold text-indigo">Match your columns</p>
+              <p className="mb-3 text-xs text-text-secondary">
+                We detected {sheet.headers.length} columns and {sheet.rows.length} rows. Point each Konek field at the right
+                column from your sheet. Required fields are marked *.
+              </p>
+
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                {MAP_FIELDS.map((f) => (
+                  <label key={f.key} className="text-xs">
+                    <span className="mb-1 block font-medium text-text-secondary">
+                      {f.label}
+                      {f.required && <span className="text-red-500"> *</span>}
+                    </span>
+                    <select
+                      value={map[f.key]}
+                      onChange={(e) => setField(f.key, Number(e.target.value))}
+                      className={`w-full rounded-lg border px-2 py-1.5 ${
+                        f.required && map[f.key] < 0 ? "border-red-400" : "border-border-soft"
+                      }`}
+                    >
+                      <option value={-1}>— none —</option>
+                      {sheet.headers.map((h, hi) => (
+                        <option key={hi} value={hi}>
+                          {h || `Column ${hi + 1}`}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                ))}
+              </div>
+
+              {/* Preview first few rows using the current mapping */}
+              <div className="mt-3 overflow-x-auto">
+                <table className="w-full text-left text-[11px]">
+                  <thead className="text-text-secondary">
+                    <tr>
+                      {MAP_FIELDS.filter((f) => map[f.key] >= 0).map((f) => (
+                        <th key={f.key} className="py-1 pr-3 font-medium">{f.label}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {sheet.rows.slice(0, 3).map((r, ri) => (
+                      <tr key={ri} className="border-t border-border-soft">
+                        {MAP_FIELDS.filter((f) => map[f.key] >= 0).map((f) => (
+                          <td key={f.key} className="py-1 pr-3 tabular-nums">{r[map[f.key]] ?? ""}</td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {missingRequired.length > 0 ? (
+                <p className="mt-3 text-xs text-red-600">Map these required fields: {missingRequired.join(", ")}.</p>
+              ) : (
+                <div className="mt-3 flex items-center gap-3">
+                  <button
+                    onClick={runCsv}
+                    disabled={!supplierId || busy || !rows}
+                    className="rounded-lg bg-konek-green px-4 py-2 text-xs font-semibold text-white disabled:opacity-50"
+                  >
+                    {busy ? "Importing…" : `Import ${built.rows.length} plans`}
+                  </button>
+                  {!supplierId && <span className="text-xs text-red-500">Choose a supplier first.</span>}
+                  {built.errors.length > 0 && (
+                    <span className="text-xs text-text-secondary">{built.errors.length} rows skipped (bad cost).</span>
+                  )}
+                </div>
+              )}
             </div>
           )}
         </Card>
