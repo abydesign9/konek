@@ -14,6 +14,9 @@ export async function POST(req: NextRequest) {
   if (typeof legalName !== "string" || !legalName.trim()) {
     return NextResponse.json({ error: "legalName is required" }, { status: 400 });
   }
+  if (typeof regNumber !== "string" || !regNumber.trim()) {
+    return NextResponse.json({ error: "regNumber (CAC registration number) is required" }, { status: 400 });
+  }
   if (!BUSINESS_TYPES.includes(businessType)) {
     return NextResponse.json({ error: `businessType must be one of ${BUSINESS_TYPES.join(", ")}` }, { status: 400 });
   }
