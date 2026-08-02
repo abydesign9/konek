@@ -10,6 +10,9 @@ import { BottomNav } from "./BottomNav";
 //
 // Shown on customer app surfaces; hidden on marketing/auth/admin and inside
 // focused flows (KYC) where a tab bar would invite abandoning the flow.
+// Also hidden on /business — that hub has its own complete nav shell
+// (BusinessShell: sidebar on desktop, drawer + header on mobile, with its
+// own "Back to Konek" link), so this bar would just duplicate/collide with it.
 const SHOW_PREFIXES = [
   "/home",
   "/wallet",
@@ -28,7 +31,6 @@ const SHOW_PREFIXES = [
   "/leaderboard",
   "/voice",
   "/transactions",
-  "/business",
 ];
 
 export function BottomNavGate() {
