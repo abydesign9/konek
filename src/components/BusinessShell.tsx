@@ -24,6 +24,8 @@ export const BizIcons = {
   Overview: (p: IconProps) => <NavIcon {...p} path="M3 12h4v8H3zM10 4h4v16h-4zM17 8h4v12h-4z" />,
   Employees: (p: IconProps) => <NavIcon {...p} path="M9 11a3.2 3.2 0 1 0 0-6.4A3.2 3.2 0 0 0 9 11ZM2.7 19.5c.8-3.4 3.3-5.3 6.3-5.3s5.5 1.9 6.3 5.3M16.5 5a3 3 0 0 1 0 6M18.5 14.6c2.1.4 3.4 1.9 4 4.3" />,
   Distributions: (p: IconProps) => <NavIcon {...p} path="M4 12h9M4 12l3.5-3.5M4 12l3.5 3.5M20 6h-9M20 6l-3.5-3.5M20 6l-3.5 3.5M4 18h16" />,
+  Cards: (p: IconProps) => <NavIcon {...p} path="M3 7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7ZM3 10h18M7 15h4" />,
+  Vendors: (p: IconProps) => <NavIcon {...p} path="M4 21V9l8-5 8 5v12M9 21v-6h6v6M4 9h16" />,
   Recurring: (p: IconProps) => <NavIcon {...p} path="M20 11a8 8 0 1 0-2.3 5.6M20 5v6h-6" />,
   Campaigns: (p: IconProps) => <NavIcon {...p} path="M4 4v16M4 5h13l-2.5 3.5L17 12H4" />,
   Reports: (p: IconProps) => <NavIcon {...p} path="M4 20V10M10 20V4M16 20v-7M4 20h16" />,
@@ -40,6 +42,8 @@ export const BizIcons = {
 
 const NAV = [
   { label: "Overview", href: "/business", Icon: BizIcons.Overview },
+  { label: "Cards", href: "/business/cards", Icon: BizIcons.Cards },
+  { label: "Vendors", href: "/business/vendors", Icon: BizIcons.Vendors },
   { label: "Employees", href: "/business/employees", Icon: BizIcons.Employees },
   { label: "Distributions", href: "/business/distributions", Icon: BizIcons.Distributions },
   { label: "Recurring Benefits", href: "/business/recurring", Icon: BizIcons.Recurring },

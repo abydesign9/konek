@@ -7,6 +7,7 @@ import { sendNotification } from "@/lib/notifications/send";
 import { recordDeposit } from "@/lib/promotions/promotionsService";
 import { mockFincraAdapter } from "@/vendors/dollarAccount/mockFincra";
 import { DollarAccountAdapter } from "@/vendors/dollarAccount/types";
+import { tryCreditBusinessInflow } from "@/lib/business/businessAccountService";
 
 const REQUIRED_KYC_TIER = 2;
 const adapter: DollarAccountAdapter = mockFincraAdapter;
@@ -83,7 +84,12 @@ export async function creditDollarInflow(inflowRef: string): Promise<void> {
       [verified.accountProviderRef]
     );
     const virtualAccount = vaRows[0];
-    if (!virtualAccount) return { unknownAccount: true };
+    if (!virtualAccount) {
+      // Not a personal account — try a business one before giving up (same
+      // provider reference space, one webhook serves both).
+      const creditedBusiness = await tryCreditBusinessInflow("USD", verified.accountProviderRef, verified, inflowRef);
+      return { unknownAccount: !creditedBusiness, creditedBusiness };
+    }
 
     const walletAccountId = await getUserWalletAccount(virtualAccount.user_id, "USD");
     const gatewayAccountId = await getOrCreateAccount("platform", null, "USD", "gateway");

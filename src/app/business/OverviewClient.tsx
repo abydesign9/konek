@@ -236,6 +236,20 @@ export function OverviewClient() {
               {role === "owner" || role === "admin" ? "Import, add or export your directory." : "View your team's directory."}
             </p>
           </Link>
+          <Link
+            href="/business/cards"
+            className="konek-card-shadow konek-tile rounded-2xl border border-border-soft bg-white px-5 py-4"
+          >
+            <p className="font-heading text-sm font-bold text-indigo">Business cards</p>
+            <p className="mt-1 text-xs text-text-secondary">Issue virtual cards for ops, ads and subscriptions.</p>
+          </Link>
+          <Link
+            href="/business/vendors"
+            className="konek-card-shadow konek-tile rounded-2xl border border-border-soft bg-white px-5 py-4"
+          >
+            <p className="font-heading text-sm font-bold text-indigo">Vendor transfers</p>
+            <p className="mt-1 text-xs text-text-secondary">Save vendors and pay them from the business wallet.</p>
+          </Link>
         </div>
       </div>
     </BusinessShell>

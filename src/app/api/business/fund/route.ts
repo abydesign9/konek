@@ -3,6 +3,7 @@ import { getSessionUserId } from "@/lib/auth/session";
 import { getMembership } from "@/lib/business/teamService";
 import { fundBusinessFromOwner, getBusinessOwner, BusinessFundingError } from "@/lib/business/businessWallet";
 import { query } from "@/lib/db";
+import { isWalletInsufficientError } from "@/lib/ledger/reservations";
 
 // Owner tops up the business wallet from their own personal wallet — an in-app
 // double-entry transfer. Only the business owner can do this, and only once KYB
@@ -46,7 +47,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: err.message }, { status: 400 });
     }
     // Non-negative ledger guard rejects an overdraw of the owner's wallet.
-    if (err instanceof Error && /non.negative|insufficient|check constraint|violates/i.test(err.message)) {
+    // Match only that specific trigger error — anything else is a real bug and
+    // must not be relabeled as "insufficient balance", which would hide it.
+    if (isWalletInsufficientError(err)) {
       return NextResponse.json({ error: "Insufficient balance in your personal wallet" }, { status: 400 });
     }
     console.error("[business/fund] error:", err);

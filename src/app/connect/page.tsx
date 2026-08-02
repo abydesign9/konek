@@ -118,20 +118,18 @@ export default async function ConnectPage() {
         </div>
       </section>
 
-      {hasBusiness && (
-        <section className="mt-7 px-5">
-          <p className="mb-3 text-xs font-bold uppercase tracking-wide text-indigo/40">Business</p>
-          <div className="flex flex-col gap-2.5">
-            <Row
-              label="Business hub"
-              sub="Bulk distribution, team, and API access"
-              Icon={IconGlobe}
-              href="/business"
-              tint={SERVICE_COLORS.intl}
-            />
-          </div>
-        </section>
-      )}
+      <section className="mt-7 px-5">
+        <p className="mb-3 text-xs font-bold uppercase tracking-wide text-indigo/40">Business</p>
+        <div className="flex flex-col gap-2.5">
+          <Row
+            label={hasBusiness ? "Business hub" : "Open a business account"}
+            sub={hasBusiness ? "Accounts, cards, vendors, team and payroll" : "Register your company and get business accounts & cards"}
+            Icon={IconGlobe}
+            href="/business"
+            tint={SERVICE_COLORS.intl}
+          />
+        </div>
+      </section>
     </main>
   );
 }

@@ -7,6 +7,7 @@ import { sendNotification } from "@/lib/notifications/send";
 import { recordDeposit } from "@/lib/promotions/promotionsService";
 import { getFinancialConfig } from "@/lib/config/financialConfig";
 import { ngnAccountAdapter } from "@/vendors/ngnAccount";
+import { tryCreditBusinessInflow } from "@/lib/business/businessAccountService";
 
 // NGN reserved (virtual) account: a real bank account number tied to the user.
 // Money sent to it credits the user's NGN wallet, mirroring the USD dollar
@@ -98,7 +99,10 @@ export async function creditNgnInflow(inflowRef: string): Promise<void> {
       [verified.accountProviderRef]
     );
     const virtualAccount = vaRows[0];
-    if (!virtualAccount) return { unknownAccount: true };
+    if (!virtualAccount) {
+      const creditedBusiness = await tryCreditBusinessInflow("NGN", verified.accountProviderRef, verified, inflowRef);
+      return { unknownAccount: !creditedBusiness, creditedBusiness };
+    }
 
     const walletAccountId = await getUserWalletAccount(virtualAccount.user_id, "NGN");
     const gatewayAccountId = await getOrCreateAccount("platform", null, "NGN", "gateway");

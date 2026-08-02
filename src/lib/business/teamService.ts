@@ -11,6 +11,9 @@ export type TeamRole = (typeof TEAM_ROLES)[number];
 
 const CAN_DISTRIBUTE: ReadonlySet<string> = new Set(["owner", "admin", "finance", "hr"]);
 const CAN_MANAGE_TEAM: ReadonlySet<string> = new Set(["owner", "admin"]);
+// Accounts, cards, vendor transfers — real money movement, tighter than
+// distributions (which spend from a pre-funded float on VTU, not free cash out).
+const CAN_MANAGE_MONEY: ReadonlySet<string> = new Set(["owner", "admin", "finance"]);
 
 export class NotAMemberError extends Error {
   constructor() {
@@ -96,6 +99,10 @@ export function canDistribute(role: string): boolean {
 
 export function assertCanManageTeam(role: string): void {
   if (!CAN_MANAGE_TEAM.has(role)) throw new ForbiddenRoleError("manage the team", role);
+}
+
+export function assertCanManageMoney(role: string): void {
+  if (!CAN_MANAGE_MONEY.has(role)) throw new ForbiddenRoleError("move business funds", role);
 }
 
 export interface TeamMemberRow {

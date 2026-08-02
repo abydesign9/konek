@@ -123,10 +123,94 @@ export function BusinessWallet() {
           </div>
           {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
           <p className="mt-2 text-xs text-indigo/45">
-            Comes out of your personal Konek wallet. Dedicated business account numbers for external inflows arrive with the payment provider.
+            Comes out of your personal Konek wallet.
           </p>
         </div>
       )}
+
+      <BusinessReceivingAccounts isOwner={isOwner} />
     </section>
+  );
+}
+
+interface VirtualAccount {
+  id: string;
+  currency: "NGN" | "USD";
+  account_number: string;
+  bank_name: string | null;
+  status: string;
+}
+
+// Dedicated account numbers external payers can send to directly — the
+// business equivalent of a personal Naira/dollar account.
+function BusinessReceivingAccounts({ isOwner }: { isOwner: boolean }) {
+  const [accounts, setAccounts] = useState<VirtualAccount[] | null>(null);
+  const [busyCurrency, setBusyCurrency] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  function load() {
+    fetch("/api/business/virtual-accounts")
+      .then((r) => r.json())
+      .then((d) => setAccounts(d.accounts ?? []))
+      .catch(() => setAccounts([]));
+  }
+  useEffect(load, []);
+
+  async function provision(currency: "NGN" | "USD") {
+    setError(null);
+    setBusyCurrency(currency);
+    const res = await fetch("/api/business/virtual-accounts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ currency }),
+    });
+    const d = await res.json().catch(() => ({}));
+    setBusyCurrency(null);
+    if (!res.ok) {
+      setError(d.error ?? "Could not open that account");
+      return;
+    }
+    load();
+  }
+
+  const have = new Set((accounts ?? []).map((a) => a.currency));
+
+  return (
+    <div className="mt-4">
+      <p className="mb-2 text-sm font-semibold text-indigo">Receiving accounts</p>
+      <p className="mb-3 text-xs text-indigo/50">
+        Dedicated account numbers so clients and partners can pay the business directly.
+      </p>
+
+      <div className="flex flex-col gap-2.5">
+        {(accounts ?? []).map((a) => (
+          <div key={a.id} className="konek-card-shadow flex items-center justify-between rounded-2xl border border-indigo/10 bg-white px-4 py-3.5">
+            <div>
+              <p className="text-xs font-semibold text-indigo/50">{FLAG[a.currency]} {a.currency} · {a.bank_name ?? "Konek"}</p>
+              <p className="mt-0.5 font-heading text-base font-bold tabular-nums text-indigo">{a.account_number}</p>
+            </div>
+            <span className="rounded-full bg-konek-green/10 px-2.5 py-1 text-[11px] font-semibold text-konek-green">{a.status}</span>
+          </div>
+        ))}
+
+        {isOwner &&
+          (["NGN", "USD"] as const)
+            .filter((c) => !have.has(c))
+            .map((c) => (
+              <button
+                key={c}
+                onClick={() => provision(c)}
+                disabled={busyCurrency === c}
+                className="konek-tile flex items-center justify-between rounded-2xl border border-dashed border-indigo/20 px-4 py-3.5 text-left disabled:opacity-50"
+              >
+                <span className="text-sm font-semibold text-indigo">
+                  {FLAG[c]} Open a {c} receiving account
+                </span>
+                <span className="text-sm text-konek-green">{busyCurrency === c ? "Opening…" : "Open →"}</span>
+              </button>
+            ))}
+      </div>
+      {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+    </div>
   );
 }
