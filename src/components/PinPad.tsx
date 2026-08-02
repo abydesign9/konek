@@ -55,6 +55,16 @@ export function PinPad({
         type="password"
         inputMode="numeric"
         autoFocus
+        autoComplete="off"
+        // Stop password managers (1Password, LastPass, Dashlane, browser saved
+        // passwords) from offering to autofill this field. It's visually a
+        // password-style dot mask but semantically a transaction PIN, not a
+        // login password — an autofilled password would silently become 4
+        // "digits" and auto-submit a wrong PIN via PinPad's onComplete.
+        data-1p-ignore="true"
+        data-lpignore="true"
+        data-bwignore="true"
+        name="konek-transaction-pin"
         value={value}
         onChange={(e) => {
           const digits = e.target.value.replace(/\D/g, "").slice(0, length);
