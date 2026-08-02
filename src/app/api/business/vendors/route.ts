@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionUserId } from "@/lib/auth/session";
 import { requireVerifiedBusiness, assertCanManageMoney, ForbiddenRoleError } from "@/lib/business/teamService";
-import { listVendors, addVendor, InvalidBankDetailsError } from "@/lib/business/businessVendorService";
+import { listVendors, addVendor, InvalidBankDetailsError, DuplicateVendorError } from "@/lib/business/businessVendorService";
 
 export async function GET() {
   const userId = await getSessionUserId();
@@ -43,6 +43,9 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     if (err instanceof InvalidBankDetailsError) {
       return NextResponse.json({ error: err.message }, { status: 422 });
+    }
+    if (err instanceof DuplicateVendorError) {
+      return NextResponse.json({ error: err.message }, { status: 409 });
     }
     throw err;
   }

@@ -30,6 +30,13 @@ export class VendorNotFoundError extends Error {
   }
 }
 
+export class DuplicateVendorError extends Error {
+  constructor() {
+    super("You already have a vendor saved with this bank and account number");
+    this.name = "DuplicateVendorError";
+  }
+}
+
 export class InsufficientBusinessBalanceError extends Error {
   constructor() {
     super("Insufficient business wallet balance");
@@ -72,11 +79,19 @@ export async function addVendor(
   const last4 = input.accountNumber.slice(-4);
   const encrypted = JSON.stringify(encryptPii(input.accountNumber, vendorAad(businessId)));
 
-  const { rows } = await query<{ id: string }>(
-    `INSERT INTO business_vendors (business_account_id, created_by, name, bank_code, bank_name, account_name, account_number_encrypted, account_number_last4)
-     VALUES ($1, $2, $3, $4, $5, $6, $7::jsonb, $8) RETURNING id`,
-    [businessId, actorUserId, input.name.trim().slice(0, 120), bank.code, bank.name, resolved.accountName, encrypted, last4]
-  );
+  let rows;
+  try {
+    ({ rows } = await query<{ id: string }>(
+      `INSERT INTO business_vendors (business_account_id, created_by, name, bank_code, bank_name, account_name, account_number_encrypted, account_number_last4)
+       VALUES ($1, $2, $3, $4, $5, $6, $7::jsonb, $8) RETURNING id`,
+      [businessId, actorUserId, input.name.trim().slice(0, 120), bank.code, bank.name, resolved.accountName, encrypted, last4]
+    ));
+  } catch (err) {
+    if (err instanceof Error && "code" in err && (err as { code: string }).code === "23505") {
+      throw new DuplicateVendorError();
+    }
+    throw err;
+  }
   await logAudit(actorUserId, "vendor_added", "vendor", rows[0].id, { businessId, bankCode: bank.code, last4 });
   return { id: rows[0].id };
 }
