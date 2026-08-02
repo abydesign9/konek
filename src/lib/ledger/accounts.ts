@@ -1,7 +1,7 @@
 import { query } from "@/lib/db";
 
 export async function getOrCreateAccount(
-  ownerType: "user" | "platform" | "vendor",
+  ownerType: "user" | "platform" | "vendor" | "business",
   ownerId: string | null,
   currency: string,
   kind: string
@@ -25,4 +25,10 @@ export async function getUserWalletAccount(userId: string, currency: string): Pr
 
 export async function getPlatformAccount(currency: string, kind: string): Promise<string> {
   return getOrCreateAccount("platform", null, currency, kind);
+}
+
+// A business account's own wallet — a ledger completely separate from the
+// owner's personal wallet (owner_type = 'business').
+export async function getBusinessWalletAccount(businessId: string, currency: string): Promise<string> {
+  return getOrCreateAccount("business", businessId, currency, "wallet");
 }

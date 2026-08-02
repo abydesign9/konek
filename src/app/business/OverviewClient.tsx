@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { BusinessWallet } from "./BusinessWallet";
 import { BusinessShell, BizIcons } from "@/components/BusinessShell";
 
 interface Business {
@@ -172,6 +173,8 @@ export function OverviewClient() {
           <KpiCard label="Recurring Benefits" value={recurringCount.toLocaleString()} Icon={BizIcons.Recurring} />
           <KpiCard label="Delivery Success" value={`${successRate.toFixed(1)}%`} Icon={BizIcons.Reports} />
         </div>
+
+        <BusinessWallet />
 
         <div className="mt-8 flex items-center justify-between">
           <h2 className="font-heading text-base font-bold text-indigo">Recent Activity</h2>
