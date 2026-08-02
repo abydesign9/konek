@@ -128,7 +128,7 @@ export function SettingsClient() {
 
   return (
     <BusinessShell businessName={business?.legal_name}>
-      <div className="mx-auto max-w-3xl">
+      <div className="mx-auto max-w-4xl">
         <h1 className="font-heading text-2xl font-bold text-indigo">Settings</h1>
         <p className="mt-1 text-sm text-text-secondary">Company details, verification, team, notifications and branding.</p>
 

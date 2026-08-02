@@ -121,7 +121,7 @@ export function EmployeesClient() {
 
   return (
     <BusinessShell businessName={businessName}>
-      <div className="mx-auto max-w-5xl">
+      <div className="mx-auto max-w-6xl">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h1 className="font-heading text-2xl font-bold text-indigo">Employees</h1>

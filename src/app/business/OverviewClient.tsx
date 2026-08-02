@@ -168,7 +168,7 @@ export function OverviewClient() {
 
   return (
     <BusinessShell businessName={business.legal_name}>
-      <div className="mx-auto max-w-5xl">
+      <div className="mx-auto max-w-6xl">
         <p className="text-sm text-text-secondary">Welcome back,</p>
         <h1 className="font-heading text-2xl font-bold text-indigo">{business.legal_name}</h1>
         <p className="mt-1 text-sm text-text-secondary">Manage your workforce connectivity from one place.</p>
@@ -219,7 +219,7 @@ export function OverviewClient() {
           ))}
         </div>
 
-        <div className="mt-8 grid gap-4 sm:grid-cols-2">
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Link
             href="/business/distributions"
             className="konek-card-shadow konek-tile rounded-2xl bg-indigo px-5 py-4 text-white"

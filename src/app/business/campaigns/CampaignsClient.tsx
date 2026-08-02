@@ -92,7 +92,7 @@ export function CampaignsClient() {
 
   return (
     <BusinessShell businessName={businessName}>
-      <div className="mx-auto max-w-3xl">
+      <div className="mx-auto max-w-4xl">
         <div className="flex items-start justify-between gap-3">
           <div>
             <h1 className="font-heading text-2xl font-bold text-indigo">Campaigns</h1>

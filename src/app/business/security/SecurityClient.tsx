@@ -27,7 +27,7 @@ export function SecurityClient() {
 
   return (
     <BusinessShell businessName={businessName}>
-      <div className="mx-auto max-w-3xl">
+      <div className="mx-auto max-w-4xl">
         <h1 className="font-heading text-2xl font-bold text-indigo">Security</h1>
         <p className="mt-1 text-sm text-text-secondary">
           A record of every change made on this business account — who did what, and when.

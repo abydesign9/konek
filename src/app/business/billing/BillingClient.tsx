@@ -32,7 +32,7 @@ export function BillingClient() {
 
   return (
     <BusinessShell businessName={businessName}>
-      <div className="mx-auto max-w-3xl">
+      <div className="mx-auto max-w-4xl">
         <h1 className="font-heading text-2xl font-bold text-indigo">Billing</h1>
         <p className="mt-1 text-sm text-text-secondary">
           Konek has no subscription — you only ever pay per-action fees (like card creation). This is

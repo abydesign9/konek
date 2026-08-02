@@ -86,7 +86,7 @@ export function DistributionsClient() {
 
   return (
     <BusinessShell businessName={businessName}>
-      <div className="mx-auto max-w-3xl">
+      <div className="mx-auto max-w-4xl">
         <h1 className="font-heading text-2xl font-bold text-indigo">Distributions</h1>
         <p className="mt-1 text-sm text-text-secondary">Send airtime and data benefits to your employees.</p>
 

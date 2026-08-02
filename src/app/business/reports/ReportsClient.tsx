@@ -34,7 +34,7 @@ export function ReportsClient() {
 
   return (
     <BusinessShell businessName={businessName}>
-      <div className="mx-auto max-w-3xl">
+      <div className="mx-auto max-w-4xl">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="font-heading text-2xl font-bold text-indigo">Reports</h1>
