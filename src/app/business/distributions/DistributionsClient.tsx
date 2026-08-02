@@ -13,6 +13,12 @@ interface Batch {
   created_at: string;
 }
 
+interface CampaignOption {
+  id: string;
+  name: string;
+  status: string;
+}
+
 function naira(minor: number | string) {
   return `₦${(Number(minor) / 100).toLocaleString()}`;
 }
@@ -26,6 +32,8 @@ export function DistributionsClient() {
 
   const [campaignName, setCampaignName] = useState("Monthly Internet Allowance");
   const [csv, setCsv] = useState("mtn,08011112222,1000\nglo,08033334444,500");
+  const [campaignId, setCampaignId] = useState("");
+  const [campaignOptions, setCampaignOptions] = useState<CampaignOption[]>([]);
   const [uploading, setUploading] = useState(false);
   const [uploadResult, setUploadResult] = useState<string | null>(null);
 
@@ -41,6 +49,9 @@ export function DistributionsClient() {
     fetch("/api/business/bulk-batches")
       .then((r) => r.json())
       .then((d) => setBatches(d.batches ?? []));
+    fetch("/api/business/campaigns")
+      .then((r) => r.json())
+      .then((d) => setCampaignOptions((d.campaigns ?? []).filter((c: { status: string }) => c.status === "active")));
   }
   useEffect(load, []);
 
@@ -61,7 +72,7 @@ export function DistributionsClient() {
     const res = await fetch("/api/business/bulk-batches", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ purpose: campaignName, items }),
+      body: JSON.stringify({ purpose: campaignName, items, campaignId: campaignId || undefined }),
     });
     setUploading(false);
     const data = await res.json().catch(() => ({}));
@@ -97,6 +108,22 @@ export function DistributionsClient() {
               onChange={(e) => setCampaignName(e.target.value)}
               className="mb-4 w-full rounded-xl border border-border-soft px-4 py-2.5 text-sm"
             />
+
+            {campaignOptions.length > 0 && (
+              <>
+                <label className="mb-2 block text-sm text-text-secondary">Link to campaign (optional)</label>
+                <select
+                  value={campaignId}
+                  onChange={(e) => setCampaignId(e.target.value)}
+                  className="mb-4 w-full rounded-xl border border-border-soft px-4 py-2.5 text-sm"
+                >
+                  <option value="">No campaign</option>
+                  {campaignOptions.map((c) => (
+                    <option key={c.id} value={c.id}>{c.name}</option>
+                  ))}
+                </select>
+              </>
+            )}
 
             <label className="mb-2 block text-sm text-text-secondary">
               Recipients — one per line: network,phone,amount₦ (or data,network,phone,amount₦)

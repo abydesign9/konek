@@ -51,7 +51,7 @@ async function assertNoExistingAccount(businessId: string, currency: string): Pr
 
 // Dedicated USD receiving account for the business, same mock Fincra adapter
 // personal dollar accounts use.
-export async function createBusinessDollarAccount(businessId: string): Promise<{ id: string }> {
+export async function createBusinessDollarAccount(businessId: string, actorUserId: string): Promise<{ id: string }> {
   await assertNoExistingAccount(businessId, "USD");
   const account = await dollarAdapter.createAccount(businessId);
   const { rows } = await query<{ id: string }>(
@@ -59,14 +59,14 @@ export async function createBusinessDollarAccount(businessId: string): Promise<{
      VALUES ($1, $2, $3, 'USD', $4, $5, $6) RETURNING id`,
     [businessId, dollarAdapter.id, account.providerRef, account.accountNumber, account.routingNumber, account.bankName]
   );
-  await logAudit(businessId, "business_dollar_account_created", "business_virtual_account", rows[0].id);
+  await logAudit(actorUserId, "business_dollar_account_created", "business_virtual_account", rows[0].id, { businessId });
   return { id: rows[0].id };
 }
 
 // Dedicated NGN receiving account, same mock Monnify (or configured) adapter
 // personal Naira accounts use. The provider needs a contact email — the
 // business owner's, since the business itself has none on file.
-export async function createBusinessNairaAccount(businessId: string, legalName: string): Promise<{ id: string }> {
+export async function createBusinessNairaAccount(businessId: string, legalName: string, actorUserId: string): Promise<{ id: string }> {
   await assertNoExistingAccount(businessId, "NGN");
   const { rows: ownerRows } = await query<{ email: string | null }>(
     `SELECT u.email FROM business_accounts b JOIN users u ON u.id = b.owner_user_id WHERE b.id = $1`,
@@ -83,7 +83,7 @@ export async function createBusinessNairaAccount(businessId: string, legalName: 
      VALUES ($1, $2, $3, 'NGN', $4, $5) RETURNING id`,
     [businessId, adapter.id, account.providerRef, account.accountNumber, account.bankName]
   );
-  await logAudit(businessId, "business_naira_account_created", "business_virtual_account", rows[0].id);
+  await logAudit(actorUserId, "business_naira_account_created", "business_virtual_account", rows[0].id, { businessId });
   return { id: rows[0].id };
 }
 
@@ -145,7 +145,11 @@ export async function tryCreditBusinessInflow(
     );
   });
 
-  await logAudit(va.business_account_id, "business_inflow_credited", "business_virtual_account", va.id, {
+  // Unattended provider-driven credit — no user acted, so the actor is a
+  // system sentinel rather than the business id (which would misleadingly
+  // read as a user/admin identifier in the audit trail).
+  await logAudit("system", "business_inflow_credited", "business_virtual_account", va.id, {
+    businessId: va.business_account_id,
     amountMinor: verified.amountMinor,
     currency,
   });

@@ -3,6 +3,7 @@ import { getSessionUserId } from "@/lib/auth/session";
 import { query } from "@/lib/db";
 import { BusinessNotVerifiedError, createBulkBatch, processBulkBatch } from "@/lib/bulk/bulkBatchService";
 import { canDistribute, requireVerifiedBusiness } from "@/lib/business/teamService";
+import { assertCampaignOwnedByBusiness } from "@/lib/business/campaignService";
 
 const VALID_SERVICE_TYPES = ["airtime", "data"];
 const VALID_NETWORKS = ["mtn", "glo", "airtel", "9mobile"];
@@ -17,7 +18,7 @@ export async function GET() {
   const membership = gate.membership;
 
   const { rows } = await query(
-    `SELECT id, purpose, total_items, total_amount_minor, status, created_at, completed_at
+    `SELECT id, purpose, total_items, total_amount_minor, status, created_at, completed_at, campaign_id
      FROM bulk_batches WHERE business_account_id = $1 ORDER BY created_at DESC`,
     [membership.businessAccountId]
   );
@@ -40,9 +41,12 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json().catch(() => null);
-  const { purpose, items } = body ?? {};
+  const { purpose, items, campaignId } = body ?? {};
 
   if (typeof purpose !== "string") return NextResponse.json({ error: "purpose is required" }, { status: 400 });
+  if (campaignId != null && typeof campaignId !== "string") {
+    return NextResponse.json({ error: "campaignId must be a string" }, { status: 400 });
+  }
   if (!Array.isArray(items) || items.length === 0) {
     return NextResponse.json({ error: "items must be a non-empty array" }, { status: 400 });
   }
@@ -55,12 +59,18 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { batchId } = await createBulkBatch(membership.businessAccountId, userId, purpose, items);
+    if (campaignId) {
+      await assertCampaignOwnedByBusiness(campaignId, membership.businessAccountId);
+    }
+    const { batchId } = await createBulkBatch(membership.businessAccountId, userId, purpose, items, campaignId);
     const result = await processBulkBatch(batchId);
     return NextResponse.json({ batchId, ...result });
   } catch (err) {
     if (err instanceof BusinessNotVerifiedError) {
       return NextResponse.json({ error: err.message }, { status: 403 });
+    }
+    if (err instanceof Error && err.message === "Campaign not found") {
+      return NextResponse.json({ error: err.message }, { status: 404 });
     }
     throw err;
   }

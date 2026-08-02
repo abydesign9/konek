@@ -12,7 +12,9 @@ export async function GET() {
   if (!membership) return NextResponse.json({ business: null, role: null, canDistribute: false });
 
   const { rows } = await query(
-    `SELECT id, legal_name, business_type, kyb_status, created_at FROM business_accounts WHERE id = $1`,
+    `SELECT id, legal_name, business_type, kyb_status, created_at,
+            notify_failed_distributions, notify_low_balance, low_balance_threshold_minor, brand_emoji
+     FROM business_accounts WHERE id = $1`,
     [membership.businessAccountId]
   );
   return NextResponse.json({

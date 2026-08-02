@@ -2,6 +2,7 @@ import { query } from "@/lib/db";
 import { purchaseVtu, InsufficientBalanceError } from "@/lib/purchases/purchaseVtuService";
 import { logAudit } from "@/lib/audit";
 import { VendorServiceType } from "@/vendors/types";
+import { notifyIfDistributionFailed } from "@/lib/business/businessAlerts";
 
 export class BusinessNotVerifiedError extends Error {
   constructor() {
@@ -21,7 +22,8 @@ export async function createBulkBatch(
   businessAccountId: string,
   uploadedBy: string,
   purpose: string,
-  items: BulkItemInput[]
+  items: BulkItemInput[],
+  campaignId?: string | null
 ): Promise<{ batchId: string }> {
   const { rows: bizRows } = await query<{ kyb_status: string }>(
     `SELECT kyb_status FROM business_accounts WHERE id = $1`,
@@ -32,9 +34,9 @@ export async function createBulkBatch(
   const totalAmountMinor = items.reduce((sum, i) => sum + i.amountMinor, 0);
 
   const { rows } = await query<{ id: string }>(
-    `INSERT INTO bulk_batches (business_account_id, purpose, total_items, total_amount_minor, currency, uploaded_by, status)
-     VALUES ($1, $2, $3, $4, 'NGN', $5, 'validated') RETURNING id`,
-    [businessAccountId, purpose, items.length, totalAmountMinor, uploadedBy]
+    `INSERT INTO bulk_batches (business_account_id, purpose, total_items, total_amount_minor, currency, uploaded_by, status, campaign_id)
+     VALUES ($1, $2, $3, $4, 'NGN', $5, 'validated', $6) RETURNING id`,
+    [businessAccountId, purpose, items.length, totalAmountMinor, uploadedBy, campaignId ?? null]
   );
   const batchId = rows[0].id;
 
@@ -45,7 +47,7 @@ export async function createBulkBatch(
     );
   }
 
-  await logAudit(uploadedBy, "bulk_batch_created", "bulk_batch", batchId, { purpose, itemCount: items.length });
+  await logAudit(uploadedBy, "bulk_batch_created", "bulk_batch", batchId, { businessId: businessAccountId, purpose, itemCount: items.length });
   return { batchId };
 }
 
@@ -112,6 +114,9 @@ export async function processBulkBatch(batchId: string): Promise<{ delivered: nu
     `UPDATE bulk_batches SET status = $2, completed_at = now() WHERE id = $1`,
     [batchId, failed === 0 ? "completed" : "completed"]
   );
+
+  const { rows: purposeRows } = await query<{ purpose: string }>(`SELECT purpose FROM bulk_batches WHERE id = $1`, [batchId]);
+  await notifyIfDistributionFailed(batch.business_account_id, failed, purposeRows[0]?.purpose ?? "Distribution").catch(() => {});
 
   return { delivered, failed };
 }

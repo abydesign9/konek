@@ -6,6 +6,7 @@ import { logAudit } from "@/lib/audit";
 import { getCardProduct } from "@/lib/cards/cardProducts";
 import { mockSudoAdapter } from "@/vendors/cards/mockSudo";
 import { CardIssuerAdapter } from "@/vendors/cards/types";
+import { notifyIfLowBalance } from "@/lib/business/businessAlerts";
 
 // Same mock issuer personal cards use — swap for the real one in one place
 // (src/vendors/cards) once a card-issuer provider is chosen; every caller,
@@ -75,6 +76,7 @@ export async function issueBusinessCard(
        VALUES ($1, $2, 'card_fee', $3, $4, $5)`,
       [businessId, actorUserId, feeMinor, product.currency, `Card creation fee (${product.name})`]
     );
+    await notifyIfLowBalance(businessId, product.currency).catch(() => {});
   }
 
   const issued = await adapter.issueCard(businessId);

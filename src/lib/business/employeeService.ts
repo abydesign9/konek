@@ -47,7 +47,7 @@ export async function addEmployee(
      RETURNING id`,
     [businessAccountId, input.fullName, input.department ?? null, input.phone, input.network, actorId]
   );
-  await logAudit(actorId, "business_employee_added", "business_employee", rows[0].id, { fullName: input.fullName });
+  await logAudit(actorId, "business_employee_added", "business_employee", rows[0].id, { businessId: businessAccountId, fullName: input.fullName });
   return { id: rows[0].id };
 }
 
@@ -78,7 +78,7 @@ export async function setEmployeeStatus(
     [id, businessAccountId, status]
   );
   if (!rowCount) throw new NotFoundError();
-  await logAudit(actorId, "business_employee_status_changed", "business_employee", id, { status });
+  await logAudit(actorId, "business_employee_status_changed", "business_employee", id, { businessId: businessAccountId, status });
 }
 
 export async function deleteEmployee(id: string, businessAccountId: string, actorId: string): Promise<void> {
@@ -87,5 +87,5 @@ export async function deleteEmployee(id: string, businessAccountId: string, acto
     [id, businessAccountId]
   );
   if (!rowCount) throw new NotFoundError();
-  await logAudit(actorId, "business_employee_deleted", "business_employee", id);
+  await logAudit(actorId, "business_employee_deleted", "business_employee", id, { businessId: businessAccountId });
 }

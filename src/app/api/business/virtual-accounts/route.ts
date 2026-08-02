@@ -45,14 +45,14 @@ export async function POST(req: NextRequest) {
 
   try {
     if (currency === "USD") {
-      const { id } = await createBusinessDollarAccount(gate.membership.businessAccountId);
+      const { id } = await createBusinessDollarAccount(gate.membership.businessAccountId, userId);
       return NextResponse.json({ id });
     }
     const { rows } = await query<{ legal_name: string }>(
       `SELECT legal_name FROM business_accounts WHERE id = $1`,
       [gate.membership.businessAccountId]
     );
-    const { id } = await createBusinessNairaAccount(gate.membership.businessAccountId, rows[0]?.legal_name ?? "Konek Business");
+    const { id } = await createBusinessNairaAccount(gate.membership.businessAccountId, rows[0]?.legal_name ?? "Konek Business", userId);
     return NextResponse.json({ id });
   } catch (err) {
     if (err instanceof AlreadyHasBusinessAccountError) {

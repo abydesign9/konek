@@ -176,7 +176,7 @@ export async function inviteMember(
     );
     memberId = rows[0].id;
   }
-  await logAudit(actorUserId, "business_member_invited", "business_team_member", memberId, { phone, role });
+  await logAudit(actorUserId, "business_member_invited", "business_team_member", memberId, { businessId: businessAccountId, phone, role });
   return { memberId };
 }
 
@@ -186,5 +186,18 @@ export async function removeMember(businessAccountId: string, actorUserId: strin
      WHERE id = $1 AND business_account_id = $2`,
     [memberId, businessAccountId]
   );
-  await logAudit(actorUserId, "business_member_removed", "business_team_member", memberId);
+  await logAudit(actorUserId, "business_member_removed", "business_team_member", memberId, { businessId: businessAccountId });
+}
+
+// Change an existing member's role. The owner isn't a row in
+// business_team_members (their role is implicit), so this can never touch them.
+export async function changeMemberRole(businessAccountId: string, actorUserId: string, memberId: string, role: TeamRole): Promise<boolean> {
+  const { rowCount } = await query(
+    `UPDATE business_team_members SET role = $3 WHERE id = $1 AND business_account_id = $2 AND status = 'active'`,
+    [memberId, businessAccountId, role]
+  );
+  if (rowCount) {
+    await logAudit(actorUserId, "business_member_role_changed", "business_team_member", memberId, { businessId: businessAccountId, role });
+  }
+  return !!rowCount;
 }

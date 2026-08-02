@@ -180,14 +180,14 @@ export function OverviewClient() {
           </div>
         )}
 
-        <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <BusinessWallet />
+
+        <div className="mt-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
           <KpiCard label="Employees" value={employeeCount.toLocaleString()} Icon={BizIcons.Employees} />
           <KpiCard label="This Month Distributed" value={naira(reports?.monthMinor ?? 0)} Icon={BizIcons.Distributions} />
           <KpiCard label="Recurring Benefits" value={recurringCount.toLocaleString()} Icon={BizIcons.Recurring} />
           <KpiCard label="Delivery Success" value={`${successRate.toFixed(1)}%`} Icon={BizIcons.Reports} />
         </div>
-
-        <BusinessWallet />
 
         <div className="mt-8 flex items-center justify-between">
           <h2 className="font-heading text-base font-bold text-indigo">Recent Activity</h2>

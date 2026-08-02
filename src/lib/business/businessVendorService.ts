@@ -8,6 +8,7 @@ import { decryptPii, encryptPii, type EncryptedEnvelope } from "@/lib/crypto/pii
 import { getPayoutProvider } from "@/lib/payout/provider";
 import { findBank } from "@/lib/payout/banks";
 import { logAudit } from "@/lib/audit";
+import { notifyIfLowBalance } from "@/lib/business/businessAlerts";
 
 const CURRENCY = "NGN"; // vendor payouts settle over the same NGN payout rail as personal withdrawals
 
@@ -219,6 +220,7 @@ export async function sendVendorTransfer(
         ]
       );
       await logAudit(actorUserId, "vendor_transfer_paid", "business_vendor_transfer", transferId, { businessId, amountMinor: input.amountMinor });
+      await notifyIfLowBalance(businessId, CURRENCY).catch(() => {});
 
       return { transferId, status: "delivered" as const };
     }
