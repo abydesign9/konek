@@ -59,6 +59,7 @@ export function OverviewClient() {
   const [reports, setReports] = useState<Reports | null>(null);
 
   const [legalName, setLegalName] = useState("");
+  const [regNumber, setRegNumber] = useState("");
   const [businessType, setBusinessType] = useState("sme");
   const [applying, setApplying] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -88,7 +89,11 @@ export function OverviewClient() {
 
   async function apply() {
     if (!legalName.trim()) {
-      setError("Legal name is required");
+      setError("Company name is required");
+      return;
+    }
+    if (!regNumber.trim()) {
+      setError("CAC registration number is required");
       return;
     }
     setApplying(true);
@@ -96,7 +101,7 @@ export function OverviewClient() {
     const res = await fetch("/api/business/apply", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ legalName, businessType }),
+      body: JSON.stringify({ legalName, regNumber, businessType }),
     });
     setApplying(false);
     if (!res.ok) {
@@ -118,10 +123,18 @@ export function OverviewClient() {
             Apply for a business account to manage workforce connectivity — airtime, data and benefits
             for your team, all from one place.
           </p>
-          <label className="mb-2 block text-sm text-text-secondary">Legal name</label>
+          <label className="mb-2 block text-sm text-text-secondary">Company name</label>
           <input
             value={legalName}
             onChange={(e) => setLegalName(e.target.value)}
+            placeholder="As registered with CAC"
+            className="mb-4 w-full rounded-xl border border-border-soft px-4 py-2.5 text-sm"
+          />
+          <label className="mb-2 block text-sm text-text-secondary">CAC registration number</label>
+          <input
+            value={regNumber}
+            onChange={(e) => setRegNumber(e.target.value)}
+            placeholder="e.g. RC1234567"
             className="mb-4 w-full rounded-xl border border-border-soft px-4 py-2.5 text-sm"
           />
           <label className="mb-2 block text-sm text-text-secondary">Business type</label>

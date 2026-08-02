@@ -36,6 +36,7 @@ interface Agent {
 interface Business {
   id: string;
   legal_name: string;
+  reg_number: string | null;
   business_type: string;
   kyb_status: string;
   phone: string;
@@ -469,7 +470,7 @@ export function AdminConsole() {
               <div>
                 <p className="text-sm font-medium text-indigo">{b.legal_name}</p>
                 <p className="text-xs text-indigo/50">
-                  {b.phone} · {b.business_type} · {b.kyb_status}
+                  CAC {b.reg_number || "— not provided —"} · {b.phone} · {b.business_type} · {b.kyb_status}
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-1.5">
