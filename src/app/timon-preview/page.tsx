@@ -1237,20 +1237,20 @@ export default function TimonPreviewPage() {
 
             <div>
               <strong>Company</strong>
-              <a href="#about">About KONEK</a>
-              <a href="#">Careers</a>
-              <a href="#">Partners</a>
-              <a href="#">Newsroom</a>
-              <a href="#">Contact</a>
+              <Link href="/about">About KONEK</Link>
+              <Link href="/company/careers">Careers</Link>
+              <Link href="/influencers">Partners</Link>
+              <Link href="/company/blog">Newsroom</Link>
+              <Link href="/help">Contact</Link>
             </div>
 
             <div>
               <strong>Support</strong>
-              <a href="#">Help centre</a>
-              <a href="#">eSIM support</a>
-              <a href="#">Account support</a>
-              <a href="#">Business support</a>
-              <a href="#">Service status</a>
+              <Link href="/help">Help centre</Link>
+              <Link href="/faq">eSIM support</Link>
+              <Link href="/faq">Account support</Link>
+              <Link href="/help">Business support</Link>
+              <Link href="/help">Service status</Link>
             </div>
           </div>
         </div>
@@ -1304,10 +1304,10 @@ export default function TimonPreviewPage() {
           </p>
 
           <div>
-            <a href="#">Privacy</a>
-            <a href="#">Terms</a>
-            <a href="#">Cookies</a>
-            <a href="#">Acceptable use</a>
+            <Link href="/privacy">Privacy</Link>
+            <Link href="/terms">Terms</Link>
+            <Link href="/privacy">Cookies</Link>
+            <Link href="/terms">Acceptable use</Link>
           </div>
 
           <span>
