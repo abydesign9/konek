@@ -1,22 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Avatar } from "@/components/Avatar";
 import { IconChevronRight } from "@/components/icons";
-
-interface ProfileData {
-  phone: string | null;
-  full_name: string | null;
-  email: string | null;
-  username: string | null;
-  avatar_url: string | null;
-  date_of_birth: string | null;
-  address: string | null;
-  kyc_status: string;
-  kyc_tier: number;
-}
+import type { ProfileData } from "@/lib/profile/getProfile";
 
 // Mirrors src/lib/kyc/tiers.ts TIER_LABEL (kept inline so this client component
 // doesn't pull in the server-only tiers module). Tier 0 = not yet verified.
@@ -80,16 +69,11 @@ const GROUPS: { title: string; rows: { icon: string; label: string; sub?: string
   },
 ];
 
-export function ProfileClient() {
+export function ProfileClient({ initial }: { initial: ProfileData | null }) {
   const router = useRouter();
-  const [profile, setProfile] = useState<ProfileData | null>(null);
+  // Server-rendered data — renders immediately, no fetch waterfall.
+  const [profile] = useState<ProfileData | null>(initial);
   const [loggingOut, setLoggingOut] = useState(false);
-
-  useEffect(() => {
-    fetch("/api/profile")
-      .then((r) => r.json())
-      .then((d: ProfileData) => setProfile(d));
-  }, []);
 
   async function logout() {
     setLoggingOut(true);
