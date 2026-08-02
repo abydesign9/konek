@@ -34,3 +34,27 @@ export async function approveBusiness(businessAccountId: string, adminActor: str
   await query(`UPDATE business_accounts SET kyb_status = 'verified' WHERE id = $1`, [businessAccountId]);
   await logAudit(adminActor, "business_approved", "business_account", businessAccountId);
 }
+
+const KYB_STATUSES = ["pending", "verified", "suspended", "rejected"] as const;
+export type KybStatus = (typeof KYB_STATUSES)[number];
+
+export function isKybStatus(v: unknown): v is KybStatus {
+  return typeof v === "string" && (KYB_STATUSES as readonly string[]).includes(v);
+}
+
+// Moderate a business account's KYB status (suspend / reject / reinstate). The
+// business's own gating reads kyb_status, so this immediately restricts a
+// suspended/rejected business from business-only features.
+export async function setBusinessKybStatus(
+  businessAccountId: string,
+  status: KybStatus,
+  adminActor: string
+): Promise<boolean> {
+  const { rowCount } = await query(
+    `UPDATE business_accounts SET kyb_status = $2 WHERE id = $1`,
+    [businessAccountId, status]
+  );
+  if (!rowCount) return false;
+  await logAudit(adminActor, "business_kyb_status_changed", "business_account", businessAccountId, { status });
+  return true;
+}

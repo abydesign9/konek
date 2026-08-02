@@ -4,7 +4,7 @@ import { query } from "@/lib/db";
 import { logAudit } from "@/lib/audit";
 import { assertPermission, ForbiddenError } from "@/lib/admin/permissions";
 
-const STATUSES = ["pending", "active", "suspended"] as const;
+const STATUSES = ["pending", "active", "suspended", "rejected", "closed"] as const;
 const TIERS = ["bronze", "silver", "gold"] as const;
 
 // Manage one agent: status (approve / suspend / reinstate), tier and commission

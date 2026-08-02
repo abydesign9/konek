@@ -30,6 +30,8 @@ const STATUS_CLASS: Record<string, string> = {
   active: "bg-konek-green/10 text-konek-green",
   pending: "bg-gold/15 text-gold",
   suspended: "bg-red-50 text-red-600",
+  rejected: "bg-red-50 text-red-600",
+  closed: "bg-slate-100 text-slate-500",
 };
 
 export function AgentsConsole() {
@@ -233,6 +235,15 @@ export function AgentsConsole() {
                                   Suspend
                                 </button>
                               )}
+                              {a.status === "pending" && (
+                                <button
+                                  onClick={() => patch(a.id, { status: "rejected" }, "Application rejected.")}
+                                  disabled={busyId === a.id}
+                                  className="rounded-lg bg-red-50 px-2.5 py-1 text-[11px] font-semibold text-red-600 disabled:opacity-50"
+                                >
+                                  Reject
+                                </button>
+                              )}
                               <button
                                 onClick={() => payCommissions(a)}
                                 disabled={busyId === a.id || unpaid <= 0}
@@ -240,6 +251,19 @@ export function AgentsConsole() {
                               >
                                 Pay
                               </button>
+                              {a.status !== "closed" && (
+                                <button
+                                  onClick={() => {
+                                    if (confirm("Remove this agent? Their history is kept but they can no longer sell.")) {
+                                      patch(a.id, { status: "closed" }, "Agent removed.");
+                                    }
+                                  }}
+                                  disabled={busyId === a.id}
+                                  className="rounded-lg border border-red-200 px-2.5 py-1 text-[11px] font-semibold text-red-600 disabled:opacity-50"
+                                >
+                                  Remove
+                                </button>
+                              )}
                             </div>
                           </td>
                         </tr>

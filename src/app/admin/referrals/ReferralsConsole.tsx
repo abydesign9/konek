@@ -11,6 +11,7 @@ interface TopReferrer {
 }
 
 interface RecentReferral {
+  id: string;
   referral_code: string;
   referrer_phone: string;
   referred_phone: string;
@@ -27,20 +28,32 @@ interface ReferralsData {
   recent: RecentReferral[];
 }
 
-const STATUS_TONE: Record<string, "indigo" | "green" | "gold"> = {
+const STATUS_TONE: Record<string, "indigo" | "green" | "gold" | "red"> = {
   pending: "indigo",
   qualified: "green",
   paid: "gold",
+  rejected: "red",
 };
 
 export function ReferralsConsole() {
   const [data, setData] = useState<ReferralsData | null>(null);
 
-  useEffect(() => {
+  function load() {
     fetch("/api/admin/referrals")
       .then((res) => res.json())
       .then(setData);
-  }, []);
+  }
+  useEffect(load, []);
+
+  async function reject(id: string) {
+    if (!confirm("Reject this referral so it never pays out?")) return;
+    await fetch(`/api/admin/referrals/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: "rejected" }),
+    });
+    load();
+  }
 
   return (
     <>
@@ -101,17 +114,28 @@ export function ReferralsConsole() {
                       <Th>Referred</Th>
                       <Th>Status</Th>
                       <Th>Date</Th>
+                      <Th>{""}</Th>
                     </tr>
                   </thead>
                   <tbody>
-                    {data.recent.map((r, i) => (
-                      <tr key={i}>
+                    {data.recent.map((r) => (
+                      <tr key={r.id}>
                         <Td>{r.referrer_phone}</Td>
                         <Td>{r.referred_phone}</Td>
                         <Td>
                           <Badge tone={STATUS_TONE[r.status] ?? "indigo"}>{r.status}</Badge>
                         </Td>
                         <Td className="text-text-secondary">{new Date(r.created_at).toLocaleDateString()}</Td>
+                        <Td>
+                          {r.status !== "paid" && r.status !== "rejected" && (
+                            <button
+                              onClick={() => reject(r.id)}
+                              className="rounded-lg bg-red-50 px-2.5 py-1 text-[11px] font-semibold text-red-600"
+                            >
+                              Reject
+                            </button>
+                          )}
+                        </Td>
                       </tr>
                     ))}
                   </tbody>

@@ -30,7 +30,7 @@ export async function GET() {
   );
 
   const { rows: recent } = await query(
-    `SELECT rc.referral_code, ref.phone AS referrer_phone, u.phone AS referred_phone, rc.status, rc.created_at
+    `SELECT rc.id, rc.referral_code, ref.phone AS referrer_phone, u.phone AS referred_phone, rc.status, rc.created_at
      FROM referral_conversions rc
      JOIN referral_codes code ON code.code = rc.referral_code
      JOIN users ref ON ref.id = code.user_id

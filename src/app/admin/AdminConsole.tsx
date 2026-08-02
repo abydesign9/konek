@@ -262,6 +262,15 @@ export function AdminConsole() {
     loadBusinesses();
   }
 
+  async function moderateBusiness(id: string, status: string) {
+    await fetch(`/api/admin/business/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status }),
+    });
+    loadBusinesses();
+  }
+
   async function refund(txnId: string) {
     setRefunding(txnId);
     setMessage(null);
@@ -463,14 +472,32 @@ export function AdminConsole() {
                   {b.phone} · {b.business_type} · {b.kyb_status}
                 </p>
               </div>
-              {b.kyb_status === "pending" && (
-                <button
-                  onClick={() => approveBusiness(b.id)}
-                  className="rounded-full bg-konek-green/15 text-konek-green text-xs font-semibold px-3 py-1.5"
-                >
-                  Approve KYB
-                </button>
-              )}
+              <div className="flex flex-wrap items-center gap-1.5">
+                {b.kyb_status !== "verified" && (
+                  <button
+                    onClick={() => approveBusiness(b.id)}
+                    className="rounded-full bg-konek-green/15 text-konek-green text-xs font-semibold px-3 py-1.5"
+                  >
+                    {b.kyb_status === "pending" ? "Approve KYB" : "Reinstate"}
+                  </button>
+                )}
+                {b.kyb_status === "pending" && (
+                  <button
+                    onClick={() => moderateBusiness(b.id, "rejected")}
+                    className="rounded-full bg-red-50 text-red-600 text-xs font-semibold px-3 py-1.5"
+                  >
+                    Reject
+                  </button>
+                )}
+                {b.kyb_status === "verified" && (
+                  <button
+                    onClick={() => moderateBusiness(b.id, "suspended")}
+                    className="rounded-full bg-red-50 text-red-600 text-xs font-semibold px-3 py-1.5"
+                  >
+                    Suspend
+                  </button>
+                )}
+              </div>
             </div>
           ))}
           {businesses.length === 0 && <p className="text-sm text-indigo/50">No business applications.</p>}
