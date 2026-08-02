@@ -24,6 +24,8 @@ interface PendingKycApplication {
   nin_verified: boolean;
   kyc_tier: number;
   kyc_status: string;
+  open_risk_flags: string | number;
+  risk_flag_types: string[] | null;
 }
 
 export async function GET() {
@@ -61,7 +63,9 @@ export async function GET() {
            u.bvn_verified,
            u.nin_verified,
            u.kyc_tier,
-           u.kyc_status
+           u.kyc_status,
+           (SELECT COUNT(*) FROM risk_flags rf WHERE rf.user_id = u.id AND rf.resolved = false) AS open_risk_flags,
+           (SELECT ARRAY_AGG(DISTINCT rf.flag) FROM risk_flags rf WHERE rf.user_id = u.id AND rf.resolved = false) AS risk_flag_types
          FROM kyc_documents kd
          JOIN users u
            ON u.id = kd.user_id

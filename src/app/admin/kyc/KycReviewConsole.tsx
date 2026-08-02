@@ -35,6 +35,8 @@ interface KycApplication {
   nin_verified: boolean;
   kyc_tier: number;
   kyc_status: string;
+  open_risk_flags?: string | number;
+  risk_flag_types?: string[] | null;
 }
 
 interface QueueResponse {
@@ -398,6 +400,16 @@ export function KycReviewConsole() {
               <EmptyState message="Select an application to review." />
             ) : (
               <div className="space-y-5">
+                {Number(selected.open_risk_flags ?? 0) > 0 && (
+                  <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3">
+                    <p className="text-sm font-bold text-red-700">
+                      ⚠ {selected.open_risk_flags} open risk flag{Number(selected.open_risk_flags) === 1 ? "" : "s"}
+                    </p>
+                    <p className="mt-0.5 text-xs text-red-600">
+                      {(selected.risk_flag_types ?? []).join(", ") || "Review fraud queue before approving."}
+                    </p>
+                  </div>
+                )}
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-wide text-text-secondary">
                     Customer
