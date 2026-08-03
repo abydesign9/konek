@@ -67,7 +67,7 @@ export function BottomNav() {
       className="konek-card-shadow fixed bottom-0 left-0 right-0 z-30 border-t border-indigo/10 bg-white/95 backdrop-blur"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
-      <div className="mx-auto flex max-w-lg items-stretch justify-between px-3 py-1.5 sm:max-w-2xl sm:px-8 sm:py-2 md:max-w-3xl md:px-16 lg:max-w-4xl lg:px-24">
+      <div className="mx-auto flex w-full max-w-3xl items-stretch justify-between px-2 py-1.5 sm:px-6 sm:py-2 md:px-12 lg:max-w-5xl lg:px-20">
         {TABS.map((tab) => {
           const active = tab.match(pathname);
           const Icon = tab.icon;
