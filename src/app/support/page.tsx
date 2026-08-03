@@ -128,7 +128,7 @@ export default function SupportPage() {
 
         {/* Quick help */}
         <div className="mb-6 grid grid-cols-2 gap-3">
-          <Link href="/faq" className="konek-tile rounded-2xl border border-indigo/10 bg-white p-4">
+          <Link href="/support/faq" className="konek-tile rounded-2xl border border-indigo/10 bg-white p-4">
             <div className="mb-2 flex h-9 w-9 items-center justify-center rounded-full bg-indigo/5 text-lg">📖</div>
             <p className="text-sm font-semibold text-indigo">Help center</p>
             <p className="text-xs text-indigo/55">FAQs & quick answers</p>

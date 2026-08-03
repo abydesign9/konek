@@ -5,10 +5,10 @@ import { PageHeader } from "@/components/PageHeader";
 import { IconChevronRight, IconHelp, IconInfo, IconShield } from "@/components/icons";
 
 const LINKS = [
-  { label: "FAQs", sub: "Answers to common questions", Icon: IconHelp, href: "/faq" },
+  { label: "FAQs", sub: "Answers to common questions", Icon: IconHelp, href: "/support/faq" },
   { label: "Contact support", sub: "Reach the Konek team directly", Icon: IconHelp, href: "/support" },
-  { label: "Terms of service", sub: "The agreement covering your use of Konek", Icon: IconShield, href: "/terms" },
-  { label: "Privacy policy", sub: "How your data is handled", Icon: IconShield, href: "/privacy" },
+  { label: "Terms of service", sub: "The agreement covering your use of Konek", Icon: IconShield, href: "/settings/terms" },
+  { label: "Privacy policy", sub: "How your data is handled", Icon: IconShield, href: "/settings/privacy" },
 ];
 
 export default async function AboutPage() {

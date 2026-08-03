@@ -534,10 +534,17 @@ export function SettingsClient() {
           <p className="mb-3 text-xs font-bold uppercase tracking-wide text-indigo/40">Legal</p>
           <div className="flex flex-col gap-2.5">
             <Link
-              href="/privacy"
+              href="/settings/privacy"
               className="flex items-center justify-between rounded-2xl bg-white px-4 py-3.5 konek-card-shadow konek-tile"
             >
               <span className="text-sm font-semibold text-indigo">Privacy policy</span>
+              <IconChevronRight className="h-4 w-4 text-indigo/30" />
+            </Link>
+            <Link
+              href="/settings/terms"
+              className="flex items-center justify-between rounded-2xl bg-white px-4 py-3.5 konek-card-shadow konek-tile"
+            >
+              <span className="text-sm font-semibold text-indigo">Terms of service</span>
               <IconChevronRight className="h-4 w-4 text-indigo/30" />
             </Link>
           </div>
