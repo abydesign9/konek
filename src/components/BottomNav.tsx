@@ -31,7 +31,6 @@ const TABS: Tab[] = [
       p.startsWith("/buy") ||
       p === "/esim" ||
       p === "/marketplace" ||
-      p.startsWith("/business") ||
       p === "/agent",
   },
   {
@@ -68,7 +67,7 @@ export function BottomNav() {
       className="konek-card-shadow fixed bottom-0 left-0 right-0 z-30 border-t border-indigo/10 bg-white/95 backdrop-blur"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
-      <div className="mx-auto flex max-w-lg items-stretch justify-between px-3 py-1.5">
+      <div className="mx-auto flex max-w-lg items-stretch justify-between px-3 py-1.5 sm:max-w-2xl sm:px-8 sm:py-2 md:max-w-3xl md:px-16 lg:max-w-4xl lg:px-24">
         {TABS.map((tab) => {
           const active = tab.match(pathname);
           const Icon = tab.icon;
@@ -77,20 +76,20 @@ export function BottomNav() {
               key={tab.href}
               href={tab.href}
               aria-current={active ? "page" : undefined}
-              className="group flex min-w-[56px] flex-1 flex-col items-center gap-0.5 py-1 transition-transform duration-100 active:scale-90"
+              className="group flex min-w-[56px] flex-1 flex-col items-center gap-0.5 py-1 transition-transform duration-100 active:scale-90 sm:gap-1"
               style={{ touchAction: "manipulation", WebkitTapHighlightColor: "transparent" }}
             >
               <span
-                className="flex h-8 w-14 items-center justify-center rounded-full transition-all duration-150"
+                className="flex h-8 w-14 items-center justify-center rounded-full transition-all duration-150 sm:h-9 sm:w-16 md:h-10 md:w-20"
                 style={{ backgroundColor: active ? tab.tint : "transparent" }}
               >
                 <Icon
-                  className="h-5 w-5 transition-colors duration-150"
+                  className="h-5 w-5 transition-colors duration-150 sm:h-[22px] sm:w-[22px] md:h-6 md:w-6"
                   style={{ color: active ? tab.color : "rgba(31,56,100,0.4)" }}
                 />
               </span>
               <span
-                className="text-[11px] leading-none transition-colors duration-150"
+                className="text-[11px] leading-none transition-colors duration-150 sm:text-xs md:text-sm"
                 style={{ color: active ? tab.color : "rgba(31,56,100,0.45)", fontWeight: active ? 700 : 500 }}
               >
                 {tab.label}
