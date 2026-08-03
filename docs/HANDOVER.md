@@ -5,7 +5,7 @@ covers what the app is, how to run it, how money and verification work, every
 module (M1 to M12) plus the newer additions, and a day to day operations
 runbook for the admin console.
 
-Last updated: 2026-07-25. Database is on migration 0047.
+Last updated: 2026-08-03. Database is on migration 0055.
 
 ---
 
@@ -31,6 +31,18 @@ user's own bank.
 - Next.js 14 (App Router) + TypeScript + Tailwind, PWA via next-pwa.
 - Postgres (Supabase). Schema is built from ordered migrations in `db/migrations`.
 - Payments: Paystack (cards + funding). VTU and eSIM via a vendor adapter layer.
+- Layout convention: every customer-app screen (Home, Wallet, Connect, Cards,
+  Profile, Settings, KYC, Buy flows — dozens of pages) wraps its content in
+  `<div className="mx-auto max-w-lg">` (512px), even on desktop web. This is
+  deliberate — a consistent, mobile-first single-column app, not a responsive
+  dashboard — distinct from the business hub (`/business`), which is its own
+  Stripe-Dashboard-style visual language with a real sidebar and wider content
+  columns. If you add a new customer-app page, include that wrapper; a page
+  missing it will stretch edge-to-edge and look broken on anything wider than
+  a phone (this happened to Home, Wallet and Connect and had to be fixed).
+  The bottom nav (`src/components/BottomNav.tsx`, rendered once from the root
+  layout via `BottomNavGate.tsx`) is full-bleed (`w-full`) at every size
+  regardless of this convention, since it's chrome, not content.
 
 Key folders:
 
@@ -222,6 +234,54 @@ user's country requires. Migration 0041.
   grouped by operator (MTN, Airtel under Data; DStv, GOtv under Cable).
 Migration 0042 adds the `customers.manage` and `funding.approve` permissions.
 
+### Business hub (full buildout)
+M9's "businesses do bulk distribution" grew into a full self-serve hub at
+`/business` (`src/components/BusinessShell.tsx` — its own fixed sidebar on
+desktop, drawer + header with a back arrow on mobile, deliberately distinct
+from the customer app's bottom-nav chrome). A business gets its own wallet,
+completely separate from the owner's personal wallet (`owner_type='business'`
+ledger accounts):
+
+- **Accounts & cards**: dedicated NGN/USD virtual accounts to receive money
+  (`business_virtual_accounts`), and virtual cards issued against the
+  business wallet (`business_cards`) — both reuse the exact same mock
+  adapters the personal wallet/cards use; swapping in a real provider is a
+  vendor-adapter change, not a rebuild.
+- **Vendor transfers**: save a vendor's bank details, pay them out of the
+  business wallet via a self-contained reserve/settle/release flow
+  (`business_vendors`, `business_vendor_transfers`), mirroring
+  `withdrawService.ts`'s pattern rather than reusing the personal
+  `reservations` table (that one's keyed to a single `user_id`).
+- **Campaigns** (migration 0054): budget-tracked groupings for distributions
+  (`business_campaigns`) — link a distribution to a campaign and see spend
+  roll up against budget.
+- **Public API** (migration 0054): SHA-256-hashed sandbox/live API keys
+  (`business_api_keys`, plaintext shown once at creation) authenticate
+  `POST /api/v1/business/distributions` — sandbox validates only, live
+  processes exactly like the Distributions page. Every call is rate-limited
+  and logged to `business_api_requests`, visible on `/business/api`.
+- **Settings finalized**: per-member role changes, notification preferences
+  (failed distributions / low balance threshold — `business_alerts.ts`),
+  emoji branding (reuses the same `AVATAR_PRESETS` emoji-avatar system the
+  rest of the app uses; there's no real file-upload infra anywhere in this
+  codebase, so "logo" was scoped honestly to that), a real audit-log page at
+  `/business/security` (`audit_log.detail->>'businessId'` scoped), and
+  `/business/billing` reframed as a fee statement — Konek has no
+  subscription model, so this shows real per-action fees instead of a fake
+  billing UI.
+- Migrations 0052 (virtual accounts/cards/vendors/wallet), 0053 (widen the
+  `journals_type_chk` constraint to allow `'transfer'`), 0054 (campaigns,
+  API keys), 0055 (settings notification/branding columns).
+
+Two real bugs were caught and fixed while building this (both are the kind
+of thing worth re-checking if you touch this area): `audit_log.actor` was
+being passed a **business** id instead of the acting user's id (or the
+`'system'` sentinel for unattended webhook credits) in a few places —
+`actor` must always be a user, admin, or `'system'`, never a business,
+or the audit trail can't show who did what. And several business
+`logAudit()` calls were missing `businessId` in their `detail` payload,
+which silently made them invisible to the business-scoped audit-log query.
+
 ---
 
 ## 8. Admin login and onboarding admins
@@ -306,6 +366,39 @@ written to the audit log with the admin's identity.
   are idempotent (a unique reference per transaction, replays rejected), and API
   errors return generic messages while typed, user safe errors carry a specific
   message. Set daily spend caps and low balance alerts in each vendor dashboard.
+- Two CSP tiers, chosen per route in `src/middleware.ts`: public marketing pages
+  (landing, /about, /pricing, /faq, /terms, /privacy, /help, /company, etc. — see
+  `MARKETING_PATHS`) get a relaxed, cache-friendly CSP (`unsafe-inline` on
+  script-src only) so they can be statically generated; everything else,
+  including login/signup, gets a strict nonce CSP (`'nonce-…' 'strict-dynamic'`,
+  no unsafe-inline). **Never link to a bare public route from inside the
+  authenticated app** — it drops a signed-in user onto the weaker CSP tier and
+  out of the app shell entirely. If a page like Privacy/Terms/FAQ needs to be
+  reachable from inside the app, build a session-gated route under the app
+  subtree that reuses the same content component (see `/settings/privacy`,
+  `/settings/terms`, `/support/faq` — content lives in
+  `PrivacyPolicyContent.tsx` / `TermsOfServiceContent.tsx` / `FaqList.tsx` and
+  is shared with the public page so the two can't drift). New routes get the
+  strict CSP automatically just by not being in `MARKETING_PATHS` — no
+  middleware change needed.
+- **Incident (2026-08-02, fixed 2026-08-03):** an obfuscated payload was found
+  appended to `postcss.config.mjs` on `main` — it queried public Ethereum RPC
+  endpoints, decoded an IP address out of a transaction's `to` field, and
+  spawned a detached `node -e` process to fetch and execute further code from
+  that address on every build. It rode in on a legitimate-looking commit whose
+  diff should only have touched the business-KYB apply form (i.e. it was
+  injected onto disk by something already running on the dev machine, then
+  swept into a `git add -A` commit — not a new dependency; `package.json` was
+  untouched). It had been executing on every Vercel production build and every
+  local build since merge. Removed in commit `a905830` (reverted the file to
+  its clean original). If you ever see `postcss.config.mjs`,
+  `next.config.mjs`, `tailwind.config.ts` or similar config files grow
+  unexpectedly in size or gain content after their `export default`, treat it
+  as a live incident: diff the file against git history immediately, and
+  rotate `DATABASE_URL`, `ADMIN_SECRET`, and any provider keys in Vercel env
+  vars, since the payload had full `process.env` access during builds. Avoid
+  broad `git add -A` — stage files by name so an unexpected diff like this
+  gets seen before it's committed, not after.
 
 ---
 
