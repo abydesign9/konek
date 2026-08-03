@@ -328,6 +328,7 @@ export default async function HomeDashboard() {
 
     <main className="min-h-screen bg-background pb-28">
 
+      <div className="mx-auto max-w-lg">
 
       <header className="flex items-center justify-between px-5 pb-3 pt-6">
 
@@ -836,6 +837,8 @@ export default async function HomeDashboard() {
         </section>
 
       )}
+
+      </div>
 
       <OnboardingWrapper />
 

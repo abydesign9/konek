@@ -42,6 +42,7 @@ export default async function WalletPage() {
 
       <main className="min-h-screen bg-background pb-28">
 
+        <div className="mx-auto max-w-lg">
 
         <header className="px-5 pb-3 pt-6">
 
@@ -103,6 +104,8 @@ export default async function WalletPage() {
 
         <WalletInsights />
 
+        </div>
+
       </main>
 
     );
@@ -158,6 +161,7 @@ export default async function WalletPage() {
 
     <main className="min-h-screen bg-background pb-28">
 
+      <div className="mx-auto max-w-lg">
 
       <header className="px-5 pb-3 pt-6">
 
@@ -356,6 +360,7 @@ export default async function WalletPage() {
 
       <WalletInsights />
 
+      </div>
 
     </main>
 

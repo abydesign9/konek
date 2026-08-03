@@ -86,50 +86,52 @@ export default async function ConnectPage() {
 
   return (
     <main className="min-h-screen bg-background pb-28">
-      <header className="px-5 pb-3 pt-6">
-        <h1 className="font-heading text-2xl font-bold text-indigo">Connect</h1>
-        <p className="mt-0.5 text-sm text-indigo/55">Everything you can buy or manage on Konek, in one place.</p>
-      </header>
+      <div className="mx-auto w-full max-w-lg">
+        <header className="px-5 pb-3 pt-6">
+          <h1 className="font-heading text-2xl font-bold text-indigo">Connect</h1>
+          <p className="mt-0.5 text-sm text-indigo/55">Everything you can buy or manage on Konek, in one place.</p>
+        </header>
 
-      <section className="mt-2 px-5">
-        <p className="mb-3 text-xs font-bold uppercase tracking-wide text-indigo/40">Connectivity</p>
-        <div className="flex flex-col gap-2.5">
-          {CONNECTIVITY.map((item) => (
-            <Row key={item.key} label={item.label} sub={item.sub} Icon={item.Icon} href={item.href} tint={SERVICE_COLORS[item.key] ?? SERVICE_COLORS.more} logos={item.logos} />
-          ))}
-        </div>
-      </section>
+        <section className="mt-2 px-5">
+          <p className="mb-3 text-xs font-bold uppercase tracking-wide text-indigo/40">Connectivity</p>
+          <div className="flex flex-col gap-2.5">
+            {CONNECTIVITY.map((item) => (
+              <Row key={item.key} label={item.label} sub={item.sub} Icon={item.Icon} href={item.href} tint={SERVICE_COLORS[item.key] ?? SERVICE_COLORS.more} logos={item.logos} />
+            ))}
+          </div>
+        </section>
 
-      <section className="mt-7 px-5">
-        <p className="mb-3 text-xs font-bold uppercase tracking-wide text-indigo/40">Finance</p>
-        <div className="flex flex-col gap-2.5">
-          {FINANCE.map((item) => (
-            <Row key={item.key} label={item.label} sub={item.sub} Icon={item.Icon} href={item.href} tint={SERVICE_COLORS.wallet} />
-          ))}
-        </div>
-      </section>
+        <section className="mt-7 px-5">
+          <p className="mb-3 text-xs font-bold uppercase tracking-wide text-indigo/40">Finance</p>
+          <div className="flex flex-col gap-2.5">
+            {FINANCE.map((item) => (
+              <Row key={item.key} label={item.label} sub={item.sub} Icon={item.Icon} href={item.href} tint={SERVICE_COLORS.wallet} />
+            ))}
+          </div>
+        </section>
 
-      <section className="mt-7 px-5">
-        <p className="mb-3 text-xs font-bold uppercase tracking-wide text-indigo/40">Earn with Konek</p>
-        <div className="flex flex-col gap-2.5">
-          {EARN.map((item) => (
-            <Row key={item.key} label={item.label} sub={item.sub} Icon={item.Icon} href={item.href} tint={SERVICE_COLORS.rewards ?? SERVICE_COLORS.more} />
-          ))}
-        </div>
-      </section>
+        <section className="mt-7 px-5">
+          <p className="mb-3 text-xs font-bold uppercase tracking-wide text-indigo/40">Earn with Konek</p>
+          <div className="flex flex-col gap-2.5">
+            {EARN.map((item) => (
+              <Row key={item.key} label={item.label} sub={item.sub} Icon={item.Icon} href={item.href} tint={SERVICE_COLORS.rewards ?? SERVICE_COLORS.more} />
+            ))}
+          </div>
+        </section>
 
-      <section className="mt-7 px-5">
-        <p className="mb-3 text-xs font-bold uppercase tracking-wide text-indigo/40">Business</p>
-        <div className="flex flex-col gap-2.5">
-          <Row
-            label={hasBusiness ? "Business hub" : "Open a business account"}
-            sub={hasBusiness ? "Accounts, cards, vendors, team and payroll" : "Register your company and get business accounts & cards"}
-            Icon={IconGlobe}
-            href="/business"
-            tint={SERVICE_COLORS.intl}
-          />
-        </div>
-      </section>
+        <section className="mt-7 px-5">
+          <p className="mb-3 text-xs font-bold uppercase tracking-wide text-indigo/40">Business</p>
+          <div className="flex flex-col gap-2.5">
+            <Row
+              label={hasBusiness ? "Business hub" : "Open a business account"}
+              sub={hasBusiness ? "Accounts, cards, vendors, team and payroll" : "Register your company and get business accounts & cards"}
+              Icon={IconGlobe}
+              href="/business"
+              tint={SERVICE_COLORS.intl}
+            />
+          </div>
+        </section>
+      </div>
     </main>
   );
 }
