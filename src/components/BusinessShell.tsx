@@ -38,6 +38,7 @@ export const BizIcons = {
   ),
   Menu: (p: IconProps) => <NavIcon {...p} path="M3 6h18M3 12h18M3 18h18" />,
   Logout: (p: IconProps) => <NavIcon {...p} path="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />,
+  Back: (p: IconProps) => <NavIcon {...p} path="M19 12H5M12 19l-7-7 7-7" />,
 };
 
 const NAV = [
@@ -94,7 +95,7 @@ function SidebarContent({ pathname, businessName, onNavigate }: { pathname: stri
         onClick={onNavigate}
         className="mt-4 flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-indigo/45 hover:bg-hover-tint hover:text-indigo"
       >
-        <BizIcons.Logout className="h-[18px] w-[18px] shrink-0" />
+        <BizIcons.Back className="h-[18px] w-[18px] shrink-0" />
         Back to Konek
       </Link>
     </nav>
@@ -122,15 +123,28 @@ export function BusinessShell({ businessName, children }: { businessName?: strin
       )}
 
       <div className="lg:pl-[264px]">
-        <header className="sticky top-0 z-20 flex h-14 items-center gap-3 border-b border-border-soft bg-white px-4 lg:hidden">
+        <header className="sticky top-0 z-20 flex h-14 items-center gap-1 border-b border-border-soft bg-white px-3 lg:hidden">
+          {pathname === "/business" ? (
+            <button
+              onClick={() => router.push("/home")}
+              className="flex items-center gap-1 rounded-lg py-2 pl-1 pr-2 text-indigo hover:bg-hover-tint"
+              aria-label="Back to Konek"
+            >
+              <BizIcons.Back className="h-5 w-5 shrink-0" />
+            </button>
+          ) : (
+            <button
+              onClick={() => router.push("/business")}
+              className="flex items-center gap-1 rounded-lg py-2 pl-1 pr-2 text-indigo hover:bg-hover-tint"
+              aria-label="Back to business overview"
+            >
+              <BizIcons.Back className="h-5 w-5 shrink-0" />
+            </button>
+          )}
+          <span className="min-w-0 flex-1 truncate text-center font-heading text-sm font-bold text-indigo">{businessName ?? "Business"}</span>
           <button onClick={() => setDrawerOpen(true)} className="rounded-lg p-2 text-indigo hover:bg-hover-tint" aria-label="Open menu">
             <BizIcons.Menu className="h-5 w-5" />
           </button>
-          <button onClick={() => router.push("/home")} className="rounded-lg p-2 text-indigo/60 hover:bg-hover-tint" aria-label="Back to Konek">
-            <BizIcons.Logout className="h-5 w-5" />
-          </button>
-          <span className="min-w-0 flex-1 truncate text-center font-heading text-sm font-bold text-indigo">{businessName ?? "Business"}</span>
-          <span className="w-9" />
         </header>
 
         <main className="px-4 py-6 sm:px-8 sm:py-8">{children}</main>
