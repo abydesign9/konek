@@ -198,6 +198,17 @@ export async function freezeUserForFraud(userId: string, reason: string): Promis
   await sendExternalAlert("fraud_score_high", `KYC fraud/mismatch — account ${userId} frozen: ${reason}`, { userId });
 }
 
+export class UnverifiedKycIntegrationError extends Error {
+  constructor() {
+    super(
+      "KYC_WEBHOOK_VERIFIED_INTEGRATION is not set to 'true' — a 'verified' decision from a webhook " +
+        "cannot be trusted without the provider integration re-fetching and confirming it server-side " +
+        "first. See the comment on applyKycWebhookResult."
+    );
+    this.name = "UnverifiedKycIntegrationError";
+  }
+}
+
 export async function applyKycWebhookResult(input: {
   userId: string;
   method: string;
@@ -206,6 +217,21 @@ export async function applyKycWebhookResult(input: {
   vendorRef?: string;
   fraud?: boolean;
 }): Promise<{ tier: number }> {
+  // A "rejected" or fraud-flagged decision only removes trust (redo
+  // verification / freeze for review) — safe to apply on payload alone. A
+  // "verified" decision GRANTS trust (tier upgrade, higher limits, dollar
+  // account access), so it must never be taken from an unauthenticated
+  // webhook payload alone: anyone who could forge or replay this event
+  // (a leaked KYC_WEBHOOK_SECRET, a compromised provider account) could
+  // upgrade an arbitrary user's KYC tier. No real KYC provider is wired to
+  // re-fetch and confirm the decision server-side yet (see the module
+  // comment above), so this is hard-gated behind an explicit env flag that
+  // must be turned on deliberately once that re-fetch call is added —
+  // never as a side effect of just setting KYC_WEBHOOK_SECRET.
+  if (input.decision === "verified" && process.env.KYC_WEBHOOK_VERIFIED_INTEGRATION !== "true") {
+    throw new UnverifiedKycIntegrationError();
+  }
+
   const methods = await loadMethods();
   if (!methods.some((m) => m.code === input.method)) throw new UnknownMethodError(input.method);
 

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminSession } from "@/lib/admin/session";
+import { assertPermission, ForbiddenError } from "@/lib/admin/permissions";
 import { query } from "@/lib/db";
 import { logAudit } from "@/lib/audit";
 
@@ -9,6 +10,13 @@ import { logAudit } from "@/lib/audit";
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
   const admin = getAdminSession();
   if (!admin) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+
+  try {
+    await assertPermission(admin.role, "referrals.manage");
+  } catch (err) {
+    if (err instanceof ForbiddenError) return NextResponse.json({ error: err.message }, { status: 403 });
+    throw err;
+  }
 
   const body = await req.json().catch(() => null);
   const status = body?.status;

@@ -48,12 +48,15 @@ export async function POST(req: NextRequest) {
   if (typeof productId !== "string" || !productId) {
     return NextResponse.json({ error: "productId is required" }, { status: 400 });
   }
+  const idempotencyKey = typeof body?.idempotencyKey === "string" ? body.idempotencyKey : null;
+  if (!idempotencyKey) return NextResponse.json({ error: "idempotencyKey required" }, { status: 400 });
 
   try {
     const { cardId } = await issueBusinessCard(
       gate.membership.businessAccountId,
       userId,
       productId,
+      idempotencyKey,
       typeof body?.label === "string" ? body.label.slice(0, 60) : undefined
     );
     return NextResponse.json({ cardId });

@@ -3,6 +3,7 @@ import { authenticateApiKey, logApiRequest } from "@/lib/business/apiKeyService"
 import { BusinessNotVerifiedError, createBulkBatch, processBulkBatch } from "@/lib/bulk/bulkBatchService";
 import { query } from "@/lib/db";
 import { checkRateLimit, RateLimitExceededError } from "@/lib/rateLimit";
+import { withIdempotency, IdempotencyConflictError, IdempotencyInProgressError } from "@/lib/idempotency";
 
 const VALID_SERVICE_TYPES = ["airtime", "data"];
 const VALID_NETWORKS = ["mtn", "glo", "airtel", "9mobile"];
@@ -68,19 +69,44 @@ export async function POST(req: NextRequest) {
     });
   }
 
+  // Required for live keys: this processes up to 500 vendor spend calls
+  // synchronously, so a client-side timeout-and-retry is very plausible —
+  // without a stable key here, a retry would create a second batch and
+  // re-send (and re-charge) the entire distribution.
+  const idempotencyKey = req.headers.get("idempotency-key");
+  if (!idempotencyKey) {
+    await logApiRequest(apiKey.id, "POST", "/api/v1/business/distributions", 400, { error: "missing Idempotency-Key header" });
+    return NextResponse.json({ error: "Idempotency-Key header is required for live requests" }, { status: 400 });
+  }
+
   try {
-    const { rows } = await query<{ owner_user_id: string }>(
-      `SELECT owner_user_id FROM business_accounts WHERE id = $1`,
-      [apiKey.businessAccountId]
+    const result = await withIdempotency(
+      `business_api_distribution:${apiKey.id}:${idempotencyKey}`,
+      { purpose, items },
+      async () => {
+        const { rows } = await query<{ owner_user_id: string }>(
+          `SELECT owner_user_id FROM business_accounts WHERE id = $1`,
+          [apiKey.businessAccountId]
+        );
+        const { batchId } = await createBulkBatch(apiKey.businessAccountId, rows[0].owner_user_id, purpose, items);
+        const outcome = await processBulkBatch(batchId);
+        return { batchId, ...outcome };
+      }
     );
-    const { batchId } = await createBulkBatch(apiKey.businessAccountId, rows[0].owner_user_id, purpose, items);
-    const result = await processBulkBatch(batchId);
-    await logApiRequest(apiKey.id, "POST", "/api/v1/business/distributions", 200, { batchId, ...result });
-    return NextResponse.json({ batchId, ...result });
+    await logApiRequest(apiKey.id, "POST", "/api/v1/business/distributions", 200, result);
+    return NextResponse.json(result);
   } catch (err) {
     if (err instanceof BusinessNotVerifiedError) {
       await logApiRequest(apiKey.id, "POST", "/api/v1/business/distributions", 403, { error: err.message });
       return NextResponse.json({ error: err.message }, { status: 403 });
+    }
+    if (err instanceof IdempotencyConflictError) {
+      await logApiRequest(apiKey.id, "POST", "/api/v1/business/distributions", 409, { error: err.message });
+      return NextResponse.json({ error: "This Idempotency-Key was already used with a different request body" }, { status: 409 });
+    }
+    if (err instanceof IdempotencyInProgressError) {
+      await logApiRequest(apiKey.id, "POST", "/api/v1/business/distributions", 409, { error: err.message });
+      return NextResponse.json({ error: "A request with this Idempotency-Key is still processing" }, { status: 409 });
     }
     await logApiRequest(apiKey.id, "POST", "/api/v1/business/distributions", 500, { error: "internal error" });
     throw err;

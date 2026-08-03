@@ -50,7 +50,7 @@ export function CardsClient() {
     const res = await fetch("/api/business/cards", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ productId, label: label || undefined }),
+      body: JSON.stringify({ productId, label: label || undefined, idempotencyKey: crypto.randomUUID() }),
     });
     const d = await res.json().catch(() => ({}));
     setBusy(false);

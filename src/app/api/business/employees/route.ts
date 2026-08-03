@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionUserId } from "@/lib/auth/session";
-import { requireVerifiedBusiness } from "@/lib/business/teamService";
+import { requireVerifiedBusiness, assertCanManageTeam, ForbiddenRoleError } from "@/lib/business/teamService";
 import { addEmployee, addEmployeesBulk, listEmployees } from "@/lib/business/employeeService";
 
 const VALID_NETWORKS = ["mtn", "glo", "airtel", "9mobile"];
@@ -37,6 +37,13 @@ export async function POST(req: NextRequest) {
   if (!gate.ok && gate.code !== "no_business") return NextResponse.json({ error: gate.error, code: gate.code }, { status: gate.status });
   if (!gate.ok) return NextResponse.json({ error: "no business account — apply first" }, { status: 404 });
   const membership = gate.membership;
+
+  try {
+    assertCanManageTeam(membership.role);
+  } catch (err) {
+    if (err instanceof ForbiddenRoleError) return NextResponse.json({ error: err.message }, { status: 403 });
+    throw err;
+  }
 
   const body = await req.json().catch(() => null);
 

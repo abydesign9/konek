@@ -143,6 +143,7 @@ export function ApiClient() {
 {`POST https://YOUR_DOMAIN/api/v1/business/distributions
 Authorization: Bearer knk_live_...
 Content-Type: application/json
+Idempotency-Key: <a key you generate, unique per distribution>
 
 {
   "purpose": "December data bonus",
@@ -154,6 +155,9 @@ Content-Type: application/json
           <p className="mt-3 text-xs text-text-secondary">
             Sandbox keys validate the request but never send anything or move money. Live keys process
             the distribution exactly like the Distributions page. Amounts are in kobo.
+            <code className="rounded bg-indigo/[0.06] px-1 py-0.5">Idempotency-Key</code> is required on
+            live requests — reuse the same key when retrying a timed-out call and it returns the original
+            result instead of sending the distribution twice.
           </p>
         </div>
 

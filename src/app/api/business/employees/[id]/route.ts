@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionUserId } from "@/lib/auth/session";
-import { requireVerifiedBusiness } from "@/lib/business/teamService";
+import { requireVerifiedBusiness, assertCanManageTeam, ForbiddenRoleError } from "@/lib/business/teamService";
 import { deleteEmployee, NotFoundError, setEmployeeStatus } from "@/lib/business/employeeService";
 
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
@@ -11,6 +11,13 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   if (!gate.ok && gate.code !== "no_business") return NextResponse.json({ error: gate.error, code: gate.code }, { status: gate.status });
   if (!gate.ok) return NextResponse.json({ error: "no business account" }, { status: 404 });
   const membership = gate.membership;
+
+  try {
+    assertCanManageTeam(membership.role);
+  } catch (err) {
+    if (err instanceof ForbiddenRoleError) return NextResponse.json({ error: err.message }, { status: 403 });
+    throw err;
+  }
 
   const body = await req.json().catch(() => ({}));
   const status = body?.status;
@@ -35,6 +42,13 @@ export async function DELETE(_req: Request, { params }: { params: { id: string }
   if (!gate.ok && gate.code !== "no_business") return NextResponse.json({ error: gate.error, code: gate.code }, { status: gate.status });
   if (!gate.ok) return NextResponse.json({ error: "no business account" }, { status: 404 });
   const membership = gate.membership;
+
+  try {
+    assertCanManageTeam(membership.role);
+  } catch (err) {
+    if (err instanceof ForbiddenRoleError) return NextResponse.json({ error: err.message }, { status: 403 });
+    throw err;
+  }
 
   try {
     await deleteEmployee(params.id, membership.businessAccountId, userId);
