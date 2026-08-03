@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminSession } from "@/lib/admin/session";
-import { createInAppMessage, listAllInAppMessages, type InAppMessageDimension, type InAppMessageType } from "@/lib/notifications/inAppMessages";
+import { createInAppMessage, listAllInAppMessages, InvalidUrlError, type InAppMessageDimension, type InAppMessageType } from "@/lib/notifications/inAppMessages";
 import { assertPermission, ForbiddenError } from "@/lib/admin/permissions";
 
 const VALID_TYPES: InAppMessageType[] = ["image", "video", "survey"];
@@ -40,6 +40,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(result);
   } catch (err) {
     if (err instanceof ForbiddenError) return NextResponse.json({ error: err.message }, { status: 403 });
+    if (err instanceof InvalidUrlError) return NextResponse.json({ error: err.message }, { status: 400 });
     throw err;
   }
 }

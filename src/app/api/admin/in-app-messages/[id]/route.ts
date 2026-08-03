@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminSession } from "@/lib/admin/session";
-import { deleteInAppMessage, NotFoundError, updateInAppMessage } from "@/lib/notifications/inAppMessages";
+import { deleteInAppMessage, NotFoundError, InvalidUrlError, updateInAppMessage } from "@/lib/notifications/inAppMessages";
 import { assertPermission, ForbiddenError } from "@/lib/admin/permissions";
 
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
@@ -20,6 +20,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   } catch (err) {
     if (err instanceof ForbiddenError) return NextResponse.json({ error: err.message }, { status: 403 });
     if (err instanceof NotFoundError) return NextResponse.json({ error: err.message }, { status: 404 });
+    if (err instanceof InvalidUrlError) return NextResponse.json({ error: err.message }, { status: 400 });
     throw err;
   }
 }

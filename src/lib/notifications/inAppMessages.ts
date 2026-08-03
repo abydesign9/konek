@@ -8,6 +8,20 @@ export class NotFoundError extends Error {
   }
 }
 
+export class InvalidUrlError extends Error {
+  constructor() {
+    super("url must start with http:// or https://");
+    this.name = "InvalidUrlError";
+  }
+}
+
+// This renders as a raw <Link href={m.url}> on every logged-in customer's
+// home screen — a javascript: URI here would execute in the authenticated
+// app origin the moment a user taps the card. Only allow real web links.
+function assertSafeUrl(url: string | null | undefined): void {
+  if (url && !/^https?:\/\//i.test(url)) throw new InvalidUrlError();
+}
+
 export type InAppMessageType = "image" | "video" | "survey";
 export type InAppMessageDimension = "small" | "medium" | "large";
 
@@ -52,6 +66,7 @@ export interface InAppMessageInput {
 }
 
 export async function createInAppMessage(input: InAppMessageInput, actorId: string): Promise<{ id: string }> {
+  assertSafeUrl(input.url);
   const { rows } = await query<{ id: string }>(
     `INSERT INTO in_app_messages (title, type, message, url, dimension, display_duration_seconds, active, closable, status, created_by)
      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING id`,
@@ -77,6 +92,7 @@ export async function updateInAppMessage(
   updates: Partial<InAppMessageInput>,
   actorId: string
 ): Promise<void> {
+  if ("url" in updates) assertSafeUrl(updates.url);
   const columnMap: Record<string, string> = {
     title: "title",
     type: "type",

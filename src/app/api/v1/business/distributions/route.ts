@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { authenticateApiKey, logApiRequest } from "@/lib/business/apiKeyService";
 import { BusinessNotVerifiedError, createBulkBatch, processBulkBatch } from "@/lib/bulk/bulkBatchService";
 import { query } from "@/lib/db";
-import { checkRateLimit, RateLimitExceededError } from "@/lib/rateLimit";
+import { checkRateLimit, clientIp, RateLimitExceededError } from "@/lib/rateLimit";
 import { withIdempotency, IdempotencyConflictError, IdempotencyInProgressError } from "@/lib/idempotency";
 
 const VALID_SERVICE_TYPES = ["airtime", "data"];
@@ -17,6 +17,19 @@ export async function POST(req: NextRequest) {
   const rawKey = auth.startsWith("Bearer ") ? auth.slice(7).trim() : null;
   if (!rawKey) {
     return NextResponse.json({ error: "Missing Authorization: Bearer <api key>" }, { status: 401 });
+  }
+
+  // Throttle failed-key attempts by IP before we even know which account this
+  // is — the key itself has 192 bits of entropy so brute force is already
+  // infeasible, but this is a cheap defense-in-depth layer plus a signal for
+  // credential-stuffing activity, matching the same pattern login/OTP use.
+  try {
+    await checkRateLimit(`business_api_auth:${clientIp(req)}`, 20, 60 * 1000);
+  } catch (err) {
+    if (err instanceof RateLimitExceededError) {
+      return NextResponse.json({ error: "Too many attempts. Please try again shortly." }, { status: 429 });
+    }
+    throw err;
   }
 
   const apiKey = await authenticateApiKey(rawKey);

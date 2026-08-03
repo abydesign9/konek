@@ -15,7 +15,12 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    await checkRateLimit(`admin_login:${clientIp(req)}`, 5, 15 * 60 * 1000); // 5 attempts per 15 min per IP
+    // Admin accounts are a higher-value target than customer accounts, so
+    // this is tighter per-email than the customer login's 8/15min — plus
+    // the IP key, so distributing guesses across many source IPs doesn't
+    // bypass the per-account throttle.
+    await checkRateLimit(`admin_login:email:${email.toLowerCase()}`, 5, 15 * 60 * 1000);
+    await checkRateLimit(`admin_login:ip:${clientIp(req)}`, 15, 15 * 60 * 1000);
   } catch (err) {
     if (err instanceof RateLimitExceededError) {
       return NextResponse.json({ error: "Too many attempts — try again shortly" }, { status: 429 });

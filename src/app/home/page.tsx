@@ -439,7 +439,7 @@ export default async function HomeDashboard() {
 
               key={m.id}
 
-              href={m.url ?? "#"}
+              href={m.url && /^https?:\/\//i.test(m.url) ? m.url : "#"}
 
               className="konek-card-shadow w-64 shrink-0 rounded-2xl bg-indigo px-5 py-4 text-white"
 
