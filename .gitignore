@@ -47,7 +47,6 @@ next-env.d.ts
 
 # local editor/agent runtime state
 .claude/
-.env*
 
 # local dev postgres (embedded-postgres)
 .pgdata/
@@ -57,3 +56,4 @@ local-*-backup-*/
 branch_structure.json
 temp_auto_push.bat
 temp_interactive_push.bat
+config.bat
