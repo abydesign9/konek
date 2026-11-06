@@ -39,7 +39,7 @@ function MockCheckout() {
       <button
         onClick={approve}
         disabled={loading !== null}
-        className="w-full rounded-xl bg-konek-green text-white py-3 font-semibold mb-3 disabled:opacity-50"
+        className="w-full rounded-xl bg-raviion-green text-white py-3 font-semibold mb-3 disabled:opacity-50"
       >
         {loading === "approve" ? "Processing…" : "Approve payment"}
       </button>

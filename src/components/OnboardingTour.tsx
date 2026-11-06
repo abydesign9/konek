@@ -10,7 +10,7 @@ interface Props {
 const steps = [
   {
     icon: "👋",
-    title: "Welcome to Konek",
+    title: "Welcome to raviion",
     text: "Your smart financial companion for payments, savings and global access."
   },
   {
@@ -21,7 +21,7 @@ const steps = [
   {
     icon: "💰",
     title: "Fund Your Wallet",
-    text: "Add money to your Konek wallet and start using services instantly."
+    text: "Add money to your raviion wallet and start using services instantly."
   },
   {
     icon: "📱",
@@ -36,7 +36,7 @@ const steps = [
   {
     icon: "💳",
     title: "Get Your Virtual Card",
-    text: "Spend online securely with your Konek card."
+    text: "Spend online securely with your raviion card."
   }
 ];
 
@@ -52,7 +52,7 @@ const current = steps[step];
 function finish(){
 
 localStorage.setItem(
-"konek_onboarding_completed",
+"raviion_onboarding_completed",
 "true"
 );
 
@@ -135,7 +135,7 @@ className="mt-8 w-full rounded-xl bg-indigo text-white py-3.5 font-semibold"
 {
 step === steps.length - 1
 ?
-"Start Using Konek"
+"Start Using raviion"
 :
 "Continue"
 }

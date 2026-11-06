@@ -18,7 +18,7 @@ export default async function OpsDashboardPage() {
     <AdminShell adminEmail={session.email}>
       <div className="px-6 py-6">
         <h1 className="mb-1 font-heading text-2xl font-bold text-indigo">Operations</h1>
-        <p className="mb-5 text-sm text-indigo/55">Provider health, queues and everything that keeps Konek running.</p>
+        <p className="mb-5 text-sm text-indigo/55">Provider health, queues and everything that keeps raviion running.</p>
         <DashboardTabs active="ops" />
 
         <Section title="Provider health (last hour)">

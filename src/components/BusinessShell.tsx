@@ -68,7 +68,7 @@ function SidebarContent({ pathname, businessName, onNavigate }: { pathname: stri
         </div>
         <span className="min-w-0 truncate font-heading text-sm font-bold text-indigo">{businessName ?? "Business"}</span>
       </Link>
-      <p className="mb-6 px-3 text-[11px] text-indigo/40">Konek for Business</p>
+      <p className="mb-6 px-3 text-[11px] text-indigo/40">raviion for Business</p>
 
       <div className="flex-1 space-y-0.5 overflow-y-auto">
         {NAV.map((item) => {
@@ -96,7 +96,7 @@ function SidebarContent({ pathname, businessName, onNavigate }: { pathname: stri
         className="mt-4 flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-indigo/45 hover:bg-hover-tint hover:text-indigo"
       >
         <BizIcons.Back className="h-[18px] w-[18px] shrink-0" />
-        Back to Konek
+        Back to raviion
       </Link>
     </nav>
   );
@@ -128,7 +128,7 @@ export function BusinessShell({ businessName, children }: { businessName?: strin
             <button
               onClick={() => router.push("/home")}
               className="flex items-center gap-1 rounded-lg py-2 pl-1 pr-2 text-indigo hover:bg-hover-tint"
-              aria-label="Back to Konek"
+              aria-label="Back to raviion"
             >
               <BizIcons.Back className="h-5 w-5 shrink-0" />
             </button>

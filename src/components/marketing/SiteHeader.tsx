@@ -33,15 +33,15 @@ const COMPANY: Item[] = [
 
 const COMMUNITY: Item[] = [
   { label: "Referrals", href: "/referrals", desc: "Invite friends and earn rewards" },
-  { label: "Campus Ambassadors", href: "/ambassadors", desc: "Represent Konek on campus and get paid" },
-  { label: "Influencers", href: "/influencers", desc: "Create content for Konek and earn" },
+  { label: "Campus Ambassadors", href: "/ambassadors", desc: "Represent raviion on campus and get paid" },
+  { label: "Influencers", href: "/influencers", desc: "Create content for raviion and earn" },
   { label: "Creator Club", href: "/creator-club", desc: "Perks and tools for creators paid globally" },
 ];
 
 const SUPPORT: Item[] = [
-  { label: "Help Center", href: "/help", desc: "Get help anytime — our team is here 24/7" },
-  { label: "FAQs", href: "/faq", desc: "Answers to common questions about Konek" },
-  { label: "Video Guides", href: "/help/videos", desc: "Step-by-step videos showing how to use Konek" },
+  { label: "Help Center", href: "/help", desc: "Support when you need it" },
+  { label: "FAQs", href: "/faq", desc: "Clear answers to common questions" },
+  { label: "Video Guides", href: "/help/videos", desc: "Simple guides for everyday steps" },
 ];
 
 function Chevron() {
@@ -59,7 +59,7 @@ function Dropdown({ title, items, links }: { title: string; items: Item[]; links
         {title} <Chevron />
       </button>
       <div className="invisible absolute left-1/2 top-full z-30 w-[340px] -translate-x-1/2 pt-3 opacity-0 transition-all group-hover:visible group-hover:opacity-100">
-        <div className="konek-card-shadow overflow-hidden rounded-2xl border border-indigo/10 bg-white p-2">
+        <div className="raviion-card-shadow overflow-hidden rounded-2xl border border-indigo/10 bg-white p-2">
           {items.map((it) => (
             <Link key={it.href} href={it.href} className="block rounded-xl px-3 py-2.5 transition-colors hover:bg-indigo/5">
               <span className="block text-sm font-semibold text-indigo">{it.label}</span>
@@ -104,8 +104,8 @@ export function SiteHeader() {
     <header className="sticky top-0 z-40 border-b border-indigo/10 bg-background/85 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3.5">
         <Link href="/" className="flex items-center gap-2">
-          <Image src="/brand/konek-logo.svg" alt="Konek" width={32} height={32} className="h-8 w-8" unoptimized />
-          <span className="font-heading text-lg font-bold tracking-tight text-indigo">KONEK</span>
+          <Image src="/brand/raviion-logo.svg" alt="raviion" width={32} height={32} className="h-8 w-8" unoptimized />
+          <span className="font-heading text-lg font-bold tracking-tight text-indigo">raviion</span>
         </Link>
 
         <nav className="hidden items-center gap-7 md:flex">
@@ -117,13 +117,13 @@ export function SiteHeader() {
 
         <div className="hidden items-center gap-3 md:flex">
           {authed ? (
-            <Link href="/home" className="rounded-full bg-indigo px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-konek-green">
+            <Link href="/home" className="rounded-full bg-indigo px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-raviion-green">
               Go to app
             </Link>
           ) : (
             <>
-              <Link href="/login" className="text-sm font-semibold text-indigo hover:text-konek-green">Log in</Link>
-              <Link href="/signup" className="rounded-full bg-indigo px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-konek-green">
+              <Link href="/login" className="text-sm font-semibold text-indigo hover:text-raviion-green">Log in</Link>
+              <Link href="/signup" className="rounded-full bg-indigo px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-raviion-green">
                 Get started
               </Link>
             </>

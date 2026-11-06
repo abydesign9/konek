@@ -159,7 +159,7 @@ export default function MarketplacePage() {
           className="mb-4 w-full rounded-xl border border-indigo/15 bg-white px-4 py-3 text-sm"
         />
 
-        <div className="konek-scrollbar-none mb-5 flex gap-2 overflow-x-auto">
+        <div className="raviion-scrollbar-none mb-5 flex gap-2 overflow-x-auto">
           {TABS.map((t) => (
             <button
               key={t.key}
@@ -198,7 +198,7 @@ export default function MarketplacePage() {
                 setError(null);
                 setShowPin(true);
               }}
-              className="flex items-center gap-3 rounded-2xl bg-white px-4 py-3.5 text-left konek-card-shadow konek-tile"
+              className="flex items-center gap-3 rounded-2xl bg-white px-4 py-3.5 text-left raviion-card-shadow raviion-tile"
             >
               <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-indigo/5 text-xl">
                 {flagOf(p.country)}
@@ -210,7 +210,7 @@ export default function MarketplacePage() {
                 </span>
               </span>
               <span className="shrink-0 text-right">
-                {p.onPromo && <span className="mb-0.5 block text-[10px] font-bold uppercase text-konek-green">Promo</span>}
+                {p.onPromo && <span className="mb-0.5 block text-[10px] font-bold uppercase text-raviion-green">Promo</span>}
                 <span className="block text-sm font-bold text-indigo">{price(p.priceMinor, p.currency)}</span>
               </span>
             </button>

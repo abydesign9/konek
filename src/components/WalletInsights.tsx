@@ -2,7 +2,7 @@ export default function WalletInsights() {
   return (
     <section className="mt-6 px-5">
 
-      <div className="rounded-3xl bg-konek-green/10 p-5">
+      <div className="rounded-3xl bg-raviion-green/10 p-5">
 
         <h3 className="font-bold text-indigo">
           Financial insight

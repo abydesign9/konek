@@ -3,10 +3,10 @@ import { EmailSender } from "./types";
 
 // Resend email sender (https://resend.com). Reads credentials from env:
 //   RESEND_API_KEY   — the re_... API key from the Resend dashboard
-//   RESEND_FROM      — verified sender, e.g. "Konek <no-reply@yourdomain.com>"
+//   RESEND_FROM      — verified sender, e.g. "raviion <no-reply@yourdomain.com>"
 // Goes through the shared HTTP resilience layer (timeout/retry/metrics).
 const RESEND_URL = "https://api.resend.com/emails";
-const DEFAULT_FROM = "Konek <onboarding@resend.dev>"; // Resend's shared test sender
+const DEFAULT_FROM = "raviion <onboarding@resend.dev>"; // Resend's shared test sender
 
 function otpHtml(code: string): string {
   return `<!DOCTYPE html>
@@ -14,7 +14,7 @@ function otpHtml(code: string): string {
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Your Konek verification code</title>
+<title>Your raviion verification code</title>
 </head>
 <body style="margin:0; padding:0; background-color:#F0F2F7; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
 
@@ -30,7 +30,7 @@ function otpHtml(code: string): string {
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                 <tr>
                   <td>
-                    <span style="font-size:20px; font-weight:700; color:#FFFFFF; letter-spacing:0.2px;">Konek</span>
+                    <span style="font-size:20px; font-weight:700; color:#FFFFFF; letter-spacing:0.2px;">raviion</span>
                   </td>
                   <td align="right">
                     <span style="font-size:12px; color:#AEB8D6; letter-spacing:0.4px; text-transform:uppercase;">One&nbsp;connected&nbsp;platform</span>
@@ -79,7 +79,7 @@ function otpHtml(code: string): string {
           <tr>
             <td style="padding:20px 32px 32px 32px;">
               <p style="margin:0; font-size:12px; color:#9AA2B8;">
-                For your security, never share this code with anyone — Konek will never ask for it.
+                For your security, never share this code with anyone — raviion will never ask for it.
               </p>
             </td>
           </tr>
@@ -91,10 +91,10 @@ function otpHtml(code: string): string {
           <tr>
             <td align="center" style="padding:0 32px;">
               <p style="margin:0 0 6px 0; font-size:12px; color:#9AA2B8;">
-                Konek · Digital access without borders
+                raviion · Digital access without borders
               </p>
               <p style="margin:0; font-size:12px; color:#9AA2B8;">
-                <a href="mailto:support@konek.app" style="color:#9AA2B8; text-decoration:underline;">support@konek.app</a>
+                <a href="mailto:support@raviion.app" style="color:#9AA2B8; text-decoration:underline;">support@raviion.app</a>
               </p>
             </td>
           </tr>
@@ -127,6 +127,6 @@ export const resendEmailSender: EmailSender = {
   },
 
   async sendOtp(to, code) {
-    return this.send(to, "Your Konek verification code", otpHtml(code), `Your Konek verification code is ${code}. It expires in 10 minutes.`);
+    return this.send(to, "Your raviion verification code", otpHtml(code), `Your raviion verification code is ${code}. It expires in 10 minutes.`);
   },
 };

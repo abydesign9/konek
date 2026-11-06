@@ -23,7 +23,7 @@ export function AppLegalShell({
         <p className="mb-4 text-xs text-indigo/50">Last updated {updated}</p>
         <div className="rounded-xl bg-gold/10 border border-gold/25 text-indigo/80 text-sm px-4 py-3 mb-8">
           This is a plain-language summary provided for transparency. Final terms are subject to
-          review by qualified counsel in each market Konek operates in before public launch.
+          review by qualified counsel in each market raviion operates in before public launch.
         </div>
         <div className="legal-prose flex flex-col gap-8 text-indigo/80 leading-relaxed">{children}</div>
       </article>

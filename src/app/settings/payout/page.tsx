@@ -59,7 +59,7 @@ export default function PayoutAccountPage() {
       <PageHeader title="Payout account" backHref="/profile" />
       <div className="mx-auto max-w-lg px-5 py-6">
         <p className="mb-5 text-sm text-indigo/60">
-          The bank account you withdraw your Konek balance to. Only accounts you&rsquo;ve added and
+          The bank account you withdraw your raviion balance to. Only accounts you&rsquo;ve added and
           verified can receive payouts — never anyone else&rsquo;s.
         </p>
 
@@ -74,7 +74,7 @@ export default function PayoutAccountPage() {
                 <div className="flex items-center justify-between">
                   <p className="font-semibold text-indigo">{a.account_name}</p>
                   {a.verified && (
-                    <span className="rounded-full bg-konek-green/15 px-2.5 py-1 text-[11px] font-semibold text-konek-green">
+                    <span className="rounded-full bg-raviion-green/15 px-2.5 py-1 text-[11px] font-semibold text-raviion-green">
                       ✓ Verified
                     </span>
                   )}

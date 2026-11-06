@@ -1,5 +1,5 @@
 -- ============================================================
--- KONEK — Migration 0033: extended profile fields
+-- Raviion — Migration 0033: extended profile fields
 --
 -- Adds self-service profile fields. username + avatar_url are low-sensitivity
 -- (display). date_of_birth and address are sensitive PII, so they are stored as

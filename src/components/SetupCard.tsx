@@ -56,7 +56,7 @@ export function SetupCard() {
     <section className="px-5">
       <Link
         href="/setup"
-        className="konek-tile flex items-center gap-4 rounded-2xl border border-konek-green/20 bg-konek-green/5 px-5 py-4"
+        className="raviion-tile flex items-center gap-4 rounded-2xl border border-raviion-green/20 bg-raviion-green/5 px-5 py-4"
       >
         <Ring pct={status.pct} />
         <div className="min-w-0 flex-1">

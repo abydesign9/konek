@@ -1,6 +1,6 @@
-# Konek Handover (M1 to M12 and beyond)
+# raviion Handover (M1 to M12 and beyond)
 
-This document hands over everything built so the team can start using Konek. It
+This document hands over everything built so the team can start using raviion. It
 covers what the app is, how to run it, how money and verification work, every
 module (M1 to M12) plus the newer additions, and a day to day operations
 runbook for the admin console.
@@ -9,7 +9,7 @@ Last updated: 2026-08-03. Database is on migration 0055.
 
 ---
 
-## 1. What Konek is
+## 1. What raviion is
 
 A Nigerian diaspora and local fintech PWA (installable web app). Phase 1 covers:
 
@@ -213,7 +213,7 @@ rules, CSV import, API sync, delete and bulk actions). Customer store at
 `/marketplace`. Suppliers are never shown to customers. Migration 0040.
 
 ### Global configurable KYC
-Konek is a global app, so BVN and NIN are Nigeria only methods, never hardcoded.
+raviion is a global app, so BVN and NIN are Nigeria only methods, never hardcoded.
 A country and method requirement matrix decides, per country and tier, which
 verification methods a customer must complete. Providers are pluggable and routed
 by (country, method). Adding a country or provider is data, no code change. Admin
@@ -266,7 +266,7 @@ ledger accounts):
   rest of the app uses; there's no real file-upload infra anywhere in this
   codebase, so "logo" was scoped honestly to that), a real audit-log page at
   `/business/security` (`audit_log.detail->>'businessId'` scoped), and
-  `/business/billing` reframed as a fee statement — Konek has no
+  `/business/billing` reframed as a fee statement — raviion has no
   subscription model, so this shows real per-action fees instead of a fake
   billing UI.
 - Migrations 0052 (virtual accounts/cards/vendors/wallet), 0053 (widen the
@@ -286,28 +286,28 @@ which silently made them invisible to the business-scoped audit-log query.
 
 ## 8. Admin login and onboarding admins
 
-Admins sign in with their own Konek account (the same email and password as their
+Admins sign in with their own raviion account (the same email and password as their
 customer account). Being an admin is a separate grant.
 
 To onboard a new admin:
 
-1. The person signs up on Konek normally with the email that should be an admin.
+1. The person signs up on raviion normally with the email that should be an admin.
 2. A super admin opens Users and Roles in the admin console and adds that email
    with a role.
-3. They log in at `/admin` with the same email and password they use for Konek.
+3. They log in at `/admin` with the same email and password they use for raviion.
 
 Notes:
 
-- To change an admin login password, change the Konek account password in the app.
+- To change an admin login password, change the raviion account password in the app.
   There is no separate admin password.
 - The very first admin can bootstrap: put the email in `ADMIN_ALLOWLIST_EMAILS`,
-  sign up on Konek with that email, then log in at `/admin` once to create the
+  sign up on raviion with that email, then log in at `/admin` once to create the
   super admin grant automatically.
 - `ADMIN_SECRET` is only the key that signs the admin session cookie. It is not a
   login credential.
 
 Current setup: `toptonmedia@gmail.com` is super admin, `topeventures@gmail.com` is
-support. They must have a Konek account (sign up) to log in, since the test users
+support. They must have a raviion account (sign up) to log in, since the test users
 were cleared.
 
 ---
@@ -406,7 +406,7 @@ written to the audit log with the admin's identity.
 
 - Real local VTU aggregator wiring (waiting on vendor choice and API docs).
 - Second eSIM supplier (eSIM Access is wired; add more as marketplace suppliers).
-- Brand logo asset at `public/brand/konek-logo.png`.
+- Brand logo asset at `public/brand/raviion-logo.png`.
 - Optional service worker caching pass for faster loads and no stale content.
 - Optional: a self service "request admin access" flow (today a super admin
   approves by adding the email under Users and Roles).
@@ -415,7 +415,7 @@ written to the audit log with the admin's identity.
 
 ## 13. PWA (installable app)
 
-Konek installs to the Home Screen and runs full screen, no app store needed.
+raviion installs to the Home Screen and runs full screen, no app store needed.
 
 - Install experience: launched as an installed app (standalone), it opens at
   `/home` (which redirects to `/login` when signed out), so it shows a splash

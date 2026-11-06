@@ -9,7 +9,7 @@ import type { ReactNode } from "react";
 // as one native module.
 function QuickAction({ href, label, icon }: { href: string; label: string; icon: ReactNode }) {
   return (
-    <Link href={href} className="konek-tile flex flex-1 flex-col items-center gap-1.5">
+    <Link href={href} className="raviion-tile flex flex-1 flex-col items-center gap-1.5">
       <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white/15 text-lg text-white backdrop-blur">
         {icon}
       </span>
@@ -23,7 +23,7 @@ export default function WalletBalanceCard({ balanceMinor }: { balanceMinor: numb
 
   return (
     <section className="px-5">
-      <div className="konek-hero konek-card-shadow rounded-3xl px-6 pb-5 pt-6 text-white">
+      <div className="raviion-hero raviion-card-shadow rounded-3xl px-6 pb-5 pt-6 text-white">
         <div className="flex items-start justify-between">
           <div>
             <p className="mb-1 flex items-center gap-2 text-xs uppercase tracking-wide text-white/60">

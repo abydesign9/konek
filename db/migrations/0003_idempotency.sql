@@ -1,5 +1,5 @@
 -- ============================================================
--- KONEK — Migration 0003: idempotency store
+-- Raviion — Migration 0003: idempotency store
 -- ============================================================
 
 CREATE TABLE idempotency_keys (

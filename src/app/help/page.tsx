@@ -3,13 +3,13 @@ import Link from "next/link";
 import { MarketingPage, Hero, Section, FeatureGrid, CTA } from "@/components/marketing/ui";
 
 export const metadata: Metadata = {
-  title: "Konek Help Center — support, FAQs & video guides",
+  title: "raviion Help Center — support, FAQs & video guides",
   description:
-    "Get help with Konek anytime. Browse FAQs, watch step-by-step video guides, and reach our support team 24/7 for accounts, cards, eSIM, funding and verification.",
-  keywords: ["Konek help", "Konek support", "Konek FAQ", "contact Konek", "Konek video guides"],
+    "Get help with raviion anytime. Browse FAQs, watch step-by-step video guides, and reach our support team 24/7 for accounts, cards, eSIM, funding and verification.",
+  keywords: ["raviion help", "raviion support", "raviion FAQ", "contact raviion", "raviion video guides"],
   alternates: { canonical: "/help" },
   openGraph: {
-    title: "Konek Help Center",
+    title: "raviion Help Center",
     description: "FAQs, video guides and 24/7 support.",
     url: "/help",
     type: "website",
@@ -21,8 +21,8 @@ export default function HelpPage() {
     <MarketingPage>
       <Hero
         eyebrow="Help Center"
-        title={<>We&apos;re here to help, <span className="text-konek-green">around the clock.</span></>}
-        subtitle="Find quick answers, watch how-to videos, or reach our support team any time of day. Whatever you need with Konek, help is a tap away."
+        title={<>We&apos;re here to help, <span className="text-raviion-green">around the clock.</span></>}
+        subtitle="Find quick answers, watch how-to videos, or reach our support team any time of day. Whatever you need with raviion, help is a tap away."
         primary={{ label: "Browse FAQs", href: "/faq" }}
         secondary={{ label: "Watch video guides", href: "/help/videos" }}
       />
@@ -30,13 +30,13 @@ export default function HelpPage() {
       <Section eyebrow="Ways to get help" title="Choose what works for you">
         <FeatureGrid
           items={[
-            { icon: "❓", title: "FAQs", body: "Get answers to your questions about Konek — accounts, cards, funding, eSIM, verification and more." },
-            { icon: "🎬", title: "Video guides", body: "Watch step-by-step videos that show you exactly how to use each Konek feature." },
+            { icon: "❓", title: "FAQs", body: "Get answers to your questions about raviion — accounts, cards, funding, eSIM, verification and more." },
+            { icon: "🎬", title: "Video guides", body: "Watch step-by-step videos that show you exactly how to use each raviion feature." },
             { icon: "💬", title: "24/7 support", body: "Our support team is here around the clock. Chat with us in the app whenever you need a hand." },
           ]}
         />
         <div className="mt-8 flex flex-wrap gap-3">
-          <Link href="/faq" className="rounded-full bg-indigo px-6 py-3 text-sm font-semibold text-white hover:bg-konek-green">Go to FAQs</Link>
+          <Link href="/faq" className="rounded-full bg-indigo px-6 py-3 text-sm font-semibold text-white hover:bg-raviion-green">Go to FAQs</Link>
           <Link href="/help/videos" className="rounded-full border border-indigo/20 px-6 py-3 text-sm font-semibold text-indigo">Video guides</Link>
         </div>
       </Section>

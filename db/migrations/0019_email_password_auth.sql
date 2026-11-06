@@ -1,5 +1,5 @@
 -- ============================================================
--- KONEK — Migration 0019: email + password auth
+-- Raviion — Migration 0019: email + password auth
 -- Replaces phone+OTP as the primary signup/login path. phone was
 -- NOT NULL UNIQUE since 0001; it drops to nullable here because a new
 -- account no longer collects one at signup (it's needed later, for VTU

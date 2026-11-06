@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import { getConfigValue, setConfigValue } from "@/lib/config/platformConfig";
 import { logAudit } from "@/lib/audit";
 
-// Konek's admin auth is one shared secret (env var ADMIN_SECRET) plus an
+// raviion's admin auth is one shared secret (env var ADMIN_SECRET) plus an
 // allowlisted email — there's no per-admin password. "Change password" maps
 // onto that real model as rotating this shared secret through the app
 // (stored hashed in platform_config) instead of only via an env-var

@@ -1,5 +1,5 @@
 -- ============================================================
--- KONEK — Phase 2+ Schema  (Postgres)
+-- Raviion — Phase 2+ Schema  (Postgres)
 -- Extends db/schema.sql (Phase 1). Apply AFTER schema.sql.
 -- Covers every module NOT in Phase 1: dollar accounts, cards,
 -- voice sessions, agents/B2B/white-label, full gamification,

@@ -1,5 +1,5 @@
 -- ============================================================
--- KONEK — Migration 0015: admin RBAC (M12 slice 2)
+-- Raviion — Migration 0015: admin RBAC (M12 slice 2)
 -- admin_users.role was a free-text label with nothing checking it — every
 -- admin API route only asked "is this a logged-in admin?" This gives roles
 -- real structure: permission types (categories), individual permissions,

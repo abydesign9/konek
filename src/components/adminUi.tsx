@@ -65,7 +65,7 @@ export function Card({
 
 const STAT_TONE = {
   indigo: "text-indigo",
-  green: "text-konek-green",
+  green: "text-raviion-green",
   gold: "text-gold",
   red: "text-red-600",
 } as const;
@@ -96,7 +96,7 @@ export function EmptyState({ message }: { message: string }) {
 
 const BADGE_TONE = {
   indigo: "bg-indigo/10 text-indigo",
-  green: "bg-konek-green/15 text-konek-green",
+  green: "bg-raviion-green/15 text-raviion-green",
   gold: "bg-gold/15 text-gold",
   red: "bg-red-100 text-red-700",
   neutral: "bg-disabled-bg text-text-secondary",

@@ -2,16 +2,16 @@ import type { Metadata } from "next";
 import { MarketingPage, Hero, Section, FeatureGrid, Stats, CTA } from "@/components/marketing/ui";
 
 export const metadata: Metadata = {
-  title: "Konek Connectivity — global eSIM, airtime, data & bills",
+  title: "raviion Connectivity | eSIM, airtime, data and bills",
   description:
-    "Stay connected anywhere with Konek: instant global eSIM data in 190+ countries, airtime and data for every network, international top-ups, electricity, cable TV, exam pins and more.",
+    "Stay connected anywhere with raviion: instant eSIM data in 190+ countries, airtime and data for every major network and essential bills in one place.",
   keywords: [
     "global eSIM", "buy eSIM Nigeria", "international airtime top up", "buy data online",
-    "electricity token", "DStv GOtv subscription", "WAEC JAMB pin", "Konek connectivity",
+    "electricity token", "DStv GOtv subscription", "WAEC JAMB pin", "raviion connectivity",
   ],
   alternates: { canonical: "/connectivity" },
   openGraph: {
-    title: "Konek Connectivity — one tap to stay online, anywhere",
+    title: "raviion Connectivity | eSIM, airtime, data and bills",
     description: "Global eSIM, airtime, data, international top-ups and bills in one app.",
     url: "/connectivity",
     type: "website",
@@ -22,9 +22,9 @@ export default function ConnectivityPage() {
   return (
     <MarketingPage>
       <Hero
-        eyebrow="Konek Connectivity"
-        title={<>Stay connected <span className="text-konek-green">wherever life takes you.</span></>}
-        subtitle="From a data plan for your next trip to airtime for family back home, Konek keeps you and the people you care about online — instantly, at fair prices, in one app."
+        eyebrow="raviion Connectivity"
+        title={<>Stay online <span className="text-raviion-green">wherever you are.</span></>}
+        subtitle="From your next trip to everyday essentials at home, raviion keeps you and the people you care about connected with simple, dependable access."
         primary={{ label: "Get an eSIM", href: "/signup" }}
         secondary={{ label: "See pricing", href: "/pricing" }}
       />
@@ -55,7 +55,7 @@ export default function ConnectivityPage() {
       <Section>
         <Stats
           items={[
-            { value: "190+", label: "eSIM destinations" },
+            { value: "190+", label: "Travel eSIM destinations" },
             { value: "4", label: "Networks supported" },
             { value: "10+", label: "Bill & VAS categories" },
             { value: "24/7", label: "Buy anytime" },
@@ -65,7 +65,7 @@ export default function ConnectivityPage() {
 
       <CTA
         title="Never lose connection again"
-        subtitle="Get connectivity and payments in one Konek account — for you and everyone you look after."
+        subtitle="Get connectivity and payments in one raviion account — for you and everyone you look after."
         secondary={{ label: "For personal use", href: "/personal" }}
       />
     </MarketingPage>

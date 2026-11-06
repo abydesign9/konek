@@ -1,5 +1,5 @@
 -- ============================================================
--- KONEK — Migration 0008: backfill referral_codes for users
+-- Raviion — Migration 0008: backfill referral_codes for users
 -- created before the Phase 2 referral_codes/referral_conversions
 -- tables existed, so referral_conversions FK inserts don't fail
 -- when an existing user is used as a referrer.

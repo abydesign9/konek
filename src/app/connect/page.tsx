@@ -47,13 +47,13 @@ const FINANCE = [
 ];
 
 const EARN = [
-  { key: "agent", label: "Become an Agent", sub: "Sell Konek services, earn commission", Icon: IconWallet, href: "/agent" },
+  { key: "agent", label: "Become an Agent", sub: "Sell raviion services, earn commission", Icon: IconWallet, href: "/agent" },
   { key: "invite", label: "Invite & Earn", sub: "Refer friends, get rewarded", Icon: IconGift, href: "/invite" },
 ];
 
 function Row({ label, sub, Icon, href, tint, logos }: { label: string; sub: string; Icon: typeof IconAirtime; href: string; tint: { bg: string; fg: string }; logos?: string[] }) {
   return (
-    <Link href={href} className="flex items-center gap-3 rounded-2xl bg-white px-4 py-3.5 konek-card-shadow konek-tile">
+    <Link href={href} className="flex items-center gap-3 rounded-2xl bg-white px-4 py-3.5 raviion-card-shadow raviion-tile">
       <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl" style={{ backgroundColor: tint.bg }}>
         <Icon className="h-5 w-5" style={{ color: tint.fg }} />
       </span>
@@ -89,7 +89,7 @@ export default async function ConnectPage() {
       <div className="mx-auto w-full max-w-lg">
         <header className="px-5 pb-3 pt-6">
           <h1 className="font-heading text-2xl font-bold text-indigo">Connect</h1>
-          <p className="mt-0.5 text-sm text-indigo/55">Everything you can buy or manage on Konek, in one place.</p>
+          <p className="mt-0.5 text-sm text-indigo/55">Everything you can buy or manage on raviion, in one place.</p>
         </header>
 
         <section className="mt-2 px-5">
@@ -111,7 +111,7 @@ export default async function ConnectPage() {
         </section>
 
         <section className="mt-7 px-5">
-          <p className="mb-3 text-xs font-bold uppercase tracking-wide text-indigo/40">Earn with Konek</p>
+          <p className="mb-3 text-xs font-bold uppercase tracking-wide text-indigo/40">Earn with raviion</p>
           <div className="flex flex-col gap-2.5">
             {EARN.map((item) => (
               <Row key={item.key} label={item.label} sub={item.sub} Icon={item.Icon} href={item.href} tint={SERVICE_COLORS.rewards ?? SERVICE_COLORS.more} />

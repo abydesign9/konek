@@ -1,5 +1,5 @@
 -- ============================================================
--- KONEK — Migration 0024: encrypt KYC provider payloads at rest
+-- Raviion — Migration 0024: encrypt KYC provider payloads at rest
 --
 -- M1 review finding: kyc_checks.raw_response stored full vendor payloads
 -- (BVN/NIN identity data) as plaintext JSON — an NDPR exposure. Going forward

@@ -140,7 +140,7 @@ export default function BettingPage() {
               key={item}
               onClick={() => setAmount(item)}
               className={`rounded-xl border py-3 text-sm font-semibold ${
-                amount === item ? "border-konek-green bg-konek-green/10 text-indigo" : "border-indigo/20 text-indigo"
+                amount === item ? "border-raviion-green bg-raviion-green/10 text-indigo" : "border-indigo/20 text-indigo"
               }`}
             >
               {money(item)}

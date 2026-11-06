@@ -1,5 +1,5 @@
 -- ============================================================
--- KONEK — Migration 0023: durable rate limiting + PIN lockout + phone verification
+-- Raviion — Migration 0023: durable rate limiting + PIN lockout + phone verification
 --
 -- Fixes M1 review findings:
 --   * Rate limiting was an in-process Map (rateLimit.ts). On a serverless

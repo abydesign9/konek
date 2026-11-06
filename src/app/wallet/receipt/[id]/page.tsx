@@ -133,10 +133,10 @@ export default async function ReceiptPage({ params }: { params: { id: string } }
         backLabel="Transactions"
         right={
           <ShareReceiptButton
-            title="Konek receipt"
+            title="raviion receipt"
             text={`${txnTypeLabel(txn.type)} · ${credit ? "+" : "−"}${formatMoney(txn.amount_minor, txn.currency)} · ${
               TXN_STATUS_LABEL[txn.status] ?? txn.status
-            } · Konek`}
+            } · raviion`}
           />
         }
       />
@@ -145,7 +145,7 @@ export default async function ReceiptPage({ params }: { params: { id: string } }
         {/* Amount header */}
         <div className="rounded-3xl bg-white border border-indigo/10 p-6 text-center mb-5">
           <p className="text-sm text-indigo/50 mb-1">{txnTypeLabel(txn.type)}</p>
-          <p className={`font-heading text-3xl font-bold mb-3 ${credit ? "text-konek-green" : "text-indigo"}`}>
+          <p className={`font-heading text-3xl font-bold mb-3 ${credit ? "text-raviion-green" : "text-indigo"}`}>
             {credit ? "+" : "−"}
             {formatMoney(txn.amount_minor, txn.currency)}
           </p>
@@ -193,7 +193,7 @@ export default async function ReceiptPage({ params }: { params: { id: string } }
                   <span
                     className={`w-2.5 h-2.5 rounded-full shrink-0 ${
                       e.to_status === "delivered"
-                        ? "bg-konek-green"
+                        ? "bg-raviion-green"
                         : e.to_status === "failed"
                         ? "bg-red-500"
                         : "bg-indigo/30"
@@ -210,7 +210,7 @@ export default async function ReceiptPage({ params }: { params: { id: string } }
         )}
 
         <p className="text-center text-xs text-indigo/40 mt-8">
-          Konek · support@konek.app · Keep this receipt for your records
+          raviion · support@raviion.app · Keep this receipt for your records
         </p>
       </div>
     </main>

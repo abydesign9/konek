@@ -61,10 +61,10 @@ const GROUPS: { title: string; rows: { icon: string; label: string; sub?: string
   {
     title: "More",
     rows: [
-      { icon: "🤝", label: "Partner with Konek", href: "/agent" },
+      { icon: "🤝", label: "Partner with raviion", href: "/agent" },
       { icon: "⚙️", label: "Settings", href: "/settings" },
       { icon: "💬", label: "Support", href: "/support" },
-      { icon: "ℹ️", label: "About Konek", href: "/profile/about" },
+      { icon: "ℹ️", label: "About raviion", href: "/profile/about" },
     ],
   },
 ];
@@ -86,8 +86,8 @@ export function ProfileClient({ initial }: { initial: ProfileData | null }) {
   return (
     <div className="mx-auto max-w-lg px-5 pb-6">
       {/* ---------- Hero: identity + completeness in one seamless card ---------- */}
-      <div className="konek-hero overflow-hidden rounded-3xl text-white">
-        <Link href="/profile/account" className="konek-tile flex items-center gap-4 px-6 pb-5 pt-6">
+      <div className="raviion-hero overflow-hidden rounded-3xl text-white">
+        <Link href="/profile/account" className="raviion-tile flex items-center gap-4 px-6 pb-5 pt-6">
           {profile ? (
             <Avatar
               value={profile.avatar_url}
@@ -120,10 +120,10 @@ export function ProfileClient({ initial }: { initial: ProfileData | null }) {
           <Link href={c.nextHref} className="block border-t border-white/10 bg-white/5 px-6 py-3.5">
             <div className="mb-1.5 flex items-center justify-between text-xs">
               <span className="font-semibold text-white/80">Profile {c.pct}% complete</span>
-              <span className="font-semibold text-konek-green">{c.nextLabel} →</span>
+              <span className="font-semibold text-raviion-green">{c.nextLabel} →</span>
             </div>
             <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/15">
-              <div className="h-full rounded-full bg-konek-green transition-all" style={{ width: `${c.pct}%` }} />
+              <div className="h-full rounded-full bg-raviion-green transition-all" style={{ width: `${c.pct}%` }} />
             </div>
           </Link>
         )}
@@ -133,7 +133,7 @@ export function ProfileClient({ initial }: { initial: ProfileData | null }) {
       {GROUPS.map((group) => (
         <section key={group.title} className="mt-6">
           <p className="mb-2 px-1 text-xs font-bold uppercase tracking-wide text-indigo/40">{group.title}</p>
-          <div className="konek-card-shadow overflow-hidden rounded-2xl bg-white">
+          <div className="raviion-card-shadow overflow-hidden rounded-2xl bg-white">
             {group.rows.map((row, i) => {
               const badge = profile && row.badge ? row.badge(profile) : null;
               return (
@@ -154,7 +154,7 @@ export function ProfileClient({ initial }: { initial: ProfileData | null }) {
                   {badge && (
                     <span
                       className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold ${
-                        badge === "Verify now" ? "bg-gold/15 text-gold" : "bg-konek-green/15 text-konek-green"
+                        badge === "Verify now" ? "bg-gold/15 text-gold" : "bg-raviion-green/15 text-raviion-green"
                       }`}
                     >
                       {badge}
@@ -172,13 +172,13 @@ export function ProfileClient({ initial }: { initial: ProfileData | null }) {
       <button
         onClick={logout}
         disabled={loggingOut}
-        className="konek-card-shadow mt-6 w-full rounded-2xl bg-white px-4 py-3.5 text-center text-sm font-semibold text-red-600 disabled:opacity-50"
+        className="raviion-card-shadow mt-6 w-full rounded-2xl bg-white px-4 py-3.5 text-center text-sm font-semibold text-red-600 disabled:opacity-50"
       >
         {loggingOut ? "Logging out…" : "Log out"}
       </button>
 
       <p className="mt-4 text-center text-[11px] text-indigo/35">
-        Konek · Secured with encryption, PINs and fraud monitoring
+        raviion · Secured with encryption, PINs and fraud monitoring
       </p>
     </div>
   );

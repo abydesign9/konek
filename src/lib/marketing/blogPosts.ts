@@ -22,20 +22,20 @@ export const BLOG_POSTS: BlogPost[] = [
     category: "Getting paid globally",
     date: "2026-07-29",
     readMinutes: 5,
-    body: `If you earn from clients, platforms or brands abroad, the hardest part is often just receiving your own money. Here's how to make it simple with Konek.
+    body: `If you earn from clients, platforms or brands abroad, the hardest part is often just receiving your own money. Here's how to make it simple with raviion.
 
 ## Why receiving USD is usually painful
 Traditional routes — third-party processors, borrowed accounts, or asking a friend abroad — are slow, risky and expensive. Payments bounce, fees stack up, and you rarely control the exchange rate.
 
 ## A dollar account in your name
-With Konek you can open a USD account in your own name, even as a non-US resident. You share your account details with clients and platforms and receive payments directly.
+With raviion you can open a USD account in your own name, even as a non-US resident. You share your account details with clients and platforms and receive payments directly.
 
 - Get paid by clients and marketplaces worldwide
 - Hold your balance in USD until you're ready
 - Convert to Naira when the rate works for you
 
 ## Steps to get started
-1. Create your Konek account and verify your identity once.
+1. Create your raviion account and verify your identity once.
 2. Open your USD account and copy your receiving details.
 3. Share those details with your client or platform.
 4. Watch payments land, then spend with a card, hold, or convert.
@@ -43,7 +43,7 @@ With Konek you can open a USD account in your own name, even as a non-US residen
 ## Keep more of what you earn
 Because your money lands directly and converts on your terms, you keep more of every invoice — and you get paid faster.
 
-Ready to get paid globally? Create your Konek account and open your USD account in minutes.`,
+Ready to get paid globally? Create your raviion account and open your USD account in minutes.`,
   },
   {
     slug: "esim-explained-stay-online-abroad",
@@ -64,7 +64,7 @@ An eSIM is a digital SIM built into your phone. Instead of swapping a plastic ca
 - Keep your main line active for calls and OTPs
 - Pick local, regional or global plans for your trip
 
-## How to use an eSIM with Konek
+## How to use an eSIM with raviion
 1. Choose your destination and a data plan in the app.
 2. Buy and install the eSIM — it takes a couple of minutes.
 3. Turn on the plan when you arrive and start browsing.
@@ -75,18 +75,18 @@ Think about how long you'll travel and how much data you use. Short trip and lig
 Travelling soon? Set up your eSIM before you fly so you're connected the moment you land.`,
   },
   {
-    slug: "keep-your-konek-account-secure",
-    title: "Keeping your Konek account secure: a simple checklist",
+    slug: "keep-your-raviion-account-secure",
+    title: "Keeping your raviion account secure: a simple checklist",
     excerpt:
-      "A few small habits protect your money and data. Here's a quick checklist every Konek user should run through.",
+      "A few small habits protect your money and data. Here's a quick checklist every raviion user should run through.",
     category: "Security & trust",
     date: "2026-07-29",
     readMinutes: 3,
-    body: `Your money and identity deserve strong protection. Konek secures your account with encryption, PINs and fraud monitoring — and these habits add an extra layer.
+    body: `Your money and identity deserve strong protection. raviion secures your account with encryption, PINs and fraud monitoring — and these habits add an extra layer.
 
 ## Your security checklist
 - Set a strong, unique password you don't use anywhere else.
-- Keep your transaction PIN private — Konek staff will never ask for it.
+- Keep your transaction PIN private — raviion staff will never ask for it.
 - Turn on every verification step we offer; it protects you, not just us.
 - Review your active sessions and log out ones you don't recognise.
 - Be alert to phishing: we'll never ask for your password or PIN by message.

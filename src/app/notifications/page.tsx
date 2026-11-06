@@ -100,7 +100,7 @@ export default function NotificationsPage() {
         backHref="/home"
         right={
           unreadCount > 0 ? (
-            <button onClick={markAllRead} className="text-xs font-semibold text-konek-green">
+            <button onClick={markAllRead} className="text-xs font-semibold text-raviion-green">
               Mark all read
             </button>
           ) : undefined
@@ -108,7 +108,7 @@ export default function NotificationsPage() {
       />
 
       <div className="mx-auto max-w-lg px-5 py-6">
-        <div className="konek-scrollbar-none mb-5 flex gap-2 overflow-x-auto">
+        <div className="raviion-scrollbar-none mb-5 flex gap-2 overflow-x-auto">
           {FILTERS.map((f) => (
             <button
               key={f}
@@ -152,7 +152,7 @@ export default function NotificationsPage() {
                     onClick={() => markRead(n)}
                     className={`flex w-full items-start gap-3 px-4 py-3.5 text-left ${
                       i > 0 ? "border-t border-indigo/5" : ""
-                    } ${n.read_at ? "" : "bg-konek-green/5"}`}
+                    } ${n.read_at ? "" : "bg-raviion-green/5"}`}
                   >
                     <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo/5 text-lg">
                       {meta.icon}
@@ -166,7 +166,7 @@ export default function NotificationsPage() {
                       </span>
                       {n.body && <span className="mt-0.5 block text-sm leading-snug text-indigo/55">{n.body}</span>}
                     </span>
-                    {!n.read_at && <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-konek-green" />}
+                    {!n.read_at && <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-raviion-green" />}
                   </button>
                 );
               })}

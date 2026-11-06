@@ -352,7 +352,7 @@ export default async function HomeDashboard() {
 
           <Link
             href="/notifications"
-            className="konek-tile flex h-11 w-11 items-center justify-center rounded-full bg-white konek-card-shadow"
+            className="raviion-tile flex h-11 w-11 items-center justify-center rounded-full bg-white raviion-card-shadow"
           >
 
             <IconBell className="h-5 w-5 text-indigo" />
@@ -363,7 +363,7 @@ export default async function HomeDashboard() {
 
           <Link
             href="/rewards"
-            className="konek-tile flex h-11 w-11 items-center justify-center rounded-full bg-gold/15 konek-card-shadow"
+            className="raviion-tile flex h-11 w-11 items-center justify-center rounded-full bg-gold/15 raviion-card-shadow"
           >
 
             <IconGift className="h-5 w-5 text-gold" />
@@ -387,7 +387,7 @@ export default async function HomeDashboard() {
 
           <Link
             href="/kyc"
-            className="konek-tile block rounded-2xl border border-gold/40 bg-gold/15 px-5 py-4"
+            className="raviion-tile block rounded-2xl border border-gold/40 bg-gold/15 px-5 py-4"
           >
 
             <p className="mb-0.5 font-heading font-semibold text-indigo">
@@ -441,7 +441,7 @@ export default async function HomeDashboard() {
 
               href={m.url && /^https?:\/\//i.test(m.url) ? m.url : "#"}
 
-              className="konek-card-shadow w-64 shrink-0 rounded-2xl bg-indigo px-5 py-4 text-white"
+              className="raviion-card-shadow w-64 shrink-0 rounded-2xl bg-indigo px-5 py-4 text-white"
 
             >
 
@@ -487,12 +487,12 @@ export default async function HomeDashboard() {
 
                 href={href}
 
-                className="konek-tile flex flex-col items-center gap-1.5"
+                className="raviion-tile flex flex-col items-center gap-1.5"
 
               >
 
                 <div
-                  className="konek-card-shadow flex h-12 w-12 items-center justify-center rounded-2xl"
+                  className="raviion-card-shadow flex h-12 w-12 items-center justify-center rounded-2xl"
                   style={{
                     backgroundColor:c.bg
                   }}
@@ -556,13 +556,13 @@ export default async function HomeDashboard() {
 
                 href={href}
 
-                className="konek-tile flex flex-col items-center gap-1.5"
+                className="raviion-tile flex flex-col items-center gap-1.5"
 
               >
 
                 <div
 
-                  className="konek-card-shadow flex h-12 w-12 items-center justify-center rounded-2xl"
+                  className="raviion-card-shadow flex h-12 w-12 items-center justify-center rounded-2xl"
 
                   style={{
                     backgroundColor:c.bg
@@ -602,11 +602,11 @@ export default async function HomeDashboard() {
 
             href="/connect"
 
-            className="konek-tile flex flex-col items-center gap-1.5"
+            className="raviion-tile flex flex-col items-center gap-1.5"
 
           >
 
-            <div className="konek-card-shadow flex h-12 w-12 items-center justify-center rounded-2xl bg-hover-tint">
+            <div className="raviion-card-shadow flex h-12 w-12 items-center justify-center rounded-2xl bg-hover-tint">
 
               <IconChevronRight className="h-6 w-6 text-indigo/60"/>
 
@@ -667,7 +667,7 @@ export default async function HomeDashboard() {
 
                 href={repeatHref(txn)}
 
-                className="konek-card-shadow flex items-center gap-3 rounded-2xl bg-white px-4 py-3"
+                className="raviion-card-shadow flex items-center gap-3 rounded-2xl bg-white px-4 py-3"
 
               >
 
@@ -744,7 +744,7 @@ export default async function HomeDashboard() {
 
                 href={beneficiaryHref(b)}
 
-                className="konek-card-shadow flex shrink-0 items-center gap-3 rounded-2xl bg-white px-4 py-3"
+                className="raviion-card-shadow flex shrink-0 items-center gap-3 rounded-2xl bg-white px-4 py-3"
 
               >
 
@@ -813,7 +813,7 @@ export default async function HomeDashboard() {
 
             href="/business"
 
-            className="konek-card-shadow block rounded-2xl bg-white px-4 py-3.5"
+            className="raviion-card-shadow block rounded-2xl bg-white px-4 py-3.5"
 
           >
 

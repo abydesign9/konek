@@ -60,7 +60,7 @@ export async function GET() {
     );
   }
 
-  const filename = `konek-business-distributions-${new Date().toISOString().slice(0, 10)}.csv`;
+  const filename = `raviion-business-distributions-${new Date().toISOString().slice(0, 10)}.csv`;
   return new NextResponse(lines.join("\n"), {
     headers: {
       "Content-Type": "text/csv; charset=utf-8",

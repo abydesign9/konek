@@ -59,7 +59,7 @@ export async function GET(req: NextRequest) {
   }
 
   const csv = lines.join("\n");
-  const filename = `konek-statement-${currency}-${new Date().toISOString().slice(0, 10)}.csv`;
+  const filename = `raviion-statement-${currency}-${new Date().toISOString().slice(0, 10)}.csv`;
   return new NextResponse(csv, {
     headers: {
       "Content-Type": "text/csv; charset=utf-8",

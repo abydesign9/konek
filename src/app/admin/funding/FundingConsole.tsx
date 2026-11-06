@@ -42,7 +42,7 @@ export function FundingConsole() {
         title="Funding reconciliation"
         description="Wallet top-ups that never completed. When a customer says they were charged but the balance did not move (a gateway timeout), verify the payment here. We re-check the reference with Paystack and credit the wallet only if the payment truly succeeded, exactly once."
       />
-      {msg && <p className="mb-3 text-sm font-semibold text-konek-green">{msg}</p>}
+      {msg && <p className="mb-3 text-sm font-semibold text-raviion-green">{msg}</p>}
 
       <Card title="Open and failed top-ups (last 30 days)">
         <div className="overflow-x-auto">

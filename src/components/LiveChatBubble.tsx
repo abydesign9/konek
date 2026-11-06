@@ -7,7 +7,7 @@ import { whatsappLink } from "@/lib/contact";
 // Rendered once from the root layout; shown on customer app surfaces, hidden on
 // marketing/auth/admin and focused flows (KYC, PIN pad, checkout) where a
 // floating control would get in the way. Sits above the bottom tab bar.
-const HIDE_PREFIXES = ["/admin", "/login", "/signup", "/kyc", "/timon-preview"];
+const HIDE_PREFIXES = ["/admin", "/login", "/signup", "/kyc"];
 const HIDE_EXACT = ["/", "/support"]; // support already has its own chat CTA
 
 export function LiveChatBubble() {
@@ -30,7 +30,7 @@ export function LiveChatBubble() {
       rel="noopener noreferrer"
       aria-label="Chat with support on WhatsApp"
       title="Live chat"
-      className="konek-tile fixed right-4 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-konek-green text-xl text-white shadow-lg active:scale-95"
+      className="raviion-tile fixed right-4 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-raviion-green text-xl text-white shadow-lg active:scale-95"
       style={{ bottom: "calc(env(safe-area-inset-bottom) + 84px)", touchAction: "manipulation" }}
     >
       💬

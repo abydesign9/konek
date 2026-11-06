@@ -18,7 +18,7 @@ export class InsufficientUsdBalanceError extends Error {
 // Converts USD wallet -> NGN wallet at the user rate (mid-market minus the FX
 // spread). One journal, two currency legs — each balances within its own
 // currency (per-currency balancing is enforced by assertBalanced and the DB
-// trigger). The spread is Konek's margin, held as the USD it acquires.
+// trigger). The spread is raviion's margin, held as the USD it acquires.
 export async function convertUsdToNgn(
   userId: string,
   usdMinor: number,

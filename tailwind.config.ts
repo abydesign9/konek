@@ -12,11 +12,11 @@ const config: Config = {
         background: "var(--background)",
         foreground: "var(--foreground)",
         indigo: "#22315C",
-        "konek-green": "#2E9E6B",
+        "raviion-green": "#2E9E6B",
         gold: "#E2932F",
-        // KONEK design system tokens — admin dashboard chrome (dense,
+        // Raviion design system tokens — admin dashboard chrome (dense,
         // desktop-first) sits on these; the customer app keeps using
-        // background/indigo/konek-green/gold directly.
+        // background/indigo/raviion-green/gold directly.
         ivory: "#FAF6F0",
         "text-primary": "#1E2435",
         "text-secondary": "#6C748A",

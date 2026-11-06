@@ -333,7 +333,7 @@ export function SupportConsole() {
                   <div
                     key={r.id}
                     className={`max-w-[90%] rounded-xl px-3 py-2 text-sm ${
-                      r.author_type === "admin" ? "self-start bg-konek-green/10 text-indigo" : "ml-auto self-end bg-indigo text-white"
+                      r.author_type === "admin" ? "self-start bg-raviion-green/10 text-indigo" : "ml-auto self-end bg-indigo text-white"
                     }`}
                   >
                     {r.body}
@@ -351,7 +351,7 @@ export function SupportConsole() {
                 <button onClick={() => sendReply(false)} className="rounded-lg bg-indigo px-3 text-xs font-semibold text-white">
                   Reply
                 </button>
-                <button onClick={resolveTicket} className="rounded-lg bg-konek-green px-3 text-xs font-semibold text-white">
+                <button onClick={resolveTicket} className="rounded-lg bg-raviion-green px-3 text-xs font-semibold text-white">
                   Resolve
                 </button>
               </div>
@@ -393,7 +393,7 @@ export function SupportConsole() {
       <Card
         title="Knowledge base"
         action={
-          <button onClick={() => setShowFaqForm((s) => !s)} className="text-xs font-semibold text-konek-green">
+          <button onClick={() => setShowFaqForm((s) => !s)} className="text-xs font-semibold text-raviion-green">
             {showFaqForm ? "Cancel" : "New article"}
           </button>
         }

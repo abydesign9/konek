@@ -91,7 +91,7 @@ export function ProgramApplicationsConsole() {
                     <td className="px-4 py-3 text-right">
                       <button
                         onClick={() => setExpanded(expanded === r.id ? null : r.id)}
-                        className="text-xs font-semibold text-konek-green"
+                        className="text-xs font-semibold text-raviion-green"
                       >
                         {expanded === r.id ? "Hide" : "View"}
                       </button>

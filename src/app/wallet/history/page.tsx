@@ -60,7 +60,7 @@ export default async function HistoryPage({
         right={
           <a
             href={`/api/wallet/statement?currency=${currency}`}
-            className="text-sm font-semibold text-konek-green hover:underline"
+            className="text-sm font-semibold text-raviion-green hover:underline"
           >
             Export
           </a>
@@ -87,7 +87,7 @@ export default async function HistoryPage({
           <div className="rounded-2xl bg-white border border-indigo/10 p-8 text-center">
             <p className="font-heading font-semibold text-indigo mb-1">No transactions yet</p>
             <p className="text-sm text-indigo/60">
-              Your {currency} transactions will show up here once you start using Konek.
+              Your {currency} transactions will show up here once you start using raviion.
             </p>
           </div>
         ) : (
@@ -109,7 +109,7 @@ export default async function HistoryPage({
                       </p>
                     </div>
                     <div className="text-right shrink-0 ml-3">
-                      <p className={`font-semibold ${credit ? "text-konek-green" : "text-indigo"}`}>
+                      <p className={`font-semibold ${credit ? "text-raviion-green" : "text-indigo"}`}>
                         {credit ? "+" : "−"}
                         {formatMoney(t.amount_minor, t.currency)}
                       </p>

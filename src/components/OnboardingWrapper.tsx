@@ -19,7 +19,7 @@ setMounted(true);
 
 const completed =
 window.localStorage.getItem(
-"konek_onboarding_completed"
+"raviion_onboarding_completed"
 );
 
 
@@ -37,7 +37,7 @@ setShow(true);
 function complete(){
 
 window.localStorage.setItem(
-"konek_onboarding_completed",
+"raviion_onboarding_completed",
 "true"
 );
 

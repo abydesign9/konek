@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { PageHeader } from "@/components/PageHeader";
 
@@ -32,40 +32,26 @@ export default function CardSettingsPage() {
   const [merchantLock, setMerchantLock] = useState("");
   const [message, setMessage] = useState("");
 
-  async function loadCard() {
-
+  const loadCard = useCallback(async () => {
     const res = await fetch("/api/cards/me");
     const data: CardsResponse = await res.json();
 
-    const found = data.cards.find(
-      (item) => item.id === id
-    );
+    const found = data.cards.find((item) => item.id === id);
 
     if (!found) {
       setNotFound(true);
       return;
     }
 
-    if (found) {
-      setCard(found);
-      setSingleLimit(
-        found.single_txn_limit_minor
-          ? String(found.single_txn_limit_minor)
-          : ""
-      );
-      setMonthlyLimit(
-        found.monthly_limit_minor
-          ? String(found.monthly_limit_minor)
-          : ""
-      );
-      setMerchantLock(found.merchant_lock ?? "");
-    }
-  }
-
+    setCard(found);
+    setSingleLimit(found.single_txn_limit_minor ? String(found.single_txn_limit_minor) : "");
+    setMonthlyLimit(found.monthly_limit_minor ? String(found.monthly_limit_minor) : "");
+    setMerchantLock(found.merchant_lock ?? "");
+  }, [id]);
 
   useEffect(() => {
     loadCard();
-  }, []);
+  }, [loadCard]);
 
 
 
@@ -222,14 +208,14 @@ export default function CardSettingsPage() {
 
           <button
             onClick={saveControls}
-            className="w-full rounded-xl bg-konek-green py-3 font-semibold"
+            className="w-full rounded-xl bg-raviion-green py-3 font-semibold"
           >
             Save Controls
           </button>
 
 
           {message && (
-            <p className="mt-3 text-sm text-konek-green">
+            <p className="mt-3 text-sm text-raviion-green">
               {message}
             </p>
           )}

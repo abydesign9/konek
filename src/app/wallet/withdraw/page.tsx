@@ -237,7 +237,7 @@ export default function WithdrawPage() {
                   type="button"
                   onClick={() => setSelectedId(a.id)}
                   className={`rounded-2xl border px-4 py-3 text-left transition ${
-                    active ? "border-konek-green bg-konek-green/10" : "border-indigo/15 bg-white"
+                    active ? "border-raviion-green bg-raviion-green/10" : "border-indigo/15 bg-white"
                   }`}
                 >
                   <p className="text-sm font-semibold text-indigo">{a.account_name}</p>
@@ -306,7 +306,7 @@ export default function WithdrawPage() {
                 setCustomNaira("");
               }}
               className={`rounded-xl border py-3.5 font-semibold transition ${
-                amountMinor === m ? "border-konek-green bg-konek-green/10 text-indigo" : "border-indigo/20 text-indigo"
+                amountMinor === m ? "border-raviion-green bg-raviion-green/10 text-indigo" : "border-indigo/20 text-indigo"
               }`}
             >
               {naira(m)}

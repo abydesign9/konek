@@ -1,7 +1,7 @@
 import FloatingProduct from "./FloatingProduct";
 
 
-export default function KonekPremiumShowcase(){
+export default function RaviionPremiumShowcase(){
 
 return (
 
@@ -11,13 +11,13 @@ return (
 <div className="mx-auto max-w-6xl px-6">
 
 
-<p className="text-center text-xs uppercase tracking-[0.25em] text-konek-green font-bold">
+<p className="text-center text-xs uppercase tracking-[0.25em] text-raviion-green font-bold">
 Everything in one app
 </p>
 
 
 <h2 className="mt-4 text-center font-heading text-4xl font-bold text-indigo">
-Your connected world, powered by KONEK
+Your connected world, powered by raviion
 </h2>
 
 
@@ -32,7 +32,7 @@ eSIM, global accounts, virtual cards, airtime, data and business connectivity in
 
 <FloatingProduct
 
-image="/landing/konek_dashboard_day.jpg"
+image="/landing/raviion_dashboard_day.jpg"
 
 title="One app. Every connection."
 
@@ -44,7 +44,7 @@ text="Manage global accounts, cards, eSIM, airtime and digital services from one
 
 <FloatingProduct
 
-image="/landing/konek_esim_travel.jpg"
+image="/landing/raviion_esim_travel.jpg"
 
 title="Travel without borders"
 
@@ -56,9 +56,9 @@ text="Activate eSIM instantly and stay connected anywhere you go."
 
 <FloatingProduct
 
-image="/landing/konek_business_day.jpg"
+image="/landing/raviion_business_day.jpg"
 
-title="KONEK Business"
+title="raviion Business"
 
 text="Receive global payments, manage business connectivity, bulk airtime and team communication."
 
@@ -68,7 +68,7 @@ text="Receive global payments, manage business connectivity, bulk airtime and te
 
 <FloatingProduct
 
-image="/landing/konek_lifestyle_day.jpg"
+image="/landing/raviion_lifestyle_day.jpg"
 
 title="Built for modern Africans"
 

@@ -1,5 +1,5 @@
 -- ============================================================
--- KONEK — Migration 0028: eSIM lifecycle records
+-- Raviion — Migration 0028: eSIM lifecycle records
 --
 -- eSIMs are purchased through the generic VTU/reservation path (service_type
 -- 'esim'), but they have a real post-purchase lifecycle the transaction row

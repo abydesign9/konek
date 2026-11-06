@@ -7,7 +7,7 @@ INSERT INTO promotions (name, promo_type, reward_type, target_audience, reward_a
                         cashback_pct, min_deposit_minor, min_spend_minor, valid_spend_types, user_cap, status, notification_message)
 SELECT 'Welcome bonus (sample)', 'signup', 'wallet_locked', 'ALL', 100000, 'NGN',
        NULL, 500000, 200000, ARRAY['airtime','data','esim'], 1, 'paused',
-       'Welcome to Konek! Here is ₦1,000 to get started — unlock it by funding ₦5,000 and spending ₦2,000.'
+       'Welcome to Raviion! Here is ₦1,000 to get started — unlock it by funding ₦5,000 and spending ₦2,000.'
 WHERE NOT EXISTS (SELECT 1 FROM promotions WHERE name = 'Welcome bonus (sample)');
 
 INSERT INTO promotions (name, promo_type, reward_type, target_audience, reward_amount_minor, reward_currency,
@@ -21,7 +21,7 @@ INSERT INTO promotions (name, promo_type, reward_type, target_audience, reward_a
                         cashback_pct, min_deposit_minor, min_spend_minor, valid_spend_types, user_cap, status, notification_message)
 SELECT 'Card spend cashback (sample)', 'card_cashback', 'cashback_percent', 'ALL', 0, 'NGN',
        2.000, 0, 0, ARRAY['card_spend'], NULL, 'paused',
-       'Earn 2% cashback every time you spend with your Konek card.'
+       'Earn 2% cashback every time you spend with your Raviion card.'
 WHERE NOT EXISTS (SELECT 1 FROM promotions WHERE name = 'Card spend cashback (sample)');
 
 INSERT INTO promotions (name, promo_type, reward_type, target_audience, reward_amount_minor, reward_currency,

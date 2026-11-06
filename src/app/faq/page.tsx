@@ -3,14 +3,14 @@ import { MarketingPage, Hero, Section, CTA } from "@/components/marketing/ui";
 import { FaqList } from "./FaqList";
 
 export const metadata: Metadata = {
-  title: "Konek FAQs — answers to common questions",
+  title: "raviion FAQs — answers to common questions",
   description:
-    "Answers to common questions about Konek: accounts, cards, eSIM, funding, verification, security and more. Public help you can browse without signing in.",
-  keywords: ["Konek FAQ", "Konek help", "how does Konek work", "Konek questions"],
+    "Answers to common questions about raviion: accounts, cards, eSIM, funding, verification, security and more. Public help you can browse without signing in.",
+  keywords: ["raviion FAQ", "raviion help", "how does raviion work", "raviion questions"],
   alternates: { canonical: "/faq" },
   openGraph: {
-    title: "Konek FAQs",
-    description: "Answers to common questions about Konek.",
+    title: "raviion FAQs",
+    description: "Answers to common questions about raviion.",
     url: "/faq",
     type: "website",
   },
@@ -21,7 +21,7 @@ export default function FaqPage() {
     <MarketingPage>
       <Hero
         eyebrow="FAQs"
-        title={<>Questions? <span className="text-konek-green">We&apos;ve got answers.</span></>}
+        title={<>Questions? <span className="text-raviion-green">We&apos;ve got answers.</span></>}
         subtitle="Quick answers about accounts, cards, eSIM, funding, verification and staying secure. Browse freely — no sign-in needed."
         primary={{ label: "Visit Help Center", href: "/help" }}
         secondary={{ label: "Watch video guides", href: "/help/videos" }}

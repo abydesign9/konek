@@ -2,17 +2,17 @@ import type { Metadata } from "next";
 import { MarketingPage, Hero, Section, FeatureGrid, Stats, CTA } from "@/components/marketing/ui";
 
 export const metadata: Metadata = {
-  title: "About Konek — connecting Africa to the world",
+  title: "About raviion | Building a better way to move and pay",
   description:
-    "Konek is building the connectivity and payments layer for Africans at home and abroad — one app for multi-currency accounts, cards, global eSIM and everyday bills. A product of Topton Global Consult.",
+    "raviion helps Africans move money, pay bills and stay connected from home or abroad. One app for accounts, cards, eSIM data and everyday essentials.",
   keywords: [
-    "about Konek", "Konek fintech", "African connectivity platform",
+    "about raviion", "raviion fintech", "African connectivity platform",
     "Topton Global Consult", "diaspora payments", "global accounts Africa",
   ],
   alternates: { canonical: "/about" },
   openGraph: {
-    title: "About Konek — connecting Africa to the world",
-    description: "One app for accounts, cards, eSIM and bills — for Africans everywhere.",
+    title: "About raviion | Building a better way to move and pay",
+    description: "One app for accounts, cards, eSIM and bills for people living across borders.",
     url: "/about",
     type: "website",
   },
@@ -23,42 +23,33 @@ export default function AboutPage() {
     <MarketingPage>
       <Hero
         eyebrow="About us"
-        title={<>We connect Africa <span className="text-konek-green">to the world.</span></>}
-        subtitle="Konek exists so that being African — at home or anywhere on earth — never means being cut off from money or connection. One account for the tools a global life actually needs."
-        primary={{ label: "Join Konek", href: "/signup" }}
+        title={<>We make life <span className="text-raviion-green">less complicated across borders.</span></>}
+        subtitle="raviion exists for people who need money and connection to work wherever they are. One account for the essentials that matter most."
+        primary={{ label: "Join raviion", href: "/signup" }}
         secondary={{ label: "Explore products", href: "/personal" }}
       />
 
-      <Section eyebrow="Our mission" title="Borders shouldn't decide who belongs to the global economy">
+      <Section eyebrow="Our mission" title="Life should not stop because of distance">
         <div className="max-w-3xl space-y-5 text-lg leading-relaxed text-indigo/70">
           <p>
-            For millions of Africans, the hardest part of ambition isn&apos;t the work — it&apos;s the plumbing.
-            A dollar account you can&apos;t open. A card that gets declined abroad. A SIM that stops working the
-            moment you land. Airtime for family that takes three apps and a prayer to send.
+            For millions of Africans, the hard part is not the work. It is the friction: a dollar account that is hard to open, a card that fails abroad, a SIM that stops working when you land, or the time it takes to send airtime home.
           </p>
           <p>
-            Konek was built to erase that friction. We bring receiving accounts in four currencies, virtual
-            cards that work everywhere, global eSIM connectivity, and the everyday bills you pay each week into
-            a single, trustworthy app — so your money and your connection finally move as fast as you do.
+            raviion was built to remove that friction. We bring multi-currency accounts, virtual cards, eSIM data and essential bill payments into a single app so money and connection work without delays.
           </p>
         </div>
       </Section>
 
-      <Section tint eyebrow="Our story" title="It started with a simple frustration">
+      <Section tint eyebrow="Our story" title="It started with a simple problem">
         <div className="max-w-3xl space-y-5 text-lg leading-relaxed text-indigo/70">
           <p>
-            Konek began with a familiar scene: a talented freelancer in Lagos, paid by clients overseas, losing
-            days and a cut of every invoice just trying to receive and use their own money — while a relative
-            abroad struggled to send airtime home. Two sides of the same broken pipe.
+            raviion began with a familiar problem: a freelancer in Lagos paid by overseas clients, losing days and a chunk of every invoice just to receive and spend their own money while a relative abroad struggled to send airtime home.
           </p>
           <p>
-            We set out to build the layer that should have existed all along. Not another wallet bolted onto a
-            single feature, but one connected experience where accounts, cards, connectivity and bills work
-            together — designed for how Africans actually live, move and support each other across borders.
+            We set out to build the tool that should already exist: one connected experience for accounts, cards, connectivity and bills, designed around how people actually live and move across borders.
           </p>
           <p>
-            Today Konek keeps growing that promise: more currencies, more countries and more ways to stay
-            connected — always with security and fairness at the core.
+            Today raviion keeps expanding that promise with more currencies, more countries and simpler ways to stay connected.
           </p>
         </div>
       </Section>
@@ -66,12 +57,12 @@ export default function AboutPage() {
       <Section eyebrow="What we stand for" title="The principles behind every feature">
         <FeatureGrid
           items={[
-            { icon: "🔒", title: "Trust first", body: "Encryption, PINs, fraud monitoring and verification aren't add-ons — they're the foundation everything else is built on." },
-            { icon: "🌍", title: "Built for movement", body: "For students, freelancers, families and founders who live between countries and can't afford to be cut off." },
-            { icon: "⚖️", title: "Fair by design", body: "Transparent pricing and honest rates. We win when you keep more of your money, not less." },
-            { icon: "⚡", title: "Effortless", body: "The hard engineering is ours to carry. What you feel is a tap that just works." },
-            { icon: "🤝", title: "Community-powered", body: "Agents, partners and referrals extend Konek to the people who need it, wherever they are." },
-            { icon: "📈", title: "Here to last", body: "We build durable financial infrastructure — the kind you can rely on for years, not a trend." },
+            { icon: "🔒", title: "Trust first", body: "Encryption, PIN checks, fraud monitoring and verification are the base layer, not an afterthought." },
+            { icon: "🌍", title: "Built for movement", body: "For students, freelancers, families and founders who live between countries and cannot afford to be cut off." },
+            { icon: "⚖️", title: "Clear pricing", body: "Straightforward fees and honest rates. You keep more of what you earn." },
+            { icon: "⚡", title: "Fast by default", body: "The work is behind the scenes. What you feel is a simple tap that works." },
+            { icon: "🤝", title: "Built with people", body: "Agents, partners and referrals help bring raviion to the people who need it most." },
+            { icon: "📈", title: "Made to last", body: "We build durable financial infrastructure that people can rely on for years." },
           ]}
         />
       </Section>
@@ -81,8 +72,8 @@ export default function AboutPage() {
           items={[
             { value: "4", label: "Currencies supported" },
             { value: "190+", label: "eSIM destinations" },
-            { value: "10+", label: "Bill & VAS categories" },
-            { value: "1", label: "App to run it all" },
+            { value: "10+", label: "Bill categories" },
+            { value: "1", label: "App for daily life" },
           ]}
         />
       </Section>
@@ -90,20 +81,17 @@ export default function AboutPage() {
       <Section eyebrow="Who we are" title="A product of Topton Global Consult">
         <div className="max-w-3xl space-y-5 text-lg leading-relaxed text-indigo/70">
           <p>
-            Konek is a product of <strong className="text-indigo">Topton Global Consult</strong> — the team
-            behind our technology, partnerships and standards of care. It&apos;s the foundation that lets us move
-            quickly while holding a high bar for security, compliance and reliability.
+            raviion is built by <strong className="text-indigo">Topton Global Consult</strong>, the team behind the technology, partnerships and standards that support the product.
           </p>
           <p>
-            We&apos;re just getting started, and we&apos;d love for you to be part of it — as a customer, a partner,
-            or a member of the team building it.
+            We are just getting started, and we would love for you to be part of it as a customer, a partner or a teammate.
           </p>
         </div>
       </Section>
 
       <CTA
-        title="Come build the connected future with us"
-        subtitle="Whether you want to use Konek or help build it, there's a place for you here."
+        title="Join the next chapter of connected living"
+        subtitle="Whether you want to use raviion or help build it, there is a place for you here."
         primary={{ label: "Get started", href: "/signup" }}
         secondary={{ label: "See careers", href: "/company/careers" }}
       />

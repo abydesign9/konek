@@ -227,10 +227,10 @@ function BuyDataTopup() {
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
           placeholder="+1 555 123 4567"
-          className="w-full rounded-xl border border-indigo/20 px-4 py-3 text-base mb-2 focus:outline-none focus:ring-2 focus:ring-konek-green"
+          className="w-full rounded-xl border border-indigo/20 px-4 py-3 text-base mb-2 focus:outline-none focus:ring-2 focus:ring-raviion-green"
         />
         {detected && !manualCountry && (
-          <p className="text-xs text-konek-green font-medium mb-4">
+          <p className="text-xs text-raviion-green font-medium mb-4">
             Detected {detected.flag} {detected.name}
           </p>
         )}
@@ -243,7 +243,7 @@ function BuyDataTopup() {
             setCountryCode(e.target.value);
             setSelectedPlan(null);
           }}
-          className="w-full rounded-xl border border-indigo/20 bg-white px-4 py-3 text-base mb-6 focus:outline-none focus:ring-2 focus:ring-konek-green"
+          className="w-full rounded-xl border border-indigo/20 bg-white px-4 py-3 text-base mb-6 focus:outline-none focus:ring-2 focus:ring-raviion-green"
         >
           {COUNTRIES.map((c) => (
             <option key={c.code} value={c.code}>
@@ -268,7 +268,7 @@ function BuyDataTopup() {
                   onClick={() => setSelectedPlan(p)}
                   className={`rounded-xl border px-4 py-3 text-left transition ${
                     active
-                      ? "border-konek-green bg-konek-green/10"
+                      ? "border-raviion-green bg-raviion-green/10"
                       : "border-indigo/15 hover:border-indigo/30"
                   }`}
                 >
@@ -278,7 +278,7 @@ function BuyDataTopup() {
                   {p.meta?.validityDays ? (
                     <p className="text-xs text-indigo/55">{p.meta.validityDays} days</p>
                   ) : null}
-                  <p className="mt-1 text-sm font-semibold text-konek-green">{usd(Number(p.price_minor))}</p>
+                  <p className="mt-1 text-sm font-semibold text-raviion-green">{usd(Number(p.price_minor))}</p>
                 </button>
               );
             })}

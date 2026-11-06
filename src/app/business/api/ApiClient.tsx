@@ -89,7 +89,7 @@ export function ApiClient() {
         </div>
 
         {revealedKey && (
-          <div className="konek-card-shadow mt-5 rounded-2xl border border-gold/40 bg-gold/10 p-4">
+          <div className="raviion-card-shadow mt-5 rounded-2xl border border-gold/40 bg-gold/10 p-4">
             <p className="text-sm font-bold text-indigo">Copy this key now — it won&apos;t be shown again</p>
             <code className="mt-2 block overflow-x-auto rounded-lg bg-white px-3 py-2.5 text-xs">{revealedKey}</code>
             <button onClick={() => setRevealedKey(null)} className="mt-2 text-xs font-semibold text-indigo/60 hover:text-indigo">Done, I&apos;ve copied it</button>
@@ -97,14 +97,14 @@ export function ApiClient() {
         )}
 
         {showCreate && (
-          <div className="konek-card-shadow mt-5 rounded-2xl border border-border-soft bg-white p-4">
+          <div className="raviion-card-shadow mt-5 rounded-2xl border border-border-soft bg-white p-4">
             <div className="flex flex-wrap items-center gap-2">
               <input value={label} onChange={(e) => setLabel(e.target.value)} placeholder="Label, e.g. Payroll integration" className="min-w-0 flex-1 rounded-xl border border-border-soft px-3 py-2.5 text-sm" />
               <select value={mode} onChange={(e) => setMode(e.target.value as "sandbox" | "live")} className="rounded-xl border border-border-soft px-3 py-2.5 text-sm">
                 <option value="sandbox">Sandbox</option>
                 <option value="live">Live</option>
               </select>
-              <button onClick={createKey} disabled={busy} className="rounded-xl bg-konek-green px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50">
+              <button onClick={createKey} disabled={busy} className="rounded-xl bg-raviion-green px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50">
                 {busy ? "Creating…" : "Create"}
               </button>
             </div>
@@ -112,7 +112,7 @@ export function ApiClient() {
           </div>
         )}
 
-        <div className="konek-card-shadow mt-6 divide-y divide-border-soft rounded-2xl bg-white">
+        <div className="raviion-card-shadow mt-6 divide-y divide-border-soft rounded-2xl bg-white">
           {(keys ?? []).map((k) => (
             <div key={k.id} className="flex items-center justify-between gap-3 p-4">
               <div className="min-w-0">
@@ -137,7 +137,7 @@ export function ApiClient() {
           )}
         </div>
 
-        <div className="konek-card-shadow mt-6 rounded-2xl border border-border-soft bg-white p-5">
+        <div className="raviion-card-shadow mt-6 rounded-2xl border border-border-soft bg-white p-5">
           <p className="mb-3 text-sm font-bold text-indigo">Trigger a distribution</p>
           <pre className="overflow-x-auto rounded-xl bg-indigo/[0.04] p-4 text-xs leading-relaxed text-indigo/80">
 {`POST https://YOUR_DOMAIN/api/v1/business/distributions
@@ -162,14 +162,14 @@ Idempotency-Key: <a key you generate, unique per distribution>
         </div>
 
         <p className="mb-3 mt-8 text-sm font-bold text-indigo">Recent API activity</p>
-        <div className="konek-card-shadow divide-y divide-border-soft rounded-2xl bg-white">
+        <div className="raviion-card-shadow divide-y divide-border-soft rounded-2xl bg-white">
           {(requests ?? []).map((r) => (
             <div key={r.id} className="flex items-center justify-between p-4 text-sm">
               <div>
                 <p className="font-semibold text-indigo">{r.method} {r.path}</p>
                 <p className="text-xs text-text-secondary">{r.key_label} · {new Date(r.created_at).toLocaleString()}</p>
               </div>
-              <span className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${r.status_code < 300 ? "bg-konek-green/10 text-konek-green" : "bg-red-50 text-red-600"}`}>
+              <span className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${r.status_code < 300 ? "bg-raviion-green/10 text-raviion-green" : "bg-red-50 text-red-600"}`}>
                 {r.status_code}
               </span>
             </div>

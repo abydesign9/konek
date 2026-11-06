@@ -1,5 +1,5 @@
 -- ============================================================
--- KONEK — Migration 0038: sample catalogue for every product
+-- Raviion — Migration 0038: sample catalogue for every product
 --
 -- Seeds demo catalog_items so each product page has real content while the live
 -- vendor adapters are pending. vendor='manual' so the catalog-sync pipeline never

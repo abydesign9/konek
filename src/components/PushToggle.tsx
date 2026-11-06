@@ -43,7 +43,7 @@ export function PushToggle() {
   if (supported === null) return null;
 
   return (
-    <div className="konek-card-shadow rounded-2xl bg-white px-4 py-3.5">
+    <div className="raviion-card-shadow rounded-2xl bg-white px-4 py-3.5">
       <div className="flex items-center justify-between gap-3">
         <span className="min-w-0 flex-1">
           <span className="block text-sm font-semibold text-indigo">Push notifications on this device</span>
@@ -56,7 +56,7 @@ export function PushToggle() {
             onClick={toggle}
             disabled={busy}
             className={`shrink-0 rounded-full px-4 py-1.5 text-xs font-semibold disabled:opacity-50 ${
-              on ? "bg-konek-green/10 text-konek-green" : "bg-indigo text-white"
+              on ? "bg-raviion-green/10 text-raviion-green" : "bg-indigo text-white"
             }`}
           >
             {busy ? "…" : on ? "On" : "Enable"}
@@ -67,7 +67,7 @@ export function PushToggle() {
       </div>
       {iosNeedsInstall && (
         <p className="mt-2 text-xs text-indigo/50">
-          On iPhone, add Konek to your Home Screen first (Share, then Add to Home Screen). Push works from the
+          On iPhone, add raviion to your Home Screen first (Share, then Add to Home Screen). Push works from the
           installed app on iOS 16.4 and newer.
         </p>
       )}

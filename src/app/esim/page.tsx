@@ -76,7 +76,7 @@ right={
 
 <Link
 href="/marketplace"
-className="text-sm font-semibold text-konek-green"
+className="text-sm font-semibold text-raviion-green"
 >
 Buy
 </Link>
@@ -94,7 +94,7 @@ Buy
 
 
 <p className="text-xs uppercase text-white/60">
-Konek Global Connectivity
+raviion Global Connectivity
 </p>
 
 
@@ -212,7 +212,7 @@ Activated {formatDateTime(item.created_at)}
 
 
 
-<span className="text-konek-green font-semibold text-sm">
+<span className="text-raviion-green font-semibold text-sm">
 
 View →
 
@@ -286,7 +286,7 @@ Validity
 
 
 
-<div className="mt-7 rounded-3xl border border-konek-green/30 bg-konek-green/5 p-5">
+<div className="mt-7 rounded-3xl border border-raviion-green/30 bg-raviion-green/5 p-5">
 
 
 <h3 className="font-bold text-indigo">

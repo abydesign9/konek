@@ -76,7 +76,7 @@ export default async function WalletPage() {
             <p className="text-sm text-indigo/60 mb-6">
 
               Your BVN verification is required before
-              creating and funding your Konek wallet.
+              creating and funding your raviion wallet.
 
             </p>
 
@@ -189,7 +189,7 @@ export default async function WalletPage() {
 
             href="/wallet/dollar-account"
 
-            className="rounded-2xl bg-white konek-card-shadow px-4 py-3.5 konek-tile"
+            className="rounded-2xl bg-white raviion-card-shadow px-4 py-3.5 raviion-tile"
 
           >
 
@@ -224,13 +224,13 @@ export default async function WalletPage() {
 
             href="/cards"
 
-            className="rounded-2xl bg-white konek-card-shadow px-4 py-3.5 konek-tile"
+            className="rounded-2xl bg-white raviion-card-shadow px-4 py-3.5 raviion-tile"
 
           >
 
-            <span className="mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-konek-green/10">
+            <span className="mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-raviion-green/10">
 
-              <IconWallet className="h-4.5 w-4.5 text-konek-green" />
+              <IconWallet className="h-4.5 w-4.5 text-raviion-green" />
 
             </span>
 
@@ -285,7 +285,7 @@ export default async function WalletPage() {
 
         {recent.length === 0 ? (
 
-          <p className="rounded-2xl bg-white konek-card-shadow px-4 py-6 text-center text-sm text-indigo/50">
+          <p className="rounded-2xl bg-white raviion-card-shadow px-4 py-6 text-center text-sm text-indigo/50">
 
             No transactions yet.
 
@@ -305,7 +305,7 @@ export default async function WalletPage() {
 
                 href={`/wallet/receipt/${t.id}`}
 
-                className="flex items-center justify-between gap-3 rounded-2xl bg-white konek-card-shadow px-4 py-3 konek-tile"
+                className="flex items-center justify-between gap-3 rounded-2xl bg-white raviion-card-shadow px-4 py-3 raviion-tile"
 
               >
 

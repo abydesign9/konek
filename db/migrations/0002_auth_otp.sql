@@ -1,5 +1,5 @@
 -- ============================================================
--- KONEK — Migration 0002: phone+OTP auth
+-- Raviion — Migration 0002: phone+OTP auth
 -- ============================================================
 
 CREATE TABLE otp_codes (

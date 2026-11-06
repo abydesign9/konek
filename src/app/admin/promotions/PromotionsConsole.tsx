@@ -121,7 +121,7 @@ export function PromotionsConsole() {
         title="Promotions"
         description="Signup, deposit, virtual account, card, cashback and milestone promos. Cash rewards land in the customer's locked bonus wallet and move to their main wallet once the unlock conditions (minimum deposit and qualifying spend) are met."
       />
-      {msg && <p className="mb-3 text-sm font-semibold text-konek-green">{msg}</p>}
+      {msg && <p className="mb-3 text-sm font-semibold text-raviion-green">{msg}</p>}
 
       <div className="mb-4">
         <button onClick={() => setShowForm((s) => !s)} className="rounded-lg bg-indigo px-4 py-2 text-sm font-semibold text-white">
@@ -212,7 +212,7 @@ export function PromotionsConsole() {
             </Field>
           </div>
 
-          <button onClick={create} className="mt-4 rounded-lg bg-konek-green px-5 py-2 text-sm font-semibold text-white">
+          <button onClick={create} className="mt-4 rounded-lg bg-raviion-green px-5 py-2 text-sm font-semibold text-white">
             Create promo
           </button>
           <style jsx>{`.in{margin-top:4px;width:100%;border-radius:8px;border:1px solid var(--border-soft,#E4DED5);padding:8px 10px;font-size:13px}`}</style>

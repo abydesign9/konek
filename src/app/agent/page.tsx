@@ -34,9 +34,9 @@ interface AgentData {
 }
 
 const RESPONSIBILITIES = [
-  { t: "Sell Konek services", d: "Airtime, data, bills and eSIMs to your campus or community — every delivered sale earns your commission rate." },
+  { t: "Sell raviion services", d: "Airtime, data, bills and eSIMs to your campus or community — every delivered sale earns your commission rate." },
   { t: "Keep your float funded", d: "Sales are paid from your wallet float. Top it up so you never miss a sale." },
-  { t: "Bring people onto Konek", d: "Help customers sign up and verify — referred users count toward your performance." },
+  { t: "Bring people onto raviion", d: "Help customers sign up and verify — referred users count toward your performance." },
   { t: "Stay in good standing", d: "Fraud-free sales only. Suspended agents forfeit unpaid commissions." },
 ];
 
@@ -71,7 +71,7 @@ export default function AgentPage() {
       <div className="max-w-lg mx-auto px-4 sm:px-6 py-6">
         {!agent && (
           <div className="rounded-2xl border border-indigo/10 bg-white p-5">
-            <h2 className="font-heading text-lg font-bold text-indigo mb-2">Become a Konek agent</h2>
+            <h2 className="font-heading text-lg font-bold text-indigo mb-2">Become a raviion agent</h2>
             <p className="text-sm text-indigo/70 mb-4">
               Sell airtime, data, bills and eSIMs to your campus or community and earn a commission on
               every sale you make through your own wallet.
@@ -79,7 +79,7 @@ export default function AgentPage() {
             <div className="mb-5 flex flex-col gap-3">
               {RESPONSIBILITIES.map((r) => (
                 <div key={r.t} className="flex items-start gap-3">
-                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-konek-green" />
+                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-raviion-green" />
                   <div>
                     <p className="text-sm font-semibold text-indigo">{r.t}</p>
                     <p className="text-xs text-indigo/55">{r.d}</p>
@@ -95,7 +95,7 @@ export default function AgentPage() {
               {applying ? "Applying…" : "Apply to become an agent"}
             </button>
             <p className="mt-3 text-center text-xs text-indigo/50">
-              Applications are reviewed by the Konek team before you can start selling.
+              Applications are reviewed by the raviion team before you can start selling.
             </p>
           </div>
         )}
@@ -104,7 +104,7 @@ export default function AgentPage() {
           <div className="rounded-2xl border border-gold/30 bg-gold/10 p-5">
             <h2 className="font-heading font-bold text-indigo mb-1">Application under review 🟡</h2>
             <p className="text-sm text-indigo/70">
-              The Konek team is reviewing your agent application. You&apos;ll be able to start selling
+              The raviion team is reviewing your agent application. You&apos;ll be able to start selling
               and earning commission as soon as you&apos;re approved.
             </p>
           </div>
@@ -125,11 +125,11 @@ export default function AgentPage() {
             <div className="rounded-3xl bg-indigo px-5 py-5 text-white">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs text-white/60 mb-1">Konek agent · <span className="capitalize">{agent.tier}</span> tier</p>
+                  <p className="text-xs text-white/60 mb-1">raviion agent · <span className="capitalize">{agent.tier}</span> tier</p>
                   <p className="font-heading text-2xl font-bold">{naira(agent.unpaidMinor)}</p>
-                  <p className="text-xs text-white/70">unpaid commission — paid out by Konek</p>
+                  <p className="text-xs text-white/70">unpaid commission — paid out by raviion</p>
                 </div>
-                <span className="rounded-full bg-konek-green/25 px-3 py-1.5 text-xs font-semibold text-konek-green">
+                <span className="rounded-full bg-raviion-green/25 px-3 py-1.5 text-xs font-semibold text-raviion-green">
                   {(agent.commissionRate * 100).toFixed(1)}% rate
                 </span>
               </div>
@@ -155,7 +155,7 @@ export default function AgentPage() {
                   <p className="text-xs text-indigo/55">volume</p>
                 </div>
                 <div>
-                  <p className="font-heading text-lg font-bold text-konek-green">{naira(agent.month.earnedMinor)}</p>
+                  <p className="font-heading text-lg font-bold text-raviion-green">{naira(agent.month.earnedMinor)}</p>
                   <p className="text-xs text-indigo/55">earned</p>
                 </div>
               </div>
@@ -169,7 +169,7 @@ export default function AgentPage() {
               </div>
               <div className="rounded-2xl border border-indigo/10 bg-white p-4">
                 <p className="text-xs text-indigo/60 mb-1">Paid to date</p>
-                <p className="font-heading text-lg font-bold text-konek-green">{naira(agent.paidMinor)}</p>
+                <p className="font-heading text-lg font-bold text-raviion-green">{naira(agent.paidMinor)}</p>
               </div>
             </div>
 
@@ -193,7 +193,7 @@ export default function AgentPage() {
                         <p className="text-xs text-indigo/50">{new Date(r.createdAt).toLocaleDateString()}</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-sm font-bold text-konek-green">+{naira(r.amountMinor)}</p>
+                        <p className="text-sm font-bold text-raviion-green">+{naira(r.amountMinor)}</p>
                         <p className="text-[11px] text-indigo/50">{r.paid ? "paid" : "pending payout"}</p>
                       </div>
                     </div>
@@ -208,7 +208,7 @@ export default function AgentPage() {
               <div className="flex flex-col gap-3">
                 {RESPONSIBILITIES.map((r) => (
                   <div key={r.t} className="flex items-start gap-3">
-                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-konek-green" />
+                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-raviion-green" />
                     <div>
                       <p className="text-sm font-semibold text-indigo">{r.t}</p>
                       <p className="text-xs text-indigo/55">{r.d}</p>

@@ -66,7 +66,7 @@ export function PreferencesClient() {
           </div>
           <Link
             href="/notifications"
-            className="flex items-center justify-between rounded-2xl bg-white px-4 py-3.5 konek-card-shadow konek-tile"
+            className="flex items-center justify-between rounded-2xl bg-white px-4 py-3.5 raviion-card-shadow raviion-tile"
           >
             <span className="min-w-0 flex-1">
               <span className="block text-sm font-semibold text-indigo">Notification preferences</span>
@@ -78,7 +78,7 @@ export function PreferencesClient() {
 
         <section>
           <p className="mb-3 text-xs font-bold uppercase tracking-wide text-indigo/40">Appearance</p>
-          <div className="konek-card-shadow rounded-2xl bg-white px-4 py-3.5">
+          <div className="raviion-card-shadow rounded-2xl bg-white px-4 py-3.5">
             <p className="mb-2 text-sm font-semibold text-indigo">Theme</p>
             <div className="flex gap-2">
               {THEMES.map((t) => (
@@ -103,7 +103,7 @@ export function PreferencesClient() {
 
         <section>
           <p className="mb-3 text-xs font-bold uppercase tracking-wide text-indigo/40">Language</p>
-          <div className="konek-card-shadow rounded-2xl bg-white px-4 py-3.5">
+          <div className="raviion-card-shadow rounded-2xl bg-white px-4 py-3.5">
             <div className="flex gap-2">
               {LANGUAGES.map((l) => (
                 <button

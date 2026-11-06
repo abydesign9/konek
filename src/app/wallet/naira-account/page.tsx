@@ -58,10 +58,10 @@ export default function NairaAccountPage() {
 
       <div className="mx-auto max-w-lg px-5 py-6">
         <div className="mb-6 rounded-3xl bg-indigo p-6 text-white">
-          <p className="text-sm text-white/60">Your Konek Naira account</p>
+          <p className="text-sm text-white/60">Your raviion Naira account</p>
           <h1 className="mt-1 text-xl font-bold">Get paid directly to your wallet</h1>
           <p className="mt-2 text-sm text-white/70">
-            Share this account number. Any transfer to it lands in your Konek wallet instantly.
+            Share this account number. Any transfer to it lands in your raviion wallet instantly.
           </p>
         </div>
 

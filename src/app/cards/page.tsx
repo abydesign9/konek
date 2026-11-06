@@ -73,7 +73,7 @@ export default function CardsPage() {
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-heading text-lg font-bold">Konek</span>
+                  <span className="font-heading text-lg font-bold">raviion</span>
                   <span className="rounded-full bg-white/15 px-2.5 py-0.5 text-[11px] font-semibold uppercase">{c.currency}</span>
                 </div>
                 <p className="mt-10 text-lg tracking-widest">•••• •••• •••• {c.last4}</p>
