@@ -8,7 +8,7 @@ export default function HomeLoading() {
         {/* Greeting + wallet */}
         <section className="px-5 pt-6">
           <div className="h-4 w-28 rounded bg-indigo/10" />
-          <div className="mt-5 rounded-2xl bg-white px-5 py-6 konek-card-shadow">
+          <div className="mt-5 rounded-2xl bg-white px-5 py-6 raviion-card-shadow">
             <div className="h-3 w-24 rounded bg-indigo/10" />
             <div className="mt-3 h-8 w-40 rounded bg-indigo/15" />
             <div className="mt-4 flex gap-3">
@@ -50,7 +50,7 @@ export default function HomeLoading() {
           <div className="h-3 w-32 rounded bg-indigo/10" />
           <div className="mt-3 flex flex-col gap-2.5">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="h-14 w-full rounded-2xl bg-white konek-card-shadow" />
+              <div key={i} className="h-14 w-full rounded-2xl bg-white raviion-card-shadow" />
             ))}
           </div>
         </section>

@@ -112,7 +112,7 @@ export function RecurringTopupsClient() {
 
       <div className="mx-auto flex max-w-lg flex-col gap-4 px-5 py-6">
         {showForm && (
-          <div className="konek-card-shadow flex flex-col gap-3 rounded-2xl bg-white px-5 py-5">
+          <div className="raviion-card-shadow flex flex-col gap-3 rounded-2xl bg-white px-5 py-5">
             <input
               value={phone}
               onChange={(e) => onPhoneChange(e.target.value)}
@@ -173,7 +173,7 @@ export function RecurringTopupsClient() {
           </p>
         )}
         {schedules?.map((s) => (
-          <div key={s.id} className="konek-card-shadow flex items-center gap-3 rounded-2xl bg-white px-4 py-3.5">
+          <div key={s.id} className="raviion-card-shadow flex items-center gap-3 rounded-2xl bg-white px-4 py-3.5">
             <div className="min-w-0 flex-1">
               <p className="text-sm font-semibold text-indigo">
                 {formatUsd(Number(s.amount_minor))} · {s.interval_days === 7 ? "Weekly" : "Monthly"}

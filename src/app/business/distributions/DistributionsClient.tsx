@@ -91,15 +91,15 @@ export function DistributionsClient() {
         <p className="mt-1 text-sm text-text-secondary">Send airtime and data benefits to your employees.</p>
 
         {!kybVerified ? (
-          <div className="konek-card-shadow mt-6 rounded-2xl bg-white p-6 text-center text-sm text-text-secondary">
+          <div className="raviion-card-shadow mt-6 rounded-2xl bg-white p-6 text-center text-sm text-text-secondary">
             Distributions unlock once an admin verifies your KYB status.
           </div>
         ) : !mayDistribute ? (
-          <div className="konek-card-shadow mt-6 rounded-2xl bg-white p-6 text-center text-sm text-text-secondary">
+          <div className="raviion-card-shadow mt-6 rounded-2xl bg-white p-6 text-center text-sm text-text-secondary">
             Your role ({role}) can view distributions but not send them.
           </div>
         ) : (
-          <div className="konek-card-shadow mt-6 rounded-2xl bg-white p-6">
+          <div className="raviion-card-shadow mt-6 rounded-2xl bg-white p-6">
             <p className="mb-4 font-heading text-base font-bold text-indigo">Create Employee Benefit</p>
 
             <label className="mb-2 block text-sm text-text-secondary">Distribution Name</label>
@@ -157,7 +157,7 @@ export function DistributionsClient() {
         )}
 
         <h2 className="mt-8 font-heading text-base font-bold text-indigo">History</h2>
-        <div className="konek-card-shadow mt-3 divide-y divide-border-soft rounded-2xl bg-white">
+        <div className="raviion-card-shadow mt-3 divide-y divide-border-soft rounded-2xl bg-white">
           {batches.length === 0 && <p className="px-5 py-8 text-center text-sm text-text-secondary">No distributions yet.</p>}
           {batches.map((b) => (
             <div key={b.id} className="flex items-center justify-between px-5 py-4">

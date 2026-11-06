@@ -17,9 +17,50 @@ import { NextRequest, NextResponse } from "next/server";
 // Login/signup are deliberately treated as app (strict) even though they're
 // public — they handle credentials.
 
+const PROTECTED_API_PREFIXES = ["/api/keepalive", "/api/cron", "/api/webhooks", "/api/v1"];
+
+function isStateChangingMethod(method: string): boolean {
+  return ["POST", "PUT", "PATCH", "DELETE"].includes(method.toUpperCase());
+}
+
+function isAllowedByAuthorizationHeader(request: NextRequest): boolean {
+  return !!request.headers.get("authorization");
+}
+
+function sameOriginHost(candidate: string, host: string): boolean {
+  try {
+    const url = new URL(candidate);
+    return url.host.replace(/:\d+$/, "") === host.replace(/:\d+$/, "");
+  } catch {
+    return false;
+  }
+}
+
+function isSameOriginRequest(request: NextRequest): boolean {
+  const host = request.headers.get("host");
+  if (!host) return false;
+
+  const origin = request.headers.get("origin");
+  if (origin && sameOriginHost(origin, host)) return true;
+
+  const referer = request.headers.get("referer");
+  if (referer && sameOriginHost(referer, host)) return true;
+
+  return false;
+}
+
+function shouldEnforceCsrf(request: NextRequest): boolean {
+  if (!request.nextUrl.pathname.startsWith("/api/")) return false;
+  if (!isStateChangingMethod(request.method)) return false;
+
+  const pathname = request.nextUrl.pathname;
+  if (PROTECTED_API_PREFIXES.some((prefix) => pathname.startsWith(prefix))) return false;
+
+  return true;
+}
+
 const MARKETING_PATHS = new Set([
   "/",
-  "/timon-preview",
   "/personal",
   "/business-solutions",
   "/connectivity",
@@ -60,6 +101,10 @@ const COMMON_DIRECTIVES = (isDev: boolean) => [
 export function middleware(request: NextRequest) {
   const isDev = process.env.NODE_ENV !== "production";
 
+  if (shouldEnforceCsrf(request) && !isSameOriginRequest(request) && !isAllowedByAuthorizationHeader(request)) {
+    return NextResponse.json({ error: "csrf validation failed" }, { status: 403 });
+  }
+
   // ---- Public marketing pages: relaxed, static-cacheable CSP (no nonce) ----
   if (isPublicMarketing(request.nextUrl.pathname)) {
     const csp = [
@@ -69,6 +114,9 @@ export function middleware(request: NextRequest) {
     ].join("; ");
     const res = NextResponse.next();
     res.headers.set("Content-Security-Policy", csp);
+    res.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+    res.headers.set("X-Content-Type-Options", "nosniff");
+    res.headers.set("X-Frame-Options", "DENY");
     return res;
   }
 
@@ -86,6 +134,9 @@ export function middleware(request: NextRequest) {
 
   const response = NextResponse.next({ request: { headers: requestHeaders } });
   response.headers.set("Content-Security-Policy", csp);
+  response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  response.headers.set("X-Content-Type-Options", "nosniff");
+  response.headers.set("X-Frame-Options", "DENY");
   return response;
 }
 

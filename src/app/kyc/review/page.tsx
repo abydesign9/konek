@@ -187,7 +187,7 @@ function ReviewItem({
 }) {
   return (
     <div className="flex items-center gap-3 rounded-xl bg-indigo/5 p-4">
-      <div className="h-8 w-8 rounded-full bg-konek-green/20 flex items-center justify-center text-konek-green font-bold">
+      <div className="h-8 w-8 rounded-full bg-raviion-green/20 flex items-center justify-center text-raviion-green font-bold">
         ✓
       </div>
 

@@ -12,7 +12,7 @@ import { BottomNav } from "./BottomNav";
 // focused flows (KYC) where a tab bar would invite abandoning the flow.
 // Also hidden on /business — that hub has its own complete nav shell
 // (BusinessShell: sidebar on desktop, drawer + header on mobile, with its
-// own "Back to Konek" link), so this bar would just duplicate/collide with it.
+// own "Back to raviion" link), so this bar would just duplicate/collide with it.
 const SHOW_PREFIXES = [
   "/home",
   "/wallet",

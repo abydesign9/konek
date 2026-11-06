@@ -8,7 +8,7 @@ import { sendNotification } from "@/lib/notifications/send";
 
 // M10 Spin Rewards. One free spin per calendar day. Prizes are coins and/or
 // small NGN product credit — never cash: credit lands in the NGN wallet,
-// which can only be spent on Konek services (no withdrawal path exists in
+// which can only be spent on raviion services (no withdrawal path exists in
 // Phase 1), satisfying "Product Credit Only, Never Cash" from the spec.
 interface SpinOutcome {
   label: string;

@@ -11,8 +11,6 @@ import {
   type ColumnMapping,
   type MapField,
 } from "@/lib/marketplace/planSheet";
-import type { SupplierPlanInput } from "@/lib/marketplace/import";
-
 interface Supplier {
   id: string;
   name: string | null;
@@ -144,7 +142,7 @@ export function MarketplaceConsole() {
         ))}
       </div>
 
-      {message && <p className="mb-3 text-sm font-semibold text-konek-green">{message}</p>}
+      {message && <p className="mb-3 text-sm font-semibold text-raviion-green">{message}</p>}
 
       {tab === "dashboard" && <Dashboard stats={stats} suppliers={suppliers} imports={imports} />}
       {tab === "catalog" && <Catalog products={products} onReload={loadCatalog} onMsg={setMessage} />}
@@ -204,7 +202,7 @@ function Dashboard({ stats, suppliers, imports }: { stats: Stats | null; supplie
                   <tr key={s.id} className="border-b border-border-soft">
                     <td className="py-2 pr-3 font-medium text-indigo">{s.name ?? s.id}</td>
                     <td className="py-2 pr-3">
-                      <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${s.enabled && s.healthy ? "bg-konek-green/10 text-konek-green" : "bg-red-50 text-red-600"}`}>
+                      <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${s.enabled && s.healthy ? "bg-raviion-green/10 text-raviion-green" : "bg-red-50 text-red-600"}`}>
                         {s.enabled ? (s.healthy ? "healthy" : "down") : "disabled"}
                       </span>
                     </td>
@@ -323,7 +321,7 @@ function Catalog({
       {selected.size > 0 && (
         <div className="mb-3 flex items-center gap-2 rounded-lg bg-hover-tint px-3 py-2 text-xs">
           <span className="font-semibold text-indigo">{selected.size} selected</span>
-          <button onClick={() => bulk("activate")} className="rounded bg-konek-green/10 px-2 py-1 font-semibold text-konek-green">Activate</button>
+          <button onClick={() => bulk("activate")} className="rounded bg-raviion-green/10 px-2 py-1 font-semibold text-raviion-green">Activate</button>
           <button onClick={() => bulk("deactivate")} className="rounded bg-gold/10 px-2 py-1 font-semibold text-gold">Deactivate</button>
           <button onClick={() => bulk("delete")} className="rounded bg-red-50 px-2 py-1 font-semibold text-red-600">Delete</button>
           <button onClick={() => setSelected(new Set())} className="ml-auto text-text-secondary">Clear</button>
@@ -370,9 +368,9 @@ function Catalog({
                         className="w-20 rounded-lg border border-border-soft px-2 py-1 text-right text-xs tabular-nums"
                         title="Set a fixed price override"
                       />
-                      {p.promo_price_minor && <span className="ml-1 text-[10px] font-semibold text-konek-green">PROMO</span>}
+                      {p.promo_price_minor && <span className="ml-1 text-[10px] font-semibold text-raviion-green">PROMO</span>}
                     </td>
-                    <td className={`py-2 pr-3 text-right text-xs tabular-nums ${m == null ? "text-text-secondary" : m < 0 ? "text-red-600" : m < 20 ? "text-gold" : "text-konek-green"}`}>
+                    <td className={`py-2 pr-3 text-right text-xs tabular-nums ${m == null ? "text-text-secondary" : m < 0 ? "text-red-600" : m < 20 ? "text-gold" : "text-raviion-green"}`}>
                       {m == null ? "—" : `${m.toFixed(0)}%`}
                     </td>
                     <td className="py-2 pr-3 text-xs">
@@ -382,7 +380,7 @@ function Catalog({
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => override(p.id, { active: !p.active })}
-                          className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${p.active ? "bg-konek-green/10 text-konek-green" : "bg-red-50 text-red-600"}`}
+                          className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${p.active ? "bg-raviion-green/10 text-raviion-green" : "bg-red-50 text-red-600"}`}
                         >
                           {p.active ? "live" : "off"}
                         </button>
@@ -500,7 +498,7 @@ function Pricing({ rules, onReload, onMsg }: { rules: Rule[]; onReload: () => vo
             <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
               <Stat label="Applied rule" value={preview.appliedRule} />
               <Stat label="Markup" value={`${preview.markupPct}%`} />
-              <Stat label="Selling price" value={usd(preview.sellingPriceMinor)} tone="text-konek-green" />
+              <Stat label="Selling price" value={usd(preview.sellingPriceMinor)} tone="text-raviion-green" />
               <Stat label="Profit" value={usd(preview.profitMinor)} />
               <Stat label="Margin" value={`${preview.marginPct}%`} />
             </div>
@@ -515,7 +513,7 @@ function Pricing({ rules, onReload, onMsg }: { rules: Rule[]; onReload: () => vo
             <input value={newRule.min} onChange={(e) => setNewRule((r) => ({ ...r, min: e.target.value.replace(/[^\d.]/g, "") }))} placeholder="min $" className="w-16 rounded-lg border border-border-soft px-2 py-1.5 text-xs" />
             <input value={newRule.max} onChange={(e) => setNewRule((r) => ({ ...r, max: e.target.value.replace(/[^\d.]/g, "") }))} placeholder="max $" className="w-16 rounded-lg border border-border-soft px-2 py-1.5 text-xs" />
             <input value={newRule.markup} onChange={(e) => setNewRule((r) => ({ ...r, markup: e.target.value.replace(/[^\d.]/g, "") }))} placeholder="markup %" className="w-20 rounded-lg border border-border-soft px-2 py-1.5 text-xs" />
-            <button onClick={addRule} className="rounded-lg bg-konek-green px-3 py-1.5 text-xs font-semibold text-white">
+            <button onClick={addRule} className="rounded-lg bg-raviion-green px-3 py-1.5 text-xs font-semibold text-white">
               Add
             </button>
           </div>
@@ -687,7 +685,7 @@ function ImportPanel({
             <div className="mt-4 rounded-xl border border-border-soft p-3">
               <p className="mb-1 text-xs font-semibold text-indigo">Match your columns</p>
               <p className="mb-3 text-xs text-text-secondary">
-                We detected {sheet.headers.length} columns and {sheet.rows.length} rows. Point each Konek field at the right
+                We detected {sheet.headers.length} columns and {sheet.rows.length} rows. Point each raviion field at the right
                 column from your sheet. Required fields are marked *.
               </p>
 
@@ -745,7 +743,7 @@ function ImportPanel({
                   <button
                     onClick={runCsv}
                     disabled={!supplierId || busy || !rows}
-                    className="rounded-lg bg-konek-green px-4 py-2 text-xs font-semibold text-white disabled:opacity-50"
+                    className="rounded-lg bg-raviion-green px-4 py-2 text-xs font-semibold text-white disabled:opacity-50"
                   >
                     {busy ? "Importing…" : `Import ${built.rows.length} plans`}
                   </button>

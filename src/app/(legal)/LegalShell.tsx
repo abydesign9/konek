@@ -17,12 +17,12 @@ export function LegalShell({
           <Link href="/" className="flex items-center gap-2">
             <Image
               src="/brand/logo.png"
-              alt="Konek logo"
+              alt="raviion logo"
               width={30}
               height={37}
               className="mix-blend-multiply"
             />
-            <span className="font-heading text-xl font-bold text-indigo">Konek</span>
+            <span className="font-heading text-xl font-bold text-indigo">raviion</span>
           </Link>
           <Link
             href="/signup"
@@ -38,7 +38,7 @@ export function LegalShell({
         <p className="text-sm text-indigo/50 mb-4">Last updated {updated}</p>
         <div className="rounded-xl bg-gold/10 border border-gold/25 text-indigo/80 text-sm px-4 py-3 mb-10">
           This is a plain-language summary provided for transparency. Final terms are subject to
-          review by qualified counsel in each market Konek operates in before public launch.
+          review by qualified counsel in each market raviion operates in before public launch.
         </div>
         <div className="legal-prose flex flex-col gap-8 text-indigo/80 leading-relaxed">
           {children}
@@ -47,11 +47,11 @@ export function LegalShell({
 
       <footer className="border-t border-indigo/10">
         <div className="max-w-3xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-indigo/50">
-          <p>© {new Date().getFullYear()} Konek. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} raviion. All rights reserved.</p>
           <p className="flex gap-4">
             <Link href="/terms" className="hover:text-indigo">Terms</Link>
             <Link href="/privacy" className="hover:text-indigo">Privacy</Link>
-            <a href="mailto:support@konek.app" className="hover:text-indigo">support@konek.app</a>
+            <a href="mailto:support@raviion.app" className="hover:text-indigo">support@raviion.app</a>
           </p>
         </div>
       </footer>

@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
   if (!user) return NextResponse.json({ error: "user not found" }, { status: 404 });
   // Every account has one or the other now (email required at signup;
   // phone-only accounts predate this and still have a phone).
-  const gatewayEmail = user.email ?? (user.phone ? `${user.phone.replace("+", "")}@konek.app` : `${userId}@konek.app`);
+  const gatewayEmail = user.email ?? (user.phone ? `${user.phone.replace("+", "")}@raviion.app` : `${userId}@raviion.app`);
 
   const result = await withIdempotency(
     `wallet_fund:${userId}:${idempotencyKey}`,

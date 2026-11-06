@@ -1,5 +1,5 @@
 -- ============================================================
--- KONEK — Migration 0039: register the live eSIM provider (eSIM Access)
+-- Raviion — Migration 0039: register the live eSIM provider (eSIM Access)
 --
 -- Routing (src/vendors/registry.ts selectVendor) only considers vendors that
 -- have a row here AND a registered adapter. The adapter registers itself only

@@ -1,5 +1,5 @@
 -- ============================================================
--- KONEK — Migration 0025: reservation lifecycle for the spend path
+-- Raviion — Migration 0025: reservation lifecycle for the spend path
 --
 -- Closes the M2 double-spend race. Previously the wallet was debited AFTER the
 -- vendor call, with a non-atomic balance pre-check, so concurrent purchases

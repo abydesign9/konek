@@ -42,8 +42,8 @@ export const PROGRAM_FORMS: Record<ProgramKey, { title: string; intro: string; f
       { name: "tiktok", label: "TikTok handle", type: "text", placeholder: "@yourhandle" },
       { name: "reach", label: "Total social following", type: "select", options: FOLLOWERS },
       { name: "experience", label: "Leadership / marketing experience", type: "textarea", placeholder: "Clubs, roles, campaigns you've run…" },
-      { name: "motivation", label: "Why do you want to be a Konek Ambassador?", type: "textarea", required: true, placeholder: "What excites you about representing Konek?" },
-      { name: "plan", label: "How would you promote Konek on your campus?", type: "textarea", required: true, placeholder: "Your ideas for reaching fellow students" },
+      { name: "motivation", label: "Why do you want to be a raviion Ambassador?", type: "textarea", required: true, placeholder: "What excites you about representing raviion?" },
+      { name: "plan", label: "How would you promote raviion on your campus?", type: "textarea", required: true, placeholder: "Your ideas for reaching fellow students" },
     ],
   },
   influencer: {
@@ -59,7 +59,7 @@ export const PROGRAM_FORMS: Record<ProgramKey, { title: string; intro: string; f
       { name: "niche", label: "Content niche", type: "text", required: true, placeholder: "e.g. finance, travel, tech, lifestyle" },
       { name: "audienceLocation", label: "Main audience location", type: "text", placeholder: "e.g. Nigeria, UK, US" },
       { name: "portfolio", label: "Link to your best content / media kit", type: "url", placeholder: "https://…" },
-      { name: "motivation", label: "Why do you want to partner with Konek?", type: "textarea", required: true, placeholder: "Tell us what draws you to Konek" },
+      { name: "motivation", label: "Why do you want to partner with raviion?", type: "textarea", required: true, placeholder: "Tell us what draws you to raviion" },
     ],
   },
   creator_club: {

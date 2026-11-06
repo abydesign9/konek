@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Konek — one command to get your machine up to date and push your work.
+# Raviion — one command to get your machine up to date and push your work.
 #
 #   npm run sync          pull latest, then push anything you have locally
 #   npm run sync -- -m "msg"   commit your changes first, then pull + push

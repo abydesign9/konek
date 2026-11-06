@@ -13,7 +13,7 @@ const achievements = [
   {
     icon:"🌍",
     title:"Global User",
-    text:"Used Konek international services"
+    text:"Used raviion international services"
   },
   {
     icon:"🔥",
@@ -80,7 +80,7 @@ Your rewards balance
 
 
 <p className="text-sm text-white/70 mt-2">
-Earn rewards every time you use Konek.
+Earn rewards every time you use raviion.
 </p>
 
 
@@ -239,7 +239,7 @@ className="flex justify-between"
 
 
 
-<p className="font-bold text-konek-green">
+<p className="font-bold text-raviion-green">
 {item.amount}
 </p>
 

@@ -40,7 +40,7 @@ export default async function GrowthDashboardPage() {
                   <div key={d.day} className="flex flex-1 flex-col items-center justify-end gap-1">
                     <span className="text-[10px] font-semibold text-indigo/70">{d.signups}</span>
                     <div
-                      className="w-full rounded-t bg-konek-green"
+                      className="w-full rounded-t bg-raviion-green"
                       style={{ height: `${Math.max((d.signups / maxDay) * 90, 4)}px` }}
                     />
                     <span className="text-[9px] text-indigo/40">{d.day.slice(5)}</span>

@@ -3,8 +3,8 @@ import { LegalShell } from "../(legal)/LegalShell";
 import { TermsOfServiceContent } from "./TermsOfServiceContent";
 
 export const metadata: Metadata = {
-  title: "Terms of Service — Konek",
-  description: "The terms that govern your use of Konek.",
+  title: "Terms of Service — raviion",
+  description: "The terms that govern your use of raviion.",
 };
 
 export default function TermsPage() {

@@ -9,9 +9,7 @@ import { IconChevronRight } from "@/components/icons";
 
 type PinStep = "closed" | "current" | "new" | "confirm" | "otp";
 
-// Requests an email OTP for a sensitive change. Returns the demo code when real
-// email delivery isn't configured (dev), so the flow stays testable.
-async function requestChangeOtp(purpose: "change_pin" | "change_password"): Promise<string | null> {
+async function requestChangeOtp(purpose: "change_pin" | "change_password"): Promise<void> {
   const res = await fetch("/api/auth/email-otp/request", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -19,7 +17,6 @@ async function requestChangeOtp(purpose: "change_pin" | "change_password"): Prom
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.error ?? "Could not send a verification code");
-  return typeof data.demoOtp === "string" ? data.demoOtp : null;
 }
 
 function ChangePinCard() {
@@ -29,7 +26,6 @@ function ChangePinCard() {
   const [next, setNext] = useState("");
   const [confirm, setConfirm] = useState("");
   const [otp, setOtp] = useState("");
-  const [demoOtp, setDemoOtp] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -40,7 +36,6 @@ function ChangePinCard() {
     setNext("");
     setConfirm("");
     setOtp("");
-    setDemoOtp(null);
     setError(null);
   }
 
@@ -57,7 +52,7 @@ function ChangePinCard() {
     setSaving(true);
     setError(null);
     try {
-      setDemoOtp(await requestChangeOtp("change_pin"));
+      await requestChangeOtp("change_pin");
       setStep("otp");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not send a verification code");
@@ -95,7 +90,7 @@ function ChangePinCard() {
     return (
       <Link
         href="/settings/pin"
-        className="flex w-full items-center justify-between rounded-2xl bg-white px-4 py-3.5 konek-card-shadow konek-tile"
+        className="flex w-full items-center justify-between rounded-2xl bg-white px-4 py-3.5 raviion-card-shadow raviion-tile"
       >
         <span className="text-sm font-semibold text-indigo">Set up your transaction PIN</span>
         <IconChevronRight className="h-4 w-4 text-indigo/30" />
@@ -108,7 +103,7 @@ function ChangePinCard() {
       <button
         onClick={() => setStep("current")}
         disabled={hasPin === null}
-        className="flex w-full items-center justify-between rounded-2xl bg-white px-4 py-3.5 konek-card-shadow konek-tile disabled:opacity-50"
+        className="flex w-full items-center justify-between rounded-2xl bg-white px-4 py-3.5 raviion-card-shadow raviion-tile disabled:opacity-50"
       >
         <span className="text-sm font-semibold text-indigo">Change transaction PIN</span>
         <IconChevronRight className="h-4 w-4 text-indigo/30" />
@@ -117,9 +112,9 @@ function ChangePinCard() {
   }
 
   return (
-    <div className="rounded-2xl bg-white px-5 py-6 konek-card-shadow">
+    <div className="rounded-2xl bg-white px-5 py-6 raviion-card-shadow">
       {success ? (
-        <p className="text-center text-sm font-semibold text-konek-green">PIN updated ✓</p>
+        <p className="text-center text-sm font-semibold text-raviion-green">PIN updated ✓</p>
       ) : (
         <>
           <p className="mb-4 text-center text-sm font-semibold text-indigo">
@@ -140,7 +135,6 @@ function ChangePinCard() {
               value={otp}
               onChange={setOtp}
               onSubmit={submit}
-              demoOtp={demoOtp}
               submitting={saving}
             />
           )}
@@ -155,19 +149,15 @@ function ChangePinCard() {
   );
 }
 
-// Shared 6-digit code entry for OTP-gated changes. Surfaces the demo code
-// inline when real email delivery isn't configured yet (dev).
 function OtpEntry({
   value,
   onChange,
   onSubmit,
-  demoOtp,
   submitting,
 }: {
   value: string;
   onChange: (v: string) => void;
   onSubmit: () => void;
-  demoOtp: string | null;
   submitting: boolean;
 }) {
   return (
@@ -179,13 +169,8 @@ function OtpEntry({
         value={value}
         onChange={(e) => onChange(e.target.value.replace(/[^\d]/g, ""))}
         placeholder="6-digit code"
-        className="w-full rounded-xl border border-indigo/20 px-4 py-3 text-center font-heading text-lg font-bold tracking-[0.3em] text-indigo focus:outline-none focus:ring-2 focus:ring-konek-green"
+        className="w-full rounded-xl border border-indigo/20 px-4 py-3 text-center font-heading text-lg font-bold tracking-[0.3em] text-indigo focus:outline-none focus:ring-2 focus:ring-raviion-green"
       />
-      {demoOtp && (
-        <p className="text-center text-[11px] text-indigo/45">
-          Dev mode — email delivery not configured. Code: <span className="font-semibold">{demoOtp}</span>
-        </p>
-      )}
       <button
         onClick={onSubmit}
         disabled={submitting || value.length < 6}
@@ -204,7 +189,6 @@ function ChangePasswordCard() {
   const [current, setCurrent] = useState("");
   const [next, setNext] = useState("");
   const [otp, setOtp] = useState("");
-  const [demoOtp, setDemoOtp] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -214,7 +198,6 @@ function ChangePasswordCard() {
     setCurrent("");
     setNext("");
     setOtp("");
-    setDemoOtp(null);
     setError(null);
   }
 
@@ -226,7 +209,7 @@ function ChangePasswordCard() {
     setSaving(true);
     setError(null);
     try {
-      setDemoOtp(await requestChangeOtp("change_password"));
+      await requestChangeOtp("change_password");
       setStep("otp");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not send a verification code");
@@ -258,7 +241,7 @@ function ChangePasswordCard() {
     return (
       <button
         onClick={() => setStep("form")}
-        className="flex w-full items-center justify-between rounded-2xl bg-white px-4 py-3.5 konek-card-shadow konek-tile"
+        className="flex w-full items-center justify-between rounded-2xl bg-white px-4 py-3.5 raviion-card-shadow raviion-tile"
       >
         <span className="text-sm font-semibold text-indigo">Change password</span>
         <IconChevronRight className="h-4 w-4 text-indigo/30" />
@@ -267,9 +250,9 @@ function ChangePasswordCard() {
   }
 
   return (
-    <div className="rounded-2xl bg-white px-5 py-6 konek-card-shadow">
+    <div className="rounded-2xl bg-white px-5 py-6 raviion-card-shadow">
       {success ? (
-        <p className="text-center text-sm font-semibold text-konek-green">Password updated ✓</p>
+        <p className="text-center text-sm font-semibold text-raviion-green">Password updated ✓</p>
       ) : step === "form" ? (
         <div className="flex flex-col gap-3">
           <p className="mb-1 text-center text-sm font-semibold text-indigo">Change your password</p>
@@ -278,14 +261,14 @@ function ChangePasswordCard() {
             value={current}
             onChange={(e) => setCurrent(e.target.value)}
             placeholder="Current password"
-            className="w-full rounded-xl border border-indigo/20 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-konek-green"
+            className="w-full rounded-xl border border-indigo/20 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-raviion-green"
           />
           <input
             type="password"
             value={next}
             onChange={(e) => setNext(e.target.value)}
             placeholder="New password (8+ characters)"
-            className="w-full rounded-xl border border-indigo/20 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-konek-green"
+            className="w-full rounded-xl border border-indigo/20 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-raviion-green"
           />
           {error && <p className="text-center text-xs text-red-600">{error}</p>}
           <button
@@ -302,7 +285,7 @@ function ChangePasswordCard() {
       ) : (
         <>
           <p className="mb-4 text-center text-sm font-semibold text-indigo">Enter the code we emailed you</p>
-          <OtpEntry value={otp} onChange={setOtp} onSubmit={submit} demoOtp={demoOtp} submitting={saving} />
+          <OtpEntry value={otp} onChange={setOtp} onSubmit={submit} submitting={saving} />
           {error && <p className="mt-3 text-center text-xs text-red-600">{error}</p>}
           <button onClick={reset} className="mt-4 w-full text-center text-xs text-indigo/50">
             Cancel
@@ -318,7 +301,7 @@ function ChangePasswordCard() {
 // the notification scheduler and recurring top-up use.
 function ComingSoonRow({ label, sub }: { label: string; sub: string }) {
   return (
-    <div className="flex w-full items-center justify-between rounded-2xl bg-white px-4 py-3.5 konek-card-shadow opacity-70">
+    <div className="flex w-full items-center justify-between rounded-2xl bg-white px-4 py-3.5 raviion-card-shadow opacity-70">
       <span className="min-w-0 flex-1">
         <span className="block text-sm font-semibold text-indigo">{label}</span>
         <span className="block text-xs text-indigo/50">{sub}</span>
@@ -363,8 +346,8 @@ function BiometricsCard() {
       const credential = (await navigator.credentials.create({
         publicKey: {
           challenge,
-          rp: { name: "Konek" },
-          user: { id: userId, name: "konek-user", displayName: "Konek" },
+          rp: { name: "raviion" },
+          user: { id: userId, name: "raviion-user", displayName: "raviion" },
           pubKeyCredParams: [
             { type: "public-key", alg: -7 },
             { type: "public-key", alg: -257 },
@@ -403,11 +386,11 @@ function BiometricsCard() {
   }
 
   return (
-    <div className="rounded-2xl bg-white px-4 py-3.5 konek-card-shadow">
+    <div className="rounded-2xl bg-white px-4 py-3.5 raviion-card-shadow">
       <div className="flex items-center justify-between">
         <span className="min-w-0 flex-1">
           <span className="block text-sm font-semibold text-indigo">Biometrics</span>
-          <span className="block text-xs text-indigo/55">Unlock Konek with Face ID or fingerprint</span>
+          <span className="block text-xs text-indigo/55">Unlock raviion with Face ID or fingerprint</span>
         </span>
         {!supported ? (
           <span className="shrink-0 rounded-full bg-hover-tint px-2.5 py-1 text-[11px] font-semibold text-indigo/50">
@@ -520,7 +503,7 @@ export function SettingsClient() {
           <p className="mb-3 text-xs font-bold uppercase tracking-wide text-indigo/40">Devices</p>
           <Link
             href="/settings/sessions"
-            className="flex items-center justify-between rounded-2xl bg-white px-4 py-3.5 konek-card-shadow konek-tile"
+            className="flex items-center justify-between rounded-2xl bg-white px-4 py-3.5 raviion-card-shadow raviion-tile"
           >
             <span className="min-w-0 flex-1">
               <span className="block text-sm font-semibold text-indigo">Device and session management</span>
@@ -535,14 +518,14 @@ export function SettingsClient() {
           <div className="flex flex-col gap-2.5">
             <Link
               href="/settings/privacy"
-              className="flex items-center justify-between rounded-2xl bg-white px-4 py-3.5 konek-card-shadow konek-tile"
+              className="flex items-center justify-between rounded-2xl bg-white px-4 py-3.5 raviion-card-shadow raviion-tile"
             >
               <span className="text-sm font-semibold text-indigo">Privacy policy</span>
               <IconChevronRight className="h-4 w-4 text-indigo/30" />
             </Link>
             <Link
               href="/settings/terms"
-              className="flex items-center justify-between rounded-2xl bg-white px-4 py-3.5 konek-card-shadow konek-tile"
+              className="flex items-center justify-between rounded-2xl bg-white px-4 py-3.5 raviion-card-shadow raviion-tile"
             >
               <span className="text-sm font-semibold text-indigo">Terms of service</span>
               <IconChevronRight className="h-4 w-4 text-indigo/30" />

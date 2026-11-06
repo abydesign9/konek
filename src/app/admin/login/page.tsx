@@ -30,16 +30,16 @@ export default function AdminLoginPage() {
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center px-6 bg-background">
-      <h1 className="font-heading text-xl font-bold text-indigo mb-1">Konek Admin</h1>
-      <p className="text-sm text-indigo/60 mb-8">Sign in with your Konek account email and password. Admin access is granted separately.</p>
+      <h1 className="font-heading text-xl font-bold text-indigo mb-1">raviion Admin</h1>
+      <p className="text-sm text-indigo/60 mb-8">Sign in with your raviion account email and password. Admin access is granted separately.</p>
       <form onSubmit={submit} className="w-full max-w-xs flex flex-col gap-3">
         <input
           type="email"
-          placeholder="you@konek.app"
+          placeholder="you@raviion.app"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="w-full rounded-xl border border-indigo/20 px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-konek-green"
+          className="w-full rounded-xl border border-indigo/20 px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-raviion-green"
         />
         <input
           type="password"
@@ -47,7 +47,7 @@ export default function AdminLoginPage() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-          className="w-full rounded-xl border border-indigo/20 px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-konek-green"
+          className="w-full rounded-xl border border-indigo/20 px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-raviion-green"
         />
         <button
           type="submit"

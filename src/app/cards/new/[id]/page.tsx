@@ -143,7 +143,7 @@ export default function CardProductDetailPage() {
             <p className="mb-2 text-center text-sm text-red-600">
               {error}
               {fundHref && (
-                <Link href={fundHref} className="ml-2 font-semibold text-konek-green underline">
+                <Link href={fundHref} className="ml-2 font-semibold text-raviion-green underline">
                   Add funds →
                 </Link>
               )}

@@ -63,7 +63,7 @@ export default function NewCardPage() {
               <Link
                 key={p.id}
                 href={`/cards/new/${p.id}`}
-                className="flex items-center gap-3 rounded-2xl bg-white px-4 py-4 konek-card-shadow konek-tile"
+                className="flex items-center gap-3 rounded-2xl bg-white px-4 py-4 raviion-card-shadow raviion-tile"
               >
                 <span className="flex h-10 w-14 shrink-0 items-center justify-center rounded-lg bg-indigo/10 text-lg">
                   {p.formFactor === "physical" ? "💳" : "📲"}

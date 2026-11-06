@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState } from "react";
 
 // Custom "install this app" banner, since browsers' own install prompts are
@@ -19,7 +20,7 @@ import { useEffect, useState } from "react";
 // Dismissal is remembered in localStorage for 14 days so this doesn't nag
 // on every visit; installing (or already being installed) hides it for good.
 
-const DISMISS_KEY = "konek_install_dismissed_at";
+const DISMISS_KEY = "raviion_install_dismissed_at";
 const DISMISS_DAYS = 14;
 
 type Platform = "android" | "ios" | "unsupported";
@@ -104,13 +105,13 @@ export function InstallPrompt() {
     <div className="fixed inset-x-0 bottom-20 z-40 px-4">
       <div className="mx-auto flex max-w-md items-center gap-3 rounded-2xl bg-indigo px-4 py-3.5 text-white shadow-lg">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/15">
-          <img src="/icon-192.png" alt="" className="h-7 w-7 rounded-md" />
+          <Image src="/icon-192.png" alt="" width={28} height={28} className="rounded-md" />
         </div>
 
         {platform === "android" && (
           <>
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-semibold leading-tight">Install Konek</p>
+              <p className="text-sm font-semibold leading-tight">Install raviion</p>
               <p className="text-xs leading-tight text-white/70">Faster access, right from your home screen</p>
             </div>
             <button
@@ -124,7 +125,7 @@ export function InstallPrompt() {
 
         {platform === "ios" && (
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold leading-tight">Install Konek</p>
+            <p className="text-sm font-semibold leading-tight">Install raviion</p>
             <p className="text-xs leading-tight text-white/70">
               Tap <span className="font-semibold">Share</span>, then{" "}
               <span className="font-semibold">Add to Home Screen</span>

@@ -86,7 +86,7 @@ export async function requireVerifiedBusiness(userId: string): Promise<VerifiedB
     return {
       ok: false,
       status: 403,
-      error: "This business is awaiting verification — you'll get access once Konek approves it",
+      error: "This business is awaiting verification — you'll get access once raviion approves it",
       code: "kyb_pending",
     };
   }
@@ -128,7 +128,7 @@ export async function listTeam(businessAccountId: string): Promise<TeamMemberRow
 
 export class UserNotFoundError extends Error {
   constructor(phone: string) {
-    super(`No Konek user with phone ${phone} — they must sign up first`);
+    super(`No raviion user with phone ${phone} — they must sign up first`);
     this.name = "UserNotFoundError";
   }
 }

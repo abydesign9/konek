@@ -105,7 +105,7 @@ export default function ExamPinPage() {
             {pins.map((code, i) => (
               <div key={i} className="flex items-center justify-between rounded-xl bg-indigo/5 px-3 py-2">
                 <code className="text-sm text-indigo">{code}</code>
-                <button onClick={() => navigator.clipboard.writeText(code)} className="text-xs font-semibold text-konek-green">
+                <button onClick={() => navigator.clipboard.writeText(code)} className="text-xs font-semibold text-raviion-green">
                   Copy
                 </button>
               </div>
@@ -151,7 +151,7 @@ export default function ExamPinPage() {
               key={plan.id}
               onClick={() => setSelected(plan)}
               className={`w-full rounded-2xl border p-4 text-left ${
-                selected?.id === plan.id ? "border-konek-green bg-konek-green/10" : "border-indigo/15 bg-white"
+                selected?.id === plan.id ? "border-raviion-green bg-raviion-green/10" : "border-indigo/15 bg-white"
               }`}
             >
               <div className="flex justify-between">
@@ -166,14 +166,14 @@ export default function ExamPinPage() {
         <div className="flex items-center justify-between rounded-2xl border border-indigo/15 bg-white px-4 py-3">
           <button
             onClick={() => setQty((q) => Math.max(1, q - 1))}
-            className="konek-tile flex h-9 w-9 items-center justify-center rounded-full bg-indigo/10 text-lg font-bold text-indigo active:scale-90"
+            className="raviion-tile flex h-9 w-9 items-center justify-center rounded-full bg-indigo/10 text-lg font-bold text-indigo active:scale-90"
           >
             −
           </button>
           <span className="font-heading text-lg font-bold text-indigo">{qty}</span>
           <button
             onClick={() => setQty((q) => Math.min(MAX_QTY, q + 1))}
-            className="konek-tile flex h-9 w-9 items-center justify-center rounded-full bg-indigo/10 text-lg font-bold text-indigo active:scale-90"
+            className="raviion-tile flex h-9 w-9 items-center justify-center rounded-full bg-indigo/10 text-lg font-bold text-indigo active:scale-90"
           >
             +
           </button>

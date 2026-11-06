@@ -4,7 +4,7 @@ import { query } from "@/lib/db";
 import { findActiveAdminByEmail } from "./adminUsers";
 import { verifyPasswordLogin, InvalidCredentialsError } from "@/lib/auth/password";
 
-const ADMIN_COOKIE = "konek_admin";
+const ADMIN_COOKIE = "raviion_admin";
 const ADMIN_TTL_HOURS = 12;
 
 interface AdminSessionPayload {
@@ -20,14 +20,14 @@ function sign(payload: string): string {
   return crypto.createHmac("sha256", secret).update(payload).digest("hex");
 }
 
-// Admins sign in with their own Konek account credentials: the same email +
+// Admins sign in with their own raviion account credentials: the same email +
 // password as their customer account (verified against the users table). Being
 // an admin is a separate GRANT — an active admin_users row for that email, which
 // also names the audit-log actor. So onboarding an admin is just: they have a
-// Konek account, then a super_admin approves/invites their email. ADMIN_SECRET
+// raviion account, then a super_admin approves/invites their email. ADMIN_SECRET
 // is used only as the cookie-signing key below, never as a login credential.
 export async function createAdminSession(email: string, password: string): Promise<boolean> {
-  // 1. Authenticate the Konek (customer) credentials.
+  // 1. Authenticate the raviion (customer) credentials.
   let userId: string;
   try {
     ({ userId } = await verifyPasswordLogin(email, password));
@@ -53,7 +53,7 @@ export async function createAdminSession(email: string, password: string): Promi
   cookies().set(ADMIN_COOKIE, `${payloadB64}.${signature}`, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    sameSite: "strict",
     maxAge: ADMIN_TTL_HOURS * 60 * 60,
     path: "/",
   });

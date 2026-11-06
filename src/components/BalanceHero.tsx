@@ -17,7 +17,7 @@ function fmt(minor: number, currency: string) {
 
 // The dashboard balance card: one gradient card that switches between the
 // customer's currency wallets (NGN/USD/GBP/EUR), hides the balance on tap, and
-// links to accounts and adding money. No transfers — Konek is receive-and-spend.
+// links to accounts and adding money. No transfers — raviion is receive-and-spend.
 export function BalanceHero({
   balances,
   walletAllowed,
@@ -32,7 +32,7 @@ export function BalanceHero({
   const active = balances.find((b) => b.currency === currency) ?? balances[0];
 
   return (
-    <div className="konek-hero konek-card-shadow relative overflow-hidden rounded-3xl px-6 py-8 text-white">
+    <div className="raviion-hero raviion-card-shadow relative overflow-hidden rounded-3xl px-6 py-8 text-white">
       <div className="relative z-10 flex items-center justify-between">
         <button onClick={() => setHidden((h) => !h)} className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-white/70">
           {active?.currency} balance <span aria-hidden>{hidden ? "🙈" : "👁"}</span>
@@ -58,7 +58,7 @@ export function BalanceHero({
       </div>
 
       {/* Wallet switcher — doubles as "My Wallets" */}
-      <div className="konek-scrollbar-none relative z-10 -mx-1 mt-7 flex gap-2.5 overflow-x-auto px-1">
+      <div className="raviion-scrollbar-none relative z-10 -mx-1 mt-7 flex gap-2.5 overflow-x-auto px-1">
         {balances.map((b) => {
           const on = b.currency === active?.currency;
           return (

@@ -4,8 +4,8 @@ import { CreateNgnAccountResult, NgnAccountAdapter, NgnInflowVerifyResult } from
 // payload" pattern as the other mock providers. Inflows are keyed by a
 // per-inflow reference and hung off globalThis so the mock-inflow route and the
 // webhook route (separate bundles) share the same store in dev.
-const globalStore = globalThis as unknown as { __konekMockNgnInflows?: Map<string, NgnInflowVerifyResult> };
-const inflows = (globalStore.__konekMockNgnInflows ??= new Map<string, NgnInflowVerifyResult>());
+const globalStore = globalThis as unknown as { __raviionMockNgnInflows?: Map<string, NgnInflowVerifyResult> };
+const inflows = (globalStore.__raviionMockNgnInflows ??= new Map<string, NgnInflowVerifyResult>());
 
 export function registerMockNgnInflow(inflowRef: string, result: NgnInflowVerifyResult) {
   inflows.set(inflowRef, result);

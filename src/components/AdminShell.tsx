@@ -80,7 +80,7 @@ function SidebarContent({ pathname, onNavigate }: { pathname: string; onNavigate
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 font-heading text-sm font-bold text-white">
           K
         </div>
-        <span className="font-heading text-base font-bold text-white">KONEK Admin</span>
+        <span className="font-heading text-base font-bold text-white">raviion Admin</span>
       </div>
 
       <div className="flex-1 space-y-6 overflow-y-auto">

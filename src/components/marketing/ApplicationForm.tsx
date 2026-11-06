@@ -37,8 +37,8 @@ export function ApplicationForm({ program }: { program: ProgramKey }) {
 
   if (status === "done") {
     return (
-      <div className="konek-card-shadow rounded-3xl border border-konek-green/20 bg-white p-8 text-center">
-        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-konek-green/10 text-2xl">✅</div>
+      <div className="raviion-card-shadow rounded-3xl border border-raviion-green/20 bg-white p-8 text-center">
+        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-raviion-green/10 text-2xl">✅</div>
         <h3 className="font-heading text-2xl font-bold text-indigo">Application received</h3>
         <p className="mx-auto mt-3 max-w-md text-indigo/60">
           Thanks for applying to the {config.title.replace(/^Apply to (be a |the )?|^Join the /, "")} program. Our team reviews every
@@ -49,7 +49,7 @@ export function ApplicationForm({ program }: { program: ProgramKey }) {
   }
 
   return (
-    <form onSubmit={submit} className="konek-card-shadow rounded-3xl border border-indigo/10 bg-white p-6 md:p-8">
+    <form onSubmit={submit} className="raviion-card-shadow rounded-3xl border border-indigo/10 bg-white p-6 md:p-8">
       <h3 className="font-heading text-2xl font-bold text-indigo">{config.title}</h3>
       <p className="mt-2 text-sm text-indigo/60">{config.intro}</p>
 
@@ -58,7 +58,7 @@ export function ApplicationForm({ program }: { program: ProgramKey }) {
           <div key={f.name} className={f.type === "textarea" ? "sm:col-span-2" : ""}>
             <label htmlFor={f.name} className="mb-1.5 block text-sm font-semibold text-indigo">
               {f.label}
-              {f.required && <span className="text-konek-green"> *</span>}
+              {f.required && <span className="text-raviion-green"> *</span>}
             </label>
             {f.type === "textarea" ? (
               <textarea
@@ -68,7 +68,7 @@ export function ApplicationForm({ program }: { program: ProgramKey }) {
                 placeholder={f.placeholder}
                 value={values[f.name] ?? ""}
                 onChange={(e) => set(f.name, e.target.value)}
-                className="w-full rounded-xl border border-indigo/15 px-4 py-2.5 text-sm outline-none focus:border-konek-green"
+                className="w-full rounded-xl border border-indigo/15 px-4 py-2.5 text-sm outline-none focus:border-raviion-green"
               />
             ) : f.type === "select" ? (
               <select
@@ -76,7 +76,7 @@ export function ApplicationForm({ program }: { program: ProgramKey }) {
                 required={f.required}
                 value={values[f.name] ?? ""}
                 onChange={(e) => set(f.name, e.target.value)}
-                className="w-full rounded-xl border border-indigo/15 bg-white px-4 py-2.5 text-sm outline-none focus:border-konek-green"
+                className="w-full rounded-xl border border-indigo/15 bg-white px-4 py-2.5 text-sm outline-none focus:border-raviion-green"
               >
                 <option value="">Select…</option>
                 {f.options?.map((o) => (
@@ -91,7 +91,7 @@ export function ApplicationForm({ program }: { program: ProgramKey }) {
                 placeholder={f.placeholder}
                 value={values[f.name] ?? ""}
                 onChange={(e) => set(f.name, e.target.value)}
-                className="w-full rounded-xl border border-indigo/15 px-4 py-2.5 text-sm outline-none focus:border-konek-green"
+                className="w-full rounded-xl border border-indigo/15 px-4 py-2.5 text-sm outline-none focus:border-raviion-green"
               />
             )}
             {f.help && <p className="mt-1 text-xs text-indigo/45">{f.help}</p>}
@@ -104,7 +104,7 @@ export function ApplicationForm({ program }: { program: ProgramKey }) {
       <button
         type="submit"
         disabled={status === "submitting"}
-        className="mt-6 w-full rounded-full bg-indigo px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-konek-green disabled:opacity-50 sm:w-auto sm:px-10"
+        className="mt-6 w-full rounded-full bg-indigo px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-raviion-green disabled:opacity-50 sm:w-auto sm:px-10"
       >
         {status === "submitting" ? "Submitting…" : "Submit application"}
       </button>

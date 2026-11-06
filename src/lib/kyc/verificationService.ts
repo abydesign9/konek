@@ -34,7 +34,7 @@ export class MethodVerificationFailedError extends Error {
 }
 export class DuplicateFaceError extends Error {
   constructor() {
-    super("This face is already linked to another Konek account");
+    super("This face is already linked to another raviion account");
     this.name = "DuplicateFaceError";
   }
 }

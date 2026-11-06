@@ -223,13 +223,13 @@ describe.skipIf(!HAS_DB)("reservation lifecycle + refund (integration)", () => {
     expect(res.status).toBe("delivered");
     expect(await getBalance(walletId)).toBe(0);
 
-    await refundTransaction(res.txnId, "admin@konek.io");
+    await refundTransaction(res.txnId, "admin@raviion.io");
     expect(await getBalance(walletId)).toBe(AMOUNT); // net reversal returns funds
     const { rows } = await pool.query(`SELECT status FROM transactions WHERE id = $1`, [res.txnId]);
     expect(rows[0].status).toBe("refunded");
 
     // Second refund is refused (idempotent claim).
-    await expect(refundTransaction(res.txnId, "admin@konek.io")).rejects.toBeInstanceOf(
+    await expect(refundTransaction(res.txnId, "admin@raviion.io")).rejects.toBeInstanceOf(
       TransactionNotRefundableError
     );
   }, 60_000);
@@ -256,7 +256,7 @@ describe.skipIf(!HAS_DB)("reservation lifecycle + refund (integration)", () => {
     await pool.query(`UPDATE transactions SET journal_id = $2 WHERE id = $1`, [txnId, journalId]);
     expect(await getBalance(walletId)).toBe(0);
 
-    await refundTransaction(txnId, "admin@konek.io");
+    await refundTransaction(txnId, "admin@raviion.io");
     expect(await getBalance(walletId)).toBe(AMOUNT);
     const { rows } = await pool.query(`SELECT status FROM transactions WHERE id = $1`, [txnId]);
     expect(rows[0].status).toBe("refunded");

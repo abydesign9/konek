@@ -59,7 +59,7 @@ export default function SquadsPage() {
               <div className="mt-2">
                 <div className="w-full h-1.5 rounded-full bg-indigo/10 overflow-hidden mb-1">
                   <div
-                    className="h-full bg-konek-green"
+                    className="h-full bg-raviion-green"
                     style={{ width: `${Math.min(100, (s.goal.current_txn_count / s.goal.target_txn_count) * 100)}%` }}
                   />
                 </div>

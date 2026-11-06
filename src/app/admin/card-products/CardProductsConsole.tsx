@@ -90,7 +90,7 @@ export function CardProductsConsole() {
         title="Card products"
         description="Define each card type and its full fee schedule. These fees are read by the app: the creation and dispute fees are charged live, and the whole schedule is shown to customers on the card page before they create a card."
       />
-      {msg && <p className="mb-3 text-sm font-semibold text-konek-green">{msg}</p>}
+      {msg && <p className="mb-3 text-sm font-semibold text-raviion-green">{msg}</p>}
 
       <Card title="Add a card product" className="mb-6">
         <div className="flex flex-wrap items-end gap-2">
@@ -103,7 +103,7 @@ export function CardProductsConsole() {
             <option value="virtual">Virtual</option>
             <option value="physical">Physical</option>
           </select>
-          <button onClick={create} className="rounded-lg bg-konek-green px-4 py-2 text-sm font-semibold text-white">Add</button>
+          <button onClick={create} className="rounded-lg bg-raviion-green px-4 py-2 text-sm font-semibold text-white">Add</button>
         </div>
       </Card>
 

@@ -30,7 +30,7 @@ export function ChipPicker({
             hasIcons ? "flex flex-col items-center gap-1.5 py-3 text-xs" : "py-3 text-sm"
           } ${
             value === o.id
-              ? "border-konek-green bg-konek-green/10 text-indigo"
+              ? "border-raviion-green bg-raviion-green/10 text-indigo"
               : "border-indigo/20 text-indigo hover:bg-indigo/5"
           }`}
         >

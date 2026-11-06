@@ -1,6 +1,6 @@
-# Konek — Product Overview
+# raviion — Product Overview
 
-A shareable overview of what Konek is and does, for co-founders, growth,
+A shareable overview of what raviion is and does, for co-founders, growth,
 compliance and the wider team. Plain language, no code. For engineering detail
 see `HANDOVER.md`.
 
@@ -10,9 +10,9 @@ accounts are approved.
 
 ---
 
-## 1. What Konek is
+## 1. What raviion is
 
-Konek is a Nigerian diaspora-and-local fintech app. One place to stay connected
+raviion is a Nigerian diaspora-and-local fintech app. One place to stay connected
 and move money: airtime, data, cable, electricity, exam pins, betting, eSIM
 travel data, a multi-currency wallet, virtual accounts and virtual cards. It runs
 as an installable web app (PWA) today, with an App Store / Play Store version
@@ -59,7 +59,7 @@ buy-only. Withdrawals go only to the customer's own bank.
 
 ## 4. Verification (KYC) in plain language
 
-Konek uses tiered, progressive verification. Customers verify only as much as the
+raviion uses tiered, progressive verification. Customers verify only as much as the
 feature they want requires, and only what their country's regulator requires.
 
 - Tier 0 (Browse): sign up and look around. No money movement.
@@ -112,7 +112,7 @@ code.
   for when the card issuer provides the needed transaction data.
 
 Money-transmission licensing sits with our regulated partners (payment, card and
-account providers); Konek integrates with them.
+account providers); raviion integrates with them.
 
 ---
 
@@ -149,7 +149,7 @@ Everything commercial is tunable without engineering:
 - Role-based admin access: each admin has a role, each action checks a permission,
   and everything is audited.
 
-Admins sign in with their own Konek account (email + password) plus an admin
+Admins sign in with their own raviion account (email + password) plus an admin
 grant — no shared password.
 
 ---

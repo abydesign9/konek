@@ -36,18 +36,6 @@ export async function requestOtp(
   return { code };
 }
 
-// Demo shortcut: while real SMS isn't wired up, allow specific phone numbers
-// (DEMO_OTP_PHONES, comma-separated E.164) to receive their login code in the
-// API response so they can self-verify. Everyone else is unaffected — their
-// code is never exposed.
-export function isDemoOtpPhone(phone: string): boolean {
-  return (process.env.DEMO_OTP_PHONES ?? "")
-    .split(",")
-    .map((p) => p.trim())
-    .filter(Boolean)
-    .includes(phone);
-}
-
 export async function verifyOtp(phone: string, code: string): Promise<boolean> {
   const { rows } = await query<{ id: string; code_hash: string; attempt_count: number }>(
     `SELECT id, code_hash, attempt_count FROM otp_codes

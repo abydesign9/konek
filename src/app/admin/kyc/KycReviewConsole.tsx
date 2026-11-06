@@ -286,7 +286,7 @@ export function KycReviewConsole() {
       />
 
       {message && (
-        <div className="mb-5 rounded-xl border border-konek-green/30 bg-konek-green/10 px-4 py-3 text-sm text-indigo">
+        <div className="mb-5 rounded-xl border border-raviion-green/30 bg-raviion-green/10 px-4 py-3 text-sm text-indigo">
           {message}
         </div>
       )}
@@ -512,7 +512,7 @@ export function KycReviewConsole() {
                     type="button"
                     onClick={approve}
                     disabled={processing}
-                    className="w-full rounded-lg bg-konek-green px-4 py-3 text-sm font-semibold text-white disabled:opacity-50"
+                    className="w-full rounded-lg bg-raviion-green px-4 py-3 text-sm font-semibold text-white disabled:opacity-50"
                   >
                     {processing
                       ? "Processing..."

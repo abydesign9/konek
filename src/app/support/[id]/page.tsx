@@ -87,13 +87,13 @@ export default function SupportThreadPage() {
               key={r.id}
               className={`rounded-2xl px-4 py-3 max-w-[85%] ${
                 r.author_type === "admin"
-                  ? "bg-konek-green/10 border border-konek-green/20 self-start"
+                  ? "bg-raviion-green/10 border border-raviion-green/20 self-start"
                   : "bg-indigo text-white self-end"
               }`}
             >
               <p className={`text-sm ${r.author_type === "admin" ? "text-indigo" : "text-white"}`}>{r.body}</p>
               <p className={`text-[11px] mt-1 ${r.author_type === "admin" ? "text-indigo/40" : "text-white/60"}`}>
-                {r.author_type === "admin" ? "Konek support" : "You"} · {formatDateTime(r.created_at)}
+                {r.author_type === "admin" ? "raviion support" : "You"} · {formatDateTime(r.created_at)}
               </p>
             </div>
           ))}

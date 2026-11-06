@@ -1,6 +1,6 @@
 -- ============================================================
--- KONEK — Migration 0020: onboarding tour
--- Admin-editable step content for the "Welcome to Konek" first-run tour,
+-- Raviion — Migration 0020: onboarding tour
+-- Admin-editable step content for the "Welcome to Raviion" first-run tour,
 -- same CMS pattern as in_app_messages (0017): draft/active/inactive
 -- status, ordered by step_order. users.onboarding_completed_at tracks
 -- whether a user has finished or skipped the tour so it only shows once.

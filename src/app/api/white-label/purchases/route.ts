@@ -13,7 +13,7 @@ const SUPPORTED_TYPES: VendorServiceType[] = ["airtime", "data"];
 // External API for white-label partners (e.g. an FXBud-style remittance
 // app) to trigger purchases for their own end users, billed against the
 // partner's business owner wallet. Auth is a bearer-style API key, not a
-// Konek user session — this endpoint is meant to be called
+// raviion user session — this endpoint is meant to be called
 // server-to-server, never from a partner's own end-user browser.
 export async function POST(req: NextRequest) {
   const apiKey = req.headers.get("x-partner-api-key");

@@ -2,17 +2,17 @@ import type { Metadata } from "next";
 import { MarketingPage, Hero, Section, FeatureGrid, Stats, CTA } from "@/components/marketing/ui";
 
 export const metadata: Metadata = {
-  title: "Konek for Personal — USD accounts, cards & connectivity in one app",
+  title: "raviion for personal use | Accounts, cards and data in one app",
   description:
-    "Open a USD, GBP, EUR or Naira account in your name, spend with virtual cards, stay connected with global eSIM, and pay bills — all in one Konek app built for Africans at home and abroad.",
+    "Open a USD, GBP, EUR or Naira account in your name, spend with virtual cards, stay connected with eSIM data and pay bills from one raviion app built for life across borders.",
   keywords: [
     "USD account Nigeria", "virtual dollar card", "multi-currency wallet",
-    "receive USD in Nigeria", "eSIM Africa", "pay bills online Nigeria", "Konek",
+    "receive USD in Nigeria", "eSIM Africa", "pay bills online Nigeria", "raviion",
   ],
   alternates: { canonical: "/personal" },
   openGraph: {
-    title: "Konek for Personal — money and connectivity, together",
-    description: "USD/GBP/EUR/NGN accounts, virtual cards, eSIM and bills in one app.",
+    title: "raviion for personal use | Accounts, cards and data in one app",
+    description: "USD, GBP, EUR and NGN accounts, virtual cards, eSIM and bills in one app.",
     url: "/personal",
     type: "website",
   },
@@ -22,9 +22,9 @@ export default function PersonalPage() {
   return (
     <MarketingPage>
       <Hero
-        eyebrow="Konek for Personal"
-        title={<>Your money and your connection, <span className="text-konek-green">in one place.</span></>}
-        subtitle="Receive and hold four currencies, spend anywhere with virtual cards, and stay online in 190+ countries — the everyday essentials of a global life, wrapped into a single Konek account."
+        eyebrow="raviion for Personal"
+        title={<>The essentials you need, <span className="text-raviion-green">all in one account.</span></>}
+        subtitle="Hold four currencies, spend with virtual cards and stay online in 190+ countries. raviion keeps your money and daily essentials in one place."
         secondary={{ label: "See connectivity", href: "/connectivity" }}
       />
 
@@ -53,7 +53,7 @@ export default function PersonalPage() {
           items={[
             { icon: "📶", title: "Airtime & data", body: "Top up any network in seconds, for yourself or someone back home." },
             { icon: "🧾", title: "Bills & TV", body: "Electricity tokens, DStv, GOtv, StarTimes and exam pins — sorted in a tap." },
-            { icon: "🎁", title: "Rewards & referrals", body: "Earn as you spend and get rewarded for bringing friends onto Konek." },
+            { icon: "🎁", title: "Rewards & referrals", body: "Earn as you spend and get rewarded for bringing friends onto raviion." },
           ]}
         />
       </Section>
@@ -71,7 +71,7 @@ export default function PersonalPage() {
 
       <CTA
         title="One account for your whole connected life"
-        subtitle="Join Konek and get your accounts, cards and connectivity working together from day one."
+        subtitle="Join raviion and get your accounts, cards and connectivity working together from day one."
         secondary={{ label: "Talk to support", href: "/faq" }}
       />
     </MarketingPage>

@@ -216,14 +216,14 @@ export function RatesConsole() {
             action={
               <button
                 onClick={() => setShowNew((s) => !s)}
-                className="rounded-lg bg-konek-green px-3 py-1.5 text-xs font-semibold text-white"
+                className="rounded-lg bg-raviion-green px-3 py-1.5 text-xs font-semibold text-white"
               >
                 {showNew ? "Close" : "+ New product"}
               </button>
             }
           >
             {showNew && (
-              <div className="mb-4 rounded-xl border border-konek-green/30 bg-konek-green/5 p-4">
+              <div className="mb-4 rounded-xl border border-raviion-green/30 bg-raviion-green/5 p-4">
                 <p className="mb-3 text-sm font-semibold text-indigo">New catalog product</p>
                 <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
                   <label className="text-xs text-text-secondary">

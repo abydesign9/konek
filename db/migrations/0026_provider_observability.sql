@@ -1,5 +1,5 @@
 -- ============================================================
--- KONEK — Migration 0026: provider observability + routing controls
+-- Raviion — Migration 0026: provider observability + routing controls
 --
 -- Groundwork for real VTU/provider integrations, built BEFORE any live vendor:
 --   * provider_metrics — one row per external provider call (latency, outcome,

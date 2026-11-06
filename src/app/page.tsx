@@ -1,4 +1,4 @@
-import TimonPreviewPage from "./timon-preview/page";
+import RaviionHomePage from "./landing/page";
 import { StandaloneRedirect } from "@/components/StandaloneRedirect";
 
 // Browser tab: show the marketing landing page. Installed app (standalone):
@@ -8,7 +8,7 @@ export default function HomePage() {
   return (
     <>
       <StandaloneRedirect />
-      <TimonPreviewPage />
+      <RaviionHomePage />
     </>
   );
 }

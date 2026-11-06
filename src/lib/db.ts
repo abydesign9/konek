@@ -2,17 +2,17 @@ import { Pool, type QueryResultRow } from "pg";
 
 declare global {
   // eslint-disable-next-line no-var
-  var __konekPool: Pool | undefined;
+  var __raviionPool: Pool | undefined;
 }
 
 function getPool(): Pool {
   if (!process.env.DATABASE_URL) {
     throw new Error("Missing DATABASE_URL env var");
   }
-  if (!global.__konekPool) {
-    global.__konekPool = new Pool({ connectionString: process.env.DATABASE_URL });
+  if (!global.__raviionPool) {
+    global.__raviionPool = new Pool({ connectionString: process.env.DATABASE_URL });
   }
-  return global.__konekPool;
+  return global.__raviionPool;
 }
 
 export async function query<T extends QueryResultRow = QueryResultRow>(

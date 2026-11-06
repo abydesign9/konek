@@ -18,7 +18,7 @@ export default function GlobalError({ reset }: { error: Error & { digest?: strin
           }}
         >
           <h1 style={{ color: "#1F3864", fontWeight: 700, fontSize: "1.25rem", marginBottom: "0.5rem" }}>
-            Konek hit a snag
+            raviion hit a snag
           </h1>
           <p style={{ color: "#1F386499", marginBottom: "2rem" }}>
             Please refresh the page. Nothing was charged.

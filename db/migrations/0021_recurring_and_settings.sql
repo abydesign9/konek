@@ -1,5 +1,5 @@
 -- ============================================================
--- KONEK — Migration 0021: recurring schema (M4/M9) + Settings expansion
+-- Raviion — Migration 0021: recurring schema (M4/M9) + Settings expansion
 -- Two long-flagged "config layer, nothing fires yet" deferrals (see
 -- 0017's comment and api/cron/tick's own comment) get their tables and a
 -- real dispatcher wired into the existing cron tick:

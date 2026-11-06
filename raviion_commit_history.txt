@@ -1,0 +1,337 @@
+690fedd | 2026-08-03 13:03:20 +0100 | abydesign9 | Security hardening pass: XSS, brute-force, and dependency fixes
+5ee184c | 2026-08-03 10:23:51 +0100 | abydesign9 | Security/correctness audit (M1-M12 + business hub): 5 confirmed fixes
+738927e | 2026-08-03 08:51:23 +0100 | abydesign9 | Handover doc: business hub, security incident, layout convention
+07c4d0c | 2026-08-03 08:45:35 +0100 | abydesign9 | Fix width-cap inconsistency: Home, Wallet, Connect had no desktop max-width
+1a8e0e8 | 2026-08-03 07:23:56 +0100 | abydesign9 | Keep logged-in users inside the app shell for Privacy/Terms/FAQ
+11bb9e3 | 2026-08-03 07:07:14 +0100 | abydesign9 | Profile page: stream the body instead of blocking the whole page on it
+e005557 | 2026-08-03 06:59:35 +0100 | abydesign9 | Bottom nav: go full-bleed like Flyspeed instead of a growing-but-capped column
+7156763 | 2026-08-03 06:53:12 +0100 | abydesign9 | Business hub: add a real back arrow, stop reusing the logout glyph
+9e82c52 | 2026-08-03 06:30:48 +0100 | abydesign9 | Bottom nav: scale responsively instead of clamping to a fixed mobile width
+9051735 | 2026-08-02 23:53:19 +0100 | abydesign9 | Business hub: widen content column to use more of the desktop canvas
+89e75e2 | 2026-08-02 23:46:37 +0100 | abydesign9 | Business hub: remove duplicate customer-app bottom nav
+51cd008 | 2026-08-02 22:41:33 +0100 | abydesign9 | Merge main (security fix already applied there) into feature branch
+a905830 | 2026-08-02 22:38:59 +0100 | abydesign9 | SECURITY: remove malicious payload injected into postcss.config.mjs
+0900bf7 | 2026-08-02 22:35:09 +0100 | abydesign9 | SECURITY: remove malicious payload injected into postcss.config.mjs
+7c1e6bf | 2026-08-02 22:31:57 +0100 | abydesign9 | Fix: adding a duplicate business vendor crashed with a raw 500
+8059d1a | 2026-08-02 22:21:47 +0100 | abydesign9 | Business hub: campaigns, public API keys, and full Settings finalization
+e66798e | 2026-08-02 21:35:26 +0100 | abydesign9 | Business hub: full virtual accounts (NGN/USD), virtual cards, and vendor bank transfers
+e1a1ea2 | 2026-08-02 19:55:36 +0100 | abydesign9 | Business KYB: require CAC registration number on apply, show it in admin review (was collected in schema but never asked for or shown)
+c7578f7 | 2026-08-02 15:33:52 +0100 | abydesign9 | Fix: landing page footer dead links now point to real Careers/Blog/Help/FAQ/Terms/Privacy pages
+f3b8466 | 2026-08-02 15:24:16 +0100 | abydesign9 | Fix: PinPad password-manager autofill could silently submit a wrong transaction PIN (add autoComplete=off + manager-ignore attrs)
+170c833 | 2026-08-02 14:59:54 +0100 | abydesign9 | Business hub: separate business wallet ledger (NGN/USD/GBP/EUR) + owner-funded top-up (atomic, idempotent) + accounts UI
+f2c591e | 2026-08-02 10:28:49 +0100 | abydesign9 | Admin KYC review: surface open fraud/risk flags before approving
+32aea71 | 2026-08-02 10:14:39 +0100 | abydesign9 | Admin moderation: agents (reject/remove), business (suspend/reject/reinstate), referrals (reject conversion)
+f151754 | 2026-08-02 09:49:04 +0100 | abydesign9 | Profile: server-render profile data (remove client-fetch waterfall / skeleton flash)
+b2ce7f7 | 2026-08-02 00:12:20 +0100 | abydesign9 | Marketplace: manual column-mapping importer for supplier price sheets (any column names); seed sample promotions (paused)
+6ce3b5e | 2026-08-02 00:05:54 +0100 | abydesign9 | Cards: show only creation fee to customers (full schedule admin-only); marketing header shows 'Go to app' when logged in
+2efa36d | 2026-07-30 17:10:17 +0100 | abydesign9 | Build: don't fail production build on ESLint (lint stays in dev/CI)
+28824ad | 2026-07-30 13:17:37 +0100 | abydesign9 | Gate public FAQ: convert /faq to a marketing page (no app bottom nav / back-to-app), point support links to /help
+88aed09 | 2026-07-30 13:08:05 +0100 | abydesign9 | Landing nav: Products/Company/Support dropdowns + Pricing (Personal, Business, Connectivity under Products)
+808a0d9 | 2026-07-30 12:27:29 +0100 | abydesign9 | Perf+security: static CDN-cached marketing pages (relaxed CSP) vs dynamic strict-nonce CSP for the app via per-subtree layouts; cream coverage section with sliding country marquee
+dcaaca9 | 2026-07-30 11:40:58 +0100 | abydesign9 | Brand: use official Raviion logo (transparent bg, tightened frame)
+4485cef | 2026-07-30 11:23:50 +0100 | abydesign9 | Brand: add Raviion K logo (SIM-chip + connectivity waves) across landing and public site header
+9d23b94 | 2026-07-30 10:52:00 +0100 | abydesign9 | Community programs: public application forms (Ambassador/Influencer/Creator Club) + admin CSV export; seed FAQ knowledge base; gate community CTAs to on-page forms
+9bced46 | 2026-07-29 23:58:22 +0100 | abydesign9 | Marketing: public Help Center + Video Guides (fix in-app Support link), Referrals/Ambassadors/Influencers/Creator Club, Careers listing, seeded Blog posts, sitemap.xml + robots.txt
+cc845dc | 2026-07-29 23:20:05 +0100 | abydesign9 | Marketing site: Products/Company/Pricing/Support nav + Personal, Business, Connectivity, About, Pricing, Careers, Blog pages (SEO-optimised)
+1f48cd0 | 2026-07-29 22:50:33 +0100 | abydesign9 | Security: nonce-based CSP via middleware — drop unsafe-inline from script-src (strict-dynamic)
+6b726d0 | 2026-07-27 14:10:36 +0100 | abydesign9 | Security: hard-block mock endpoints in prod, no-store on /api/*, stop SW precaching admin chunks
+23c0f6d | 2026-07-27 13:58:46 +0100 | abydesign9 | Remove dead code: old eSIM buy page + old profile verification page + 6 orphaned components
+c05e74e | 2026-07-27 12:12:44 +0100 | abydesign9 | Home: single eSIM tile; KYC gate routes blocked users to verification across all money flows
+9f948c5 | 2026-07-27 01:26:28 +0100 | abydesign9 | Home: roomier balance hero + more product tiles; profile verification uses tier-based KYC
+e93c836 | 2026-07-27 01:07:47 +0100 | abydesign9 | Nav + responsiveness + simpler 1App-style profile
+caef566 | 2026-07-27 00:44:25 +0100 | abydesign9 | Home: 1App-style multi-currency balance dashboard (NGN/USD/GBP/EUR)
+ff5f1ea | 2026-07-27 00:24:01 +0100 | abydesign9 | Landing: credit Raviion as a product of Topton Global Consult (footer + body)
+0a210ad | 2026-07-25 18:42:35 +0100 | abydesign9 | Fix card detail page: replace mismatched light header on the dark hero
+ad93daa | 2026-07-25 18:30:57 +0100 | abydesign9 | On-site editable About page (content CMS)
+2370d43 | 2026-07-25 18:12:29 +0100 | abydesign9 | Harden: rate-limit card issuance + OTP verify; add product overview doc
+ae9ed0f | 2026-07-25 17:51:45 +0100 | abydesign9 | Admin-editable agent programme (affiliate commission + perks) + handover update
+ffd988e | 2026-07-25 17:33:38 +0100 | abydesign9 | Cards: drop the receiving-account gate; redesign the card flow
+d856803 | 2026-07-25 16:32:38 +0100 | abydesign9 | SmileID KYC provider + fraud auto-freeze
+5a365c9 | 2026-07-25 16:24:41 +0100 | abydesign9 | Card products + admin-configurable fee schedule reflected on the card page
+dd5415c | 2026-07-25 16:08:27 +0100 | abydesign9 | Admin financial config panels wired to live behavior
+cfd0dd8 | 2026-07-25 15:55:28 +0100 | abydesign9 | Fix build: remove unused var in cashbackOnCardSpend
+cfb1577 | 2026-07-25 15:51:59 +0100 | abydesign9 | NGN virtual accounts via Monnify (adapter + mock, provision + inflow + UI)
+dbbd37d | 2026-07-25 15:39:26 +0100 | abydesign9 | Promotions: wire remaining triggers (VTU/eSIM spend, card cashback, USD inflow)
+7f2ba8f | 2026-07-25 15:21:26 +0100 | abydesign9 | Promotions engine: configurable promos + locked bonus wallet
+a09b036 | 2026-07-25 12:46:43 +0100 | abydesign9 | PWA: ignore generated custom worker; document PWA install, push and biometric status
+59a9dd2 | 2026-07-25 12:41:03 +0100 | abydesign9 | Wire Web Push notifications (VAPID, service worker, subscribe + send)
+705e03b | 2026-07-25 12:30:57 +0100 | abydesign9 | PWA: skip landing page in installed app, add branded splash
+64693d9 | 2026-07-25 10:52:14 +0100 | abydesign9 | Document logging policy and vendor-spend safeguards in handover
+40ccecb | 2026-07-25 10:51:02 +0100 | abydesign9 | Security: rate-limit remaining vendor-spend routes; gate mock OTP logs
+98cbaf8 | 2026-07-25 10:30:40 +0100 | abydesign9 | Harden security headers; document backend-only external calls
+92fe5bb | 2026-07-25 07:15:32 +0100 | abydesign9 | Clean up project docs and tooling files
+2d2d642 | 2026-07-25 07:15:32 +0100 | abydesign9 | Clean up project docs and tooling files
+c4f3cbf | 2026-07-25 07:01:25 +0100 | abydesign9 | Admin login uses Raviion account credentials; add M1-M12 handover doc
+9eee631 | 2026-07-25 07:01:25 +0100 | abydesign9 | Admin login uses Raviion account credentials; add M1-M12 handover doc
+e93aef8 | 2026-07-25 06:38:53 +0100 | abydesign9 | Per-admin passwords for admin login
+dbde3fe | 2026-07-25 06:38:53 +0100 | abydesign9 | Per-admin passwords for admin login
+52aee20 | 2026-07-24 23:44:00 +0100 | abydesign9 | Fix marketplace migration: rename pricing_rules to avoid 0027 collision
+0c5349d | 2026-07-24 23:44:00 +0100 | abydesign9 | Fix marketplace migration: rename pricing_rules to avoid 0027 collision
+e8069d2 | 2026-07-24 20:31:07 +0100 | abydesign9 | Headers scroll with content; live chat bottom-right; rates delete + operator grouping
+ca9c315 | 2026-07-24 20:31:07 +0100 | abydesign9 | Headers scroll with content; live chat bottom-right; rates delete + operator grouping
+539cda1 | 2026-07-24 09:35:59 +0100 | abydesign9 | Fix lint-as-error in planSheet split (no comma expressions)
+32ae2b7 | 2026-07-24 09:35:59 +0100 | abydesign9 | Fix lint-as-error in planSheet split (no comma expressions)
+426023c | 2026-07-24 09:31:59 +0100 | abydesign9 | Ignore local backup folders
+193bf63 | 2026-07-24 09:31:59 +0100 | abydesign9 | Ignore local backup folders
+402ba51 | 2026-07-24 09:21:43 +0100 | abydesign9 | Admin ops tools + native-feel UX polish
+16db38b | 2026-07-24 09:21:43 +0100 | abydesign9 | Admin ops tools + native-feel UX polish
+cc60078 | 2026-07-24 08:45:40 +0100 | abydesign9 | Global configurable KYC: country/method matrix + pluggable providers
+da518c4 | 2026-07-24 08:45:40 +0100 | abydesign9 | Global configurable KYC: country/method matrix + pluggable providers
+23a22c7 | 2026-07-24 08:25:27 +0100 | abydesign9 | Marketplace: admin console + customer eSIM store UI
+559991b | 2026-07-24 08:25:27 +0100 | abydesign9 | Marketplace: admin console + customer eSIM store UI
+a78d7fa | 2026-07-23 22:25:45 +0100 | abydesign9 | Marketplace: API contracts (customer catalog/purchase + admin ops)
+eaef241 | 2026-07-23 22:25:45 +0100 | abydesign9 | Marketplace: API contracts (customer catalog/purchase + admin ops)
+67f7109 | 2026-07-23 21:24:50 +0100 | abydesign9 | Marketplace: purchase orchestration with supplier failover + attempt logging
+6191445 | 2026-07-23 21:24:50 +0100 | abydesign9 | Marketplace: purchase orchestration with supplier failover + attempt logging
+b952040 | 2026-07-23 21:14:04 +0100 | abydesign9 | Marketplace: import engine + repository + auto-reprice
+7d7289a | 2026-07-23 21:14:04 +0100 | abydesign9 | Marketplace: import engine + repository + auto-reprice
+822b99e | 2026-07-23 21:05:04 +0100 | abydesign9 | Marketplace foundation: multi-supplier schema + matching/pricing/selection engines
+210696c | 2026-07-23 21:05:04 +0100 | abydesign9 | Marketplace foundation: multi-supplier schema + matching/pricing/selection engines
+e2ec1f2 | 2026-07-23 16:43:13 +0100 | abydesign9 | Wire agents into the admin portal + add sync/update terminal scripts
+7d8ddbf | 2026-07-23 16:43:13 +0100 | abydesign9 | Wire agents into the admin portal + add sync/update terminal scripts
+3eff376 | 2026-07-23 16:30:06 +0100 | abydesign9 | Admin catalogue: finance-grade table, cost+X% re-pricing, price-sheet import
+aee93b4 | 2026-07-23 16:30:06 +0100 | abydesign9 | Admin catalogue: finance-grade table, cost+X% re-pricing, price-sheet import
+2431452 | 2026-07-23 16:13:32 +0100 | abydesign9 | Wire the real eSIM provider (eSIM Access) behind the existing abstraction
+34ae8ea | 2026-07-23 16:13:32 +0100 | abydesign9 | Wire the real eSIM provider (eSIM Access) behind the existing abstraction
+66af20c | 2026-07-23 12:02:44 +0100 | abydesign9 | Complete-your-setup flow, Payout Account screen, provider logo chips, CBN banner
+2a514ef | 2026-07-23 12:02:44 +0100 | abydesign9 | Complete-your-setup flow, Payout Account screen, provider logo chips, CBN banner
+7ce9d5f | 2026-07-23 11:43:58 +0100 | abydesign9 | Help & Support (Plug.ng style) + floating live-chat bubble
+023d20b | 2026-07-23 11:43:58 +0100 | abydesign9 | Help & Support (Plug.ng style) + floating live-chat bubble
+92f8fbf | 2026-07-23 11:26:39 +0100 | abydesign9 | Cards: create screen shows verification badge, fee/KYC notice + balance
+fb21b2b | 2026-07-23 11:26:39 +0100 | abydesign9 | Cards: create screen shows verification badge, fee/KYC notice + balance
+81c18f1 | 2026-07-23 10:43:27 +0100 | abydesign9 | Seed sample catalogue for all products; betting 8-preset style; readable referral links
+cbab257 | 2026-07-23 10:43:27 +0100 | abydesign9 | Seed sample catalogue for all products; betting 8-preset style; readable referral links
+fc0bd9d | 2026-07-23 08:39:07 +0100 | abydesign9 | Gift cards: buy/my tabs + search + brand grid; exam pins: quantity stepper
+622cd46 | 2026-07-23 08:39:07 +0100 | abydesign9 | Gift cards: buy/my tabs + search + brand grid; exam pins: quantity stepper
+9abd23f | 2026-07-23 08:16:41 +0100 | abydesign9 | Smart back button (previous page) + per-tab colour nav, both highly responsive
+d1d621a | 2026-07-23 08:16:41 +0100 | abydesign9 | Smart back button (previous page) + per-tab colour nav, both highly responsive
+ad1b268 | 2026-07-23 08:00:33 +0100 | abydesign9 | Router & MiFi product, meter verification, wallet hero quick-actions
+5daa8a5 | 2026-07-23 08:00:33 +0100 | abydesign9 | Router & MiFi product, meter verification, wallet hero quick-actions
+45d17fd | 2026-07-23 07:53:22 +0100 | abydesign9 | Admin: create/edit/delete catalogue products (was price+active only)
+e1f28d1 | 2026-07-23 07:53:22 +0100 | abydesign9 | Admin: create/edit/delete catalogue products (was price+active only)
+cd6fb1a | 2026-07-23 06:39:05 +0100 | abydesign9 | Persistent tab bar on every screen + iOS/native feel
+8ee4e06 | 2026-07-23 06:39:05 +0100 | abydesign9 | Persistent tab bar on every screen + iOS/native feel
+679f184 | 2026-07-23 06:28:12 +0100 | abydesign9 | Rewire invite to real data; redesign profile, support, notifications; polish nav
+a78958d | 2026-07-23 06:28:12 +0100 | abydesign9 | Rewire invite to real data; redesign profile, support, notifications; polish nav
+963357e | 2026-07-23 05:57:43 +0100 | abydesign9 | Layered admin dashboards: Executive + Ops/Finance/Growth/Business/Agents/Support
+9b022e9 | 2026-07-23 05:57:43 +0100 | abydesign9 | Layered admin dashboards: Executive + Ops/Finance/Growth/Business/Agents/Support
+7e3a46c | 2026-07-23 05:47:58 +0100 | abydesign9 | Agent dashboard: performance, rank, earnings + fix instant-activation bug
+4cf2a1c | 2026-07-23 05:47:58 +0100 | abydesign9 | Agent dashboard: performance, rank, earnings + fix instant-activation bug
+1c345c2 | 2026-07-23 05:43:29 +0100 | abydesign9 | Enforce KYB verification gate on all business APIs
+b3a3621 | 2026-07-23 05:43:29 +0100 | abydesign9 | Enforce KYB verification gate on all business APIs
+fbc094a | 2026-07-23 05:31:21 +0100 | abydesign9 | QA eSIM + Cards detail screens
+7605cb8 | 2026-07-23 05:31:21 +0100 | abydesign9 | QA eSIM + Cards detail screens
+ee51dc7 | 2026-07-22 18:56:53 +0100 | abydesign9 | Redesign profile hub in the old Settings style (emoji cards)
+b0e9a95 | 2026-07-22 18:56:53 +0100 | abydesign9 | Redesign profile hub in the old Settings style (emoji cards)
+053d23e | 2026-07-22 18:53:36 +0100 | abydesign9 | QA Connect + History screens
+e1d79fe | 2026-07-22 18:53:36 +0100 | abydesign9 | QA Connect + History screens
+2f6243e | 2026-07-22 18:43:27 +0100 | abydesign9 | Consolidate account menu: /settings restores Privacy & Security (was orphaned)
+35eb9ac | 2026-07-22 18:43:27 +0100 | abydesign9 | Consolidate account menu: /settings restores Privacy & Security (was orphaned)
+a7bf656 | 2026-07-22 18:37:14 +0100 | abydesign9 | Add card create button; backfill finance tier for liveness-verified users
+4601b3f | 2026-07-22 18:37:14 +0100 | abydesign9 | Add card create button; backfill finance tier for liveness-verified users
+e047cd6 | 2026-07-22 18:17:20 +0100 | abydesign9 | Fix two broken navigation links
+a60db79 | 2026-07-22 18:17:20 +0100 | abydesign9 | Fix two broken navigation links
+2deaa9a | 2026-07-22 17:57:38 +0100 | abydesign9 | Fix KYC wallet gate (BVN-or-NIN), restore CustomAmountField, bolder home icons
+4ae6002 | 2026-07-22 17:57:38 +0100 | abydesign9 | Fix KYC wallet gate (BVN-or-NIN), restore CustomAmountField, bolder home icons
+62ff589 | 2026-07-22 17:39:34 +0100 | abydesign9 | Profile: self-contained avatars + real avatar on hub + completeness nudge
+804b560 | 2026-07-22 17:39:34 +0100 | abydesign9 | Profile: self-contained avatars + real avatar on hub + completeness nudge
+a5d521a | 2026-07-22 17:39:18 +0100 | abydesign9 | Fix: liveness check now promotes to FINANCE tier (was unreachable)
+b7ad40c | 2026-07-22 17:39:18 +0100 | abydesign9 | Fix: liveness check now promotes to FINANCE tier (was unreachable)
+0f60d64 | 2026-07-22 17:08:27 +0100 | abydesign9 | feat: make new Raviion landing page the homepage
+2f255ee | 2026-07-22 17:08:27 +0100 | abydesign9 | feat: make new Raviion landing page the homepage
+a28a948 | 2026-07-22 16:47:11 +0100 | abydesign9 | feat: add rich Raviion landing experience
+7c29612 | 2026-07-22 16:47:11 +0100 | abydesign9 | feat: add rich Raviion landing experience
+1c608e9 | 2026-07-22 10:42:08 +0100 | abydesign9 | Upgrade Raviion landing page with Timon-style experience, KYC improvements and admin review
+92d4f8b | 2026-07-22 10:42:08 +0100 | abydesign9 | Upgrade Raviion landing page with Timon-style experience, KYC improvements and admin review
+7044b02 | 2026-07-22 00:34:07 +0100 | abydesign9 | feat: add KYC workflows and upgrade Raviion connectivity landing page
+6212586 | 2026-07-22 00:34:07 +0100 | abydesign9 | feat: add KYC workflows and upgrade Raviion connectivity landing page
+a449d63 | 2026-07-21 01:16:45 +0100 | abydesign9 | Fix onboarding tour navigation flow
+3c287e9 | 2026-07-21 01:16:45 +0100 | abydesign9 | Fix onboarding tour navigation flow
+c23b41e | 2026-07-21 00:55:40 +0100 | abydesign9 | Fix onboarding tour navigation flow
+a772f6e | 2026-07-21 00:55:40 +0100 | abydesign9 | Fix onboarding tour navigation flow
+aaa1779 | 2026-07-21 00:36:18 +0100 | abydesign9 | Complete wallet, products and growth features
+d757794 | 2026-07-21 00:36:18 +0100 | abydesign9 | Complete wallet, products and growth features
+6e6183c | 2026-07-20 21:29:04 +0100 | abydesign9 | Redesign eSIM purchase and management experience
+9b5b3c3 | 2026-07-20 21:29:04 +0100 | abydesign9 | Redesign eSIM purchase and management experience
+97b28bb | 2026-07-20 20:49:19 +0100 | abydesign9 | Complete KYC security gates for financial features
+946e2a7 | 2026-07-20 20:49:19 +0100 | abydesign9 | Complete KYC security gates for financial features
+636a6c2 | 2026-07-20 20:42:05 +0100 | abydesign9 | Protect card details with finance KYC
+febcca2 | 2026-07-20 20:42:05 +0100 | abydesign9 | Protect card details with finance KYC
+c3f35f7 | 2026-07-20 20:40:06 +0100 | abydesign9 | Protect card payments with finance KYC
+1b3a040 | 2026-07-20 20:40:06 +0100 | abydesign9 | Protect card payments with finance KYC
+c43df9a | 2026-07-20 20:33:53 +0100 | abydesign9 | Protect card issuance with finance KYC tier
+52d68b0 | 2026-07-20 20:33:53 +0100 | abydesign9 | Protect card issuance with finance KYC tier
+956d094 | 2026-07-20 20:07:56 +0100 | abydesign9 | Add KYC verification gates and wallet protection
+2ba1777 | 2026-07-20 20:07:56 +0100 | abydesign9 | Add KYC verification gates and wallet protection
+fb41fc0 | 2026-07-20 16:23:50 +0100 | abydesign9 | Add share account details to global accounts
+e2cc61e | 2026-07-20 16:23:50 +0100 | abydesign9 | Add share account details to global accounts
+9e98dc1 | 2026-07-20 16:05:25 +0100 | abydesign9 | Upgrade global accounts dashboard experience
+1d4d4b3 | 2026-07-20 16:05:25 +0100 | abydesign9 | Upgrade global accounts dashboard experience
+7b3c59a | 2026-07-20 15:48:35 +0100 | abydesign9 | Make global accounts product-first
+dba05ef | 2026-07-20 15:48:35 +0100 | abydesign9 | Make global accounts product-first
+de2bef7 | 2026-07-20 15:22:32 +0100 | abydesign9 | Add multi currency global accounts dashboard
+615e188 | 2026-07-20 15:22:32 +0100 | abydesign9 | Add multi currency global accounts dashboard
+3ed638c | 2026-07-20 14:50:01 +0100 | abydesign9 | Add multi currency global accounts flow
+f165d34 | 2026-07-20 14:50:01 +0100 | abydesign9 | Add multi currency global accounts flow
+08e31e6 | 2026-07-20 12:52:47 +0100 | abydesign9 | before pin flow update
+5499689 | 2026-07-20 12:52:47 +0100 | abydesign9 | before pin flow update
+67080b4 | 2026-07-20 00:03:53 +0100 | abydesign9 | Fix PWA icons (were 404ing); add cross-browser install prompt banner
+4fef725 | 2026-07-20 00:03:53 +0100 | abydesign9 | Fix PWA icons (were 404ing); add cross-browser install prompt banner
+30d340c | 2026-07-19 22:30:32 +0100 | abydesign9 | Add proper error handling to OTP route; use branded OTP email template
+c409987 | 2026-07-19 22:30:32 +0100 | abydesign9 | Add proper error handling to OTP route; use branded OTP email template
+9628627 | 2026-07-19 02:12:51 +0100 | abydesign9 | Withdraw wallet funds to your own bank (#5)
+f045c22 | 2026-07-19 02:12:51 +0100 | abydesign9 | Withdraw wallet funds to your own bank (#5)
+88fa5db | 2026-07-19 01:45:11 +0100 | abydesign9 | Home perf: parallelize data batch + instant loading skeleton
+4b18dea | 2026-07-19 01:45:11 +0100 | abydesign9 | Home perf: parallelize data batch + instant loading skeleton
+372e321 | 2026-07-19 01:36:43 +0100 | abydesign9 | Profile fields (username, avatar, DOB, address) + Verification tab
+beaffa5 | 2026-07-19 01:36:43 +0100 | abydesign9 | Profile fields (username, avatar, DOB, address) + Verification tab
+8431a19 | 2026-07-19 01:29:32 +0100 | abydesign9 | Home: move promo carousel below Bills & top-ups, drop coin banner
+0c526dd | 2026-07-19 01:29:32 +0100 | abydesign9 | Home: move promo carousel below Bills & top-ups, drop coin banner
+85bcf1d | 2026-07-19 01:18:12 +0100 | abydesign9 | Email OTP required to change PIN and password
+1c6e4ea | 2026-07-19 01:18:12 +0100 | abydesign9 | Email OTP required to change PIN and password
+0711027 | 2026-07-19 01:07:37 +0100 | abydesign9 | Cards hero copy + dedicated /invite share screen
+6fcade6 | 2026-07-19 01:07:37 +0100 | abydesign9 | Cards hero copy + dedicated /invite share screen
+6ccd439 | 2026-07-19 01:03:17 +0100 | abydesign9 | Referral $10 cash program + rewards "how earning works"
+90d5247 | 2026-07-19 01:03:17 +0100 | abydesign9 | Referral $10 cash program + rewards "how earning works"
+7fead97 | 2026-07-19 00:55:57 +0100 | abydesign9 | Custom amount input on airtime, electricity, betting
+f16d193 | 2026-07-19 00:55:57 +0100 | abydesign9 | Custom amount input on airtime, electricity, betting
+283de3a | 2026-07-19 00:51:07 +0100 | abydesign9 | International Data Top-Up as its own product + page
+5253e70 | 2026-07-19 00:51:07 +0100 | abydesign9 | International Data Top-Up as its own product + page
+ede2a26 | 2026-07-19 00:39:51 +0100 | abydesign9 | Homepage evergreen promo carousel + global Data Top-Up action
+107aa45 | 2026-07-19 00:39:51 +0100 | abydesign9 | Homepage evergreen promo carousel + global Data Top-Up action
+9e51a6f | 2026-07-18 19:34:20 +0100 | abydesign9 | Email OTP verification for signup + Resend email sender
+ba1195f | 2026-07-18 19:34:20 +0100 | abydesign9 | Email OTP verification for signup + Resend email sender
+36638f9 | 2026-07-18 19:11:46 +0100 | abydesign9 | Batch A: fund-wallet URL, profile skeleton, password toggle, section rename
+c5a5c6d | 2026-07-18 19:11:46 +0100 | abydesign9 | Batch A: fund-wallet URL, profile skeleton, password toggle, section rename
+26ec7e5 | 2026-07-18 13:26:00 +0100 | abydesign9 | Fix Vercel build: ESLint unused-vars + build-time DB coupling
+6d1e040 | 2026-07-18 13:26:00 +0100 | abydesign9 | Fix Vercel build: ESLint unused-vars + build-time DB coupling
+47f5c9c | 2026-07-18 11:58:05 +0100 | abydesign9 | Harden money paths and provider layer across M1–M12
+bb74e37 | 2026-07-18 11:58:05 +0100 | abydesign9 | Harden money paths and provider layer across M1–M12
+48e994c | 2026-07-17 11:35:19 +0100 | abydesign9 | Fix dark/system theme making the entire app unreadable
+c1ab965 | 2026-07-17 11:35:19 +0100 | abydesign9 | Fix dark/system theme making the entire app unreadable
+d8f4b37 | 2026-07-17 09:42:59 +0100 | abydesign9 | Trigger Vercel deploy: verify GitHub integration is reconnected
+e7bd8aa | 2026-07-17 09:42:59 +0100 | abydesign9 | Trigger Vercel deploy: verify GitHub integration is reconnected
+e2d7eb8 | 2026-07-16 23:37:32 +0100 | abydesign9 | Rebuild Business Dashboard as a workforce connectivity platform, not VTU
+10fc71c | 2026-07-16 23:37:32 +0100 | abydesign9 | Rebuild Business Dashboard as a workforce connectivity platform, not VTU
+fda5190 | 2026-07-16 22:52:58 +0100 | abydesign9 | Make the back button bold and consistent on every in-app page
+ff74e00 | 2026-07-16 22:52:58 +0100 | abydesign9 | Make the back button bold and consistent on every in-app page
+db3255a | 2026-07-16 21:02:50 +0100 | abydesign9 | Ship M4/M9 recurring schema + finish Settings expansion spec
+9a188ac | 2026-07-16 21:02:50 +0100 | abydesign9 | Ship M4/M9 recurring schema + finish Settings expansion spec
+a50152b | 2026-07-16 20:32:26 +0100 | abydesign9 | docs: engineering overview for co-founder onboarding
+4bd5409 | 2026-07-16 20:32:26 +0100 | abydesign9 | docs: engineering overview for co-founder onboarding
+270c468 | 2026-07-16 20:01:09 +0100 | abydesign9 | Rework profile into a grouped settings hub, mirroring reference UX
+8b1c74d | 2026-07-16 20:01:09 +0100 | abydesign9 | Rework profile into a grouped settings hub, mirroring reference UX
+1a51c16 | 2026-07-16 19:45:23 +0100 | abydesign9 | Add Raviion onboarding tour: Welcome screen + admin-editable step CMS
+2fd4d93 | 2026-07-16 19:45:23 +0100 | abydesign9 | Add Raviion onboarding tour: Welcome screen + admin-editable step CMS
+9c3b553 | 2026-07-16 19:23:49 +0100 | abydesign9 | Reorder home quick actions: connectivity/global products before local VTU
+379cc19 | 2026-07-16 19:23:49 +0100 | abydesign9 | Reorder home quick actions: connectivity/global products before local VTU
+ca88880 | 2026-07-16 18:53:17 +0100 | abydesign9 | Reposition landing page as a Global Digital Connectivity Platform
+42b646b | 2026-07-16 18:53:17 +0100 | abydesign9 | Reposition landing page as a Global Digital Connectivity Platform
+660a263 | 2026-07-16 14:27:49 +0100 | abydesign9 | Fix production build: ESLint errors that tsc --noEmit doesn't catch
+fa01d19 | 2026-07-16 14:27:49 +0100 | abydesign9 | Fix production build: ESLint errors that tsc --noEmit doesn't catch
+5961b2e | 2026-07-16 14:19:56 +0100 | abydesign9 | Fix cron schedule for Vercel Hobby plan (max once/day)
+cd03096 | 2026-07-16 14:19:56 +0100 | abydesign9 | Fix cron schedule for Vercel Hobby plan (max once/day)
+f745f2c | 2026-07-16 14:09:13 +0100 | abydesign9 | Replace phone+OTP with email+password auth; redesign login/signup
+86cf53d | 2026-07-16 14:09:13 +0100 | abydesign9 | Replace phone+OTP with email+password auth; redesign login/signup
+c2932b3 | 2026-07-16 13:34:13 +0100 | abydesign9 | Landing page: drop black sections, add floating icons, more imagery
+0bd4755 | 2026-07-16 13:34:13 +0100 | abydesign9 | Landing page: drop black sections, add floating icons, more imagery
+ece8f03 | 2026-07-16 13:14:43 +0100 | abydesign9 | Redesign landing page as a platform story, not a product list
+2d128df | 2026-07-16 13:14:43 +0100 | abydesign9 | Redesign landing page as a platform story, not a product list
+eddd200 | 2026-07-16 12:12:35 +0100 | abydesign9 | Add self-service PIN change and real account closure
+b85ae31 | 2026-07-16 12:12:35 +0100 | abydesign9 | Add self-service PIN change and real account closure
+cae9b1f | 2026-07-16 11:56:24 +0100 | abydesign9 | Mobile app slice 1: real 5-tab nav, Wallet/Connect/Profile pages, real telco logos
+eae898f | 2026-07-16 11:56:24 +0100 | abydesign9 | Mobile app slice 1: real 5-tab nav, Wallet/Connect/Profile pages, real telco logos
+0ec40aa | 2026-07-16 09:27:07 +0100 | abydesign9 | Add real Provider Monitoring page + fix a pre-existing permission gap
+5d4b9a4 | 2026-07-16 09:27:07 +0100 | abydesign9 | Add real Provider Monitoring page + fix a pre-existing permission gap
+62f8710 | 2026-07-16 08:10:04 +0100 | abydesign9 | Rework all 6 admin consoles onto the dense enterprise grid
+9cbebd4 | 2026-07-16 08:10:04 +0100 | abydesign9 | Rework all 6 admin consoles onto the dense enterprise grid
+71ec3cc | 2026-07-16 07:52:12 +0100 | abydesign9 | Stand up the app's first background worker: /api/cron/tick
+ebd93f9 | 2026-07-16 07:52:12 +0100 | abydesign9 | Stand up the app's first background worker: /api/cron/tick
+aaa1fd4 | 2026-07-16 07:29:14 +0100 | abydesign9 | Merge fraud_queue query fix from claude/serene-yalow-7ae676
+69cbed8 | 2026-07-16 07:29:14 +0100 | abydesign9 | Merge fraud_queue query fix from claude/serene-yalow-7ae676
+e944dff | 2026-07-16 07:23:42 +0100 | abydesign9 | Fix fraud_queue query in ops-alerts: flag lives on risk_flags, not fraud_queue
+6c8d038 | 2026-07-16 07:23:42 +0100 | abydesign9 | Fix fraud_queue query in ops-alerts: flag lives on risk_flags, not fraud_queue
+6896601 | 2026-07-16 07:21:15 +0100 | abydesign9 | Merge branch 'claude/serene-yalow-7ae676': resolve home redesign conflicts
+b251b8a | 2026-07-16 07:21:15 +0100 | abydesign9 | Merge branch 'claude/serene-yalow-7ae676': resolve home redesign conflicts
+108b3ee | 2026-07-16 07:06:49 +0100 | abydesign9 | Ops alerts: real admin bell counts + Discord webhook delivery
+2f57e4b | 2026-07-16 07:06:49 +0100 | abydesign9 | Ops alerts: real admin bell counts + Discord webhook delivery
+244a472 | 2026-07-16 06:40:30 +0100 | abydesign9 | Admin: desktop-first ops dashboard shell (Stripe/Linear/Vercel-style)
+809eae7 | 2026-07-16 06:40:30 +0100 | abydesign9 | Admin: desktop-first ops dashboard shell (Stripe/Linear/Vercel-style)
+44dd4bb | 2026-07-15 22:30:49 +0100 | abydesign9 | M12 (6/6): admin settings — change admin secret, reset customer PIN
+5e95e50 | 2026-07-15 22:30:49 +0100 | abydesign9 | M12 (6/6): admin settings — change admin secret, reset customer PIN
+2f86ac3 | 2026-07-15 22:16:41 +0100 | abydesign9 | M12 (5/6): Notification Center — campaigns, templates, in-app CMS
+7529999 | 2026-07-15 22:16:41 +0100 | abydesign9 | M12 (5/6): Notification Center — campaigns, templates, in-app CMS
+09e23fb | 2026-07-15 21:55:51 +0100 | abydesign9 | M12 (4/6): customer support — Zendesk-style tickets + knowledge base
+4b338cf | 2026-07-15 21:55:51 +0100 | abydesign9 | M12 (4/6): customer support — Zendesk-style tickets + knowledge base
+b96fa03 | 2026-07-15 21:35:26 +0100 | abydesign9 | M12 (3/6): referrals dashboard
+34190d3 | 2026-07-15 21:35:26 +0100 | abydesign9 | M12 (3/6): referrals dashboard
+da950d9 | 2026-07-15 21:27:23 +0100 | abydesign9 | M12 (2/6): admin RBAC — roles, permission types, permissions
+28dbe58 | 2026-07-15 21:27:23 +0100 | abydesign9 | M12 (2/6): admin RBAC — roles, permission types, permissions
+2758618 | 2026-07-15 21:13:40 +0100 | abydesign9 | M12 (1/6): Rates Configuration + admin shell
+a603e49 | 2026-07-15 21:13:40 +0100 | abydesign9 | M12 (1/6): Rates Configuration + admin shell
+e560ac7 | 2026-07-15 16:18:05 +0100 | abydesign9 | M11: notification preferences UI, WhatsApp channel, and support chat
+b535cb4 | 2026-07-15 16:18:05 +0100 | abydesign9 | M11: notification preferences UI, WhatsApp channel, and support chat
+4c8ed90 | 2026-07-15 16:06:32 +0100 | abydesign9 | M10: spin rewards + leaderboard UI
+45f675d | 2026-07-15 16:06:32 +0100 | abydesign9 | M10: spin rewards + leaderboard UI
+7c79d00 | 2026-07-15 15:52:08 +0100 | abydesign9 | UX: consistent back-arrow page headers + mobile responsiveness pass
+18413fa | 2026-07-15 15:52:08 +0100 | abydesign9 | UX: consistent back-arrow page headers + mobile responsiveness pass
+ac085ef | 2026-07-15 15:24:01 +0100 | abydesign9 | M9: business hub — team roles, spending reports, CSV export
+6b5465b | 2026-07-15 15:24:01 +0100 | abydesign9 | M9: business hub — team roles, spending reports, CSV export
+62dd229 | 2026-07-15 15:12:41 +0100 | abydesign9 | dev: local Postgres tooling — embedded-postgres + seed/provision/fund scripts
+ed19de8 | 2026-07-15 15:12:41 +0100 | abydesign9 | dev: local Postgres tooling — embedded-postgres + seed/provision/fund scripts
+fa6544c | 2026-07-15 10:08:36 +0100 | abydesign9 | M7: card controls — spend limits, merchant lock, reveal details
+8fc44ab | 2026-07-15 10:08:36 +0100 | abydesign9 | M7: card controls — spend limits, merchant lock, reveal details
+b96e97b | 2026-07-15 09:28:54 +0100 | abydesign9 | M6: USD account usability — convert USD→NGN (FX spread), receive framing, discoverability
+122d858 | 2026-07-15 09:28:54 +0100 | abydesign9 | M6: USD account usability — convert USD→NGN (FX spread), receive framing, discoverability
+4b4d760 | 2026-07-15 06:42:05 +0100 | abydesign9 | M5: eSIM marketplace — country/region/global packs, real QR, usage, My eSIMs
+9378ae2 | 2026-07-15 06:42:05 +0100 | abydesign9 | M5: eSIM marketplace — country/region/global packs, real QR, usage, My eSIMs
+fee2cd1 | 2026-07-15 00:54:35 +0100 | abydesign9 | M4: intl top-up — carrier detection, 100+ countries, family beneficiaries, share
+74e4248 | 2026-07-15 00:54:35 +0100 | abydesign9 | M4: intl top-up — carrier detection, 100+ countries, family beneficiaries, share
+9278372 | 2026-07-15 00:43:44 +0100 | abydesign9 | M3: add gift-card product + brand/bookmaker icons
+0ab3c3c | 2026-07-15 00:43:44 +0100 | abydesign9 | M3: add gift-card product + brand/bookmaker icons
+756a6d6 | 2026-07-15 00:33:07 +0100 | abydesign9 | M3: enable betting top-up + type-aware receipt labels
+1993e31 | 2026-07-15 00:33:07 +0100 | abydesign9 | M3: enable betting top-up + type-aware receipt labels
+29fdec1 | 2026-07-15 00:03:27 +0100 | abydesign9 | M2: wallet transaction history, receipts, and CSV statements
+8a09895 | 2026-07-15 00:03:27 +0100 | abydesign9 | M2: wallet transaction history, receipts, and CSV statements
+d240077 | 2026-07-14 23:56:36 +0100 | abydesign9 | M1: progressive KYC — tiers, mock vendor adapter, flow UI, tier gating
+ec168ac | 2026-07-14 23:56:36 +0100 | abydesign9 | M1: progressive KYC — tiers, mock vendor adapter, flow UI, tier gating
+f827be3 | 2026-07-14 23:44:31 +0100 | abydesign9 | M1: connect landing → signup/login → legal front door
+9591a43 | 2026-07-14 23:44:31 +0100 | abydesign9 | M1: connect landing → signup/login → legal front door
+a13b3e0 | 2026-07-14 18:19:54 +0100 | abydesign9 | Add allowlisted demo-OTP shortcut for self-service testing
+abd0298 | 2026-07-14 18:19:54 +0100 | abydesign9 | Add allowlisted demo-OTP shortcut for self-service testing
+9a1a829 | 2026-07-14 17:38:49 +0100 | abydesign9 | Add phone/OTP signup page and swap favicon to Raviion logo
+f0df17a | 2026-07-14 17:38:49 +0100 | abydesign9 | Add phone/OTP signup page and swap favicon to Raviion logo
+f50b43f | 2026-07-14 16:04:00 +0100 | abydesign9 | your message
+d5ea51a | 2026-07-14 16:04:00 +0100 | abydesign9 | your message
+d8a54e0 | 2026-07-14 13:30:44 +0100 | Temitope Bamidele | Rebrand + landing/login redesign
+66d7575 | 2026-07-14 13:30:44 +0100 | Temitope Bamidele | Rebrand + landing/login redesign
+89e3866 | 2026-07-14 12:36:34 +0100 | Temitope Bamidele | Phase 2 M12: admin console upgrade (identity, fraud queue, recon history)
+ed94ef1 | 2026-07-14 12:36:34 +0100 | Temitope Bamidele | Phase 2 M12: admin console upgrade (identity, fraud queue, recon history)
+fede363 | 2026-07-14 10:24:40 +0100 | Temitope Bamidele | Phase 2 M8: voice as a loyalty perk (not a profit center)
+41a160f | 2026-07-14 10:24:40 +0100 | Temitope Bamidele | Phase 2 M8: voice as a loyalty perk (not a profit center)
+dbfa98d | 2026-07-14 10:01:16 +0100 | Temitope Bamidele | Phase 2 M7: virtual card issuing with mandatory 3DS
+8af48fc | 2026-07-14 10:01:16 +0100 | Temitope Bamidele | Phase 2 M7: virtual card issuing with mandatory 3DS
+f456da0 | 2026-07-14 09:29:41 +0100 | Temitope Bamidele | Phase 2 M9 (rest): white-label API + corporate travel
+4cafa5c | 2026-07-14 09:29:41 +0100 | Temitope Bamidele | Phase 2 M9 (rest): white-label API + corporate travel
+5a02be6 | 2026-07-14 09:00:32 +0100 | Temitope Bamidele | Phase 2 M6: virtual dollar account (receive-only)
+a1c44a8 | 2026-07-14 09:00:32 +0100 | Temitope Bamidele | Phase 2 M6: virtual dollar account (receive-only)
+d4643ec | 2026-07-14 08:31:34 +0100 | Temitope Bamidele | Phase 2 M10: full gamification (levels, missions, streaks cache, leaderboard, squads, referral tracking)
+e161ada | 2026-07-14 08:31:34 +0100 | Temitope Bamidele | Phase 2 M10: full gamification (levels, missions, streaks cache, leaderboard, squads, referral tracking)
+78453fe | 2026-07-14 07:38:51 +0100 | Temitope Bamidele | Phase 2 M11 + M9: notifications, agents, KYB businesses, bulk VTU
+090d9ce | 2026-07-14 07:38:51 +0100 | Temitope Bamidele | Phase 2 M11 + M9: notifications, agents, KYB businesses, bulk VTU
+8de32ff | 2026-07-14 07:22:58 +0100 | Temitope Bamidele | Add Phase 2 roadmap and validated schema (not applied)
+a0224d8 | 2026-07-14 07:22:58 +0100 | Temitope Bamidele | Add Phase 2 roadmap and validated schema (not applied)
+01cad5c | 2026-07-14 07:16:37 +0100 | Temitope Bamidele | Weeks 10-11: rewards, admin console, hardening
+40f3cb8 | 2026-07-14 07:16:37 +0100 | Temitope Bamidele | Weeks 10-11: rewards, admin console, hardening
+4210da4 | 2026-07-13 23:07:55 +0100 | Temitope Bamidele | Weeks 6-9: second aggregator/failover, electricity/cable/exam pins, intl top-up, eSIM, and velocity limits
+5dc1fa4 | 2026-07-13 23:07:55 +0100 | Temitope Bamidele | Weeks 6-9: second aggregator/failover, electricity/cable/exam pins, intl top-up, eSIM, and velocity limits
+fb3b50c | 2026-07-13 22:39:17 +0100 | Temitope Bamidele | Week 5: transaction PIN, beneficiaries, 2-tap repeat purchase
+865088c | 2026-07-13 22:39:17 +0100 | Temitope Bamidele | Week 5: transaction PIN, beneficiaries, 2-tap repeat purchase
+2b1ab76 | 2026-07-13 22:25:25 +0100 | Temitope Bamidele | Week 4: vendor adapter interface + sandbox airtime/data purchases
+1c7188d | 2026-07-13 22:25:25 +0100 | Temitope Bamidele | Week 4: vendor adapter interface + sandbox airtime/data purchases
+56c2c33 | 2026-07-13 22:14:10 +0100 | Temitope Bamidele | Week 3: Paystack wallet funding (checkout + webhook)
+a9ac63d | 2026-07-13 22:14:10 +0100 | Temitope Bamidele | Week 3: Paystack wallet funding (checkout + webhook)
+09ca05e | 2026-07-13 20:46:36 +0100 | Temitope Bamidele | Landing page + Week 2 ledger service
+8a52783 | 2026-07-13 20:46:36 +0100 | Temitope Bamidele | Landing page + Week 2 ledger service
+726fa5c | 2026-07-13 16:38:25 +0100 | Temitope Bamidele | Week 1: Next.js 14 PWA scaffold + phone/OTP auth
+4055f07 | 2026-07-13 16:38:25 +0100 | Temitope Bamidele | Week 1: Next.js 14 PWA scaffold + phone/OTP auth

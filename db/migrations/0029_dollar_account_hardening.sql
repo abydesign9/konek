@@ -1,5 +1,5 @@
 -- ============================================================
--- KONEK — Migration 0029: dollar-account hardening (M6)
+-- Raviion — Migration 0029: dollar-account hardening (M6)
 --
 -- Defense-in-depth dedup for USD inflows and one-account-per-currency, backing
 -- the application-level guards in dollarAccountService.

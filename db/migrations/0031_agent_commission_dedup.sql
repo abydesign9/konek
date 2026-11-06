@@ -1,5 +1,5 @@
 -- ============================================================
--- KONEK — Migration 0031: agent commission dedup (M9)
+-- Raviion — Migration 0031: agent commission dedup (M9)
 --
 -- Backs the ON CONFLICT in recordCommissionIfAgent: a source transaction earns
 -- an agent commission at most once, even if the post-delivery hook is retried.

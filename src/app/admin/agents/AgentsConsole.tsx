@@ -27,7 +27,7 @@ function naira(minor: number) {
 }
 
 const STATUS_CLASS: Record<string, string> = {
-  active: "bg-konek-green/10 text-konek-green",
+  active: "bg-raviion-green/10 text-raviion-green",
   pending: "bg-gold/15 text-gold",
   suspended: "bg-red-50 text-red-600",
   rejected: "bg-red-50 text-red-600",
@@ -101,7 +101,7 @@ export function AgentsConsole() {
     <>
       <PageHeader
         title="Agents"
-        description="Approve applications, set tier and commission rate, and pay out earned commission. Agents sell Konek services from their own wallet and earn a rebate on every delivered sale."
+        description="Approve applications, set tier and commission rate, and pay out earned commission. Agents sell raviion services from their own wallet and earn a rebate on every delivered sale."
       />
 
       <Grid>
@@ -110,7 +110,7 @@ export function AgentsConsole() {
             {[
               { label: "Agents", value: String(totals.total) },
               { label: "Pending approval", value: String(totals.pending), tone: totals.pending ? "text-gold" : "" },
-              { label: "Active", value: String(totals.active), tone: "text-konek-green" },
+              { label: "Active", value: String(totals.active), tone: "text-raviion-green" },
               { label: "Unpaid commission", value: naira(totals.unpaid), tone: totals.unpaid ? "text-gold" : "" },
               { label: "Total float", value: naira(totals.float) },
             ].map((s) => (
@@ -144,7 +144,7 @@ export function AgentsConsole() {
               </div>
             }
           >
-            {message && <p className="mb-3 text-xs font-semibold text-konek-green">{message}</p>}
+            {message && <p className="mb-3 text-xs font-semibold text-raviion-green">{message}</p>}
 
             {agents === null ? (
               <p className="text-sm text-text-secondary">Loading…</p>
@@ -221,7 +221,7 @@ export function AgentsConsole() {
                                 <button
                                   onClick={() => patch(a.id, { status: "active" }, "Agent approved.")}
                                   disabled={busyId === a.id}
-                                  className="rounded-lg bg-konek-green px-2.5 py-1 text-[11px] font-semibold text-white disabled:opacity-50"
+                                  className="rounded-lg bg-raviion-green px-2.5 py-1 text-[11px] font-semibold text-white disabled:opacity-50"
                                 >
                                   {a.status === "pending" ? "Approve" : "Reinstate"}
                                 </button>

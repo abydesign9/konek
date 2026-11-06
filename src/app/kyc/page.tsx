@@ -84,21 +84,21 @@ export default function KycPage() {
 
       <div className="mx-auto max-w-lg px-5 py-6">
         <div className="mb-6 rounded-3xl bg-indigo p-6 text-white">
-          <p className="text-sm text-white/60">Your Konek verification · {data.country}</p>
+          <p className="text-sm text-white/60">Your raviion verification · {data.country}</p>
           <h1 className="mt-2 text-2xl font-bold">{data.tierLabel}</h1>
           <div className="mt-5 h-3 overflow-hidden rounded-full bg-white/20">
-            <div className="h-full bg-konek-green transition-all" style={{ width: `${progress}%` }} />
+            <div className="h-full bg-raviion-green transition-all" style={{ width: `${progress}%` }} />
           </div>
           <p className="mt-2 text-xs text-white/70">{progress}% complete</p>
         </div>
 
-        {notice && <p className="mb-4 rounded-xl bg-konek-green/10 px-4 py-3 text-sm font-semibold text-konek-green">{notice}</p>}
+        {notice && <p className="mb-4 rounded-xl bg-raviion-green/10 px-4 py-3 text-sm font-semibold text-raviion-green">{notice}</p>}
         {error && <p className="mb-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">{error}</p>}
 
         <div className="space-y-4">
           <div className="rounded-3xl border border-indigo/10 bg-white p-5">
             <h2 className="font-bold text-indigo">Tier 0 · Browse</h2>
-            <p className="mt-1 text-sm text-indigo/60">Explore Konek and manage your account. No verification needed.</p>
+            <p className="mt-1 text-sm text-indigo/60">Explore raviion and manage your account. No verification needed.</p>
           </div>
 
           {data.requirements
@@ -113,7 +113,7 @@ export default function KycPage() {
                 </div>
 
                 {req.satisfied ? (
-                  <p className="mt-2 text-sm text-konek-green">Complete</p>
+                  <p className="mt-2 text-sm text-raviion-green">Complete</p>
                 ) : (
                   <div className="mt-3 space-y-4">
                     {req.missingGroups.map((group, gi) => (
@@ -144,7 +144,7 @@ export default function KycPage() {
         <div className="mt-6 rounded-3xl bg-indigo/5 p-5">
           <h3 className="font-bold text-indigo">Why we ask</h3>
           <p className="mt-1 text-sm text-indigo/60">
-            Konek operates across many countries. We only request the IDs your country&apos;s regulator requires, and only
+            raviion operates across many countries. We only request the IDs your country&apos;s regulator requires, and only
             when a feature needs them. Your details are encrypted.
           </p>
         </div>

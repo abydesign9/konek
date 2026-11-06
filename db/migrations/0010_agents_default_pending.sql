@@ -1,5 +1,5 @@
 -- ============================================================
--- KONEK — Migration 0010: agents should start pending, not active
+-- Raviion — Migration 0010: agents should start pending, not active
 --
 -- schema_phase2.sql's agents.status column comment documents
 -- pending|active|suspended (implying admin approval gates

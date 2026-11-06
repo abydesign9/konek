@@ -7,7 +7,7 @@ export function PrivacyPolicyContent() {
   return (
     <>
       <p>
-        This policy explains what personal data Konek collects, why we collect it, and the choices you
+        This policy explains what personal data raviion collects, why we collect it, and the choices you
         have. We collect only what we need to deliver connectivity services and to meet our legal and
         anti-fraud obligations.
       </p>
@@ -28,7 +28,7 @@ export function PrivacyPolicyContent() {
         <p>
           To create and secure your account; deliver and support the services you buy; verify your
           identity; prevent fraud and money laundering; meet legal and regulatory requirements; and
-          improve Konek. We do not sell your personal data.
+          improve raviion. We do not sell your personal data.
         </p>
       </LegalSection>
 
@@ -61,14 +61,14 @@ export function PrivacyPolicyContent() {
         <p>
           You may request access to, correction of, or deletion of your personal data, subject to legal
           retention requirements. To exercise these rights, contact{" "}
-          <a href="mailto:privacy@konek.app" className="text-indigo underline">privacy@konek.app</a>.
+          <a href="mailto:privacy@raviion.app" className="text-indigo underline">privacy@raviion.app</a>.
         </p>
       </LegalSection>
 
       <LegalSection heading="7. Contact">
         <p>
           Questions about your privacy? Email{" "}
-          <a href="mailto:privacy@konek.app" className="text-indigo underline">privacy@konek.app</a>.
+          <a href="mailto:privacy@raviion.app" className="text-indigo underline">privacy@raviion.app</a>.
         </p>
       </LegalSection>
     </>
