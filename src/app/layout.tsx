@@ -11,7 +11,7 @@ const sora = Sora({ subsets: ["latin"], variable: "--font-sora" });
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
-  title: "Konek",
+  title: "raviion",
   description: "A digital connectivity platform for Africans at home and abroad. Airtime, data, eSIM, bills and global payments in one place.",
   manifest: "/manifest.json",
   icons: {
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     // doesn't reliably honor on its own.
     capable: true,
     statusBarStyle: "default",
-    title: "Konek",
+    title: "raviion",
   },
 };
 

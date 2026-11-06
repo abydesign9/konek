@@ -33,13 +33,13 @@ export function SecurityClient() {
           A record of every change made on this business account — who did what, and when.
         </p>
 
-        <div className="konek-card-shadow mt-5 rounded-2xl border border-gold/40 bg-gold/10 px-5 py-3.5 text-sm text-indigo">
+        <div className="raviion-card-shadow mt-5 rounded-2xl border border-gold/40 bg-gold/10 px-5 py-3.5 text-sm text-indigo">
           Single sign-on (SSO) is coming soon — it needs an identity provider (Google Workspace, Microsoft
           Entra, Okta) to be chosen first.
         </div>
 
         <p className="mb-3 mt-6 text-sm font-bold text-indigo">Activity log</p>
-        <div className="konek-card-shadow divide-y divide-border-soft rounded-2xl bg-white">
+        <div className="raviion-card-shadow divide-y divide-border-soft rounded-2xl bg-white">
           {(entries ?? []).map((e) => (
             <div key={e.id} className="p-4">
               <p className="text-sm font-semibold text-indigo">{actionLabel(e.action)}</p>

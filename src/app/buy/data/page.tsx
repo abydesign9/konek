@@ -384,7 +384,7 @@ onClick={()=>setSelected(plan)}
 className={`rounded-2xl border p-4 text-left ${
 selected?.id===plan.id
 ?
-"border-konek-green bg-konek-green/10"
+"border-raviion-green bg-raviion-green/10"
 :
 "border-indigo/10 bg-white"
 }`}

@@ -1,5 +1,5 @@
 -- ============================================================
--- KONEK — Migration 0034: linked bank accounts for withdrawals
+-- Raviion — Migration 0034: linked bank accounts for withdrawals
 --
 -- Users withdraw their OWN wallet funds to their OWN bank account (never P2P /
 -- send-to-others). Each row is a payout destination the user has linked. The

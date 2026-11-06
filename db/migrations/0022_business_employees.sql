@@ -1,12 +1,12 @@
 -- ============================================================
--- KONEK — Migration 0022: business employee directory
+-- Raviion — Migration 0022: business employee directory
 -- Business Dashboard rework, foundation phase. business_team_members
 -- (0012) is who can log into the business console — a separate concept
 -- from the people a business distributes benefits to, which never had a
 -- directory of their own (bulk_batch_items just carried raw
 -- {phone, network} per batch, no name/department, nothing durable).
 -- This gives the "employees" a business actually manages their own
--- table, independent of whether they have a Konek account.
+-- table, independent of whether they have a Raviion account.
 -- ============================================================
 
 CREATE TABLE business_employees (

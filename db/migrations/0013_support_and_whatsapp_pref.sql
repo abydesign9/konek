@@ -1,5 +1,5 @@
 -- ============================================================
--- KONEK — Migration 0013: support messages + WhatsApp preference
+-- Raviion — Migration 0013: support messages + WhatsApp preference
 -- ============================================================
 
 -- WhatsApp was a notification channel with no dedicated opt-out — every

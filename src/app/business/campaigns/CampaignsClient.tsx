@@ -22,7 +22,7 @@ function naira(minor: number | string | null) {
 }
 
 const STATUS_TONE: Record<string, string> = {
-  active: "bg-konek-green/10 text-konek-green",
+  active: "bg-raviion-green/10 text-raviion-green",
   completed: "bg-indigo/10 text-indigo",
   archived: "bg-slate-100 text-slate-500",
 };
@@ -112,7 +112,7 @@ export function CampaignsClient() {
         </div>
 
         {showCreate && (
-          <div className="konek-card-shadow mt-5 rounded-2xl border border-border-soft bg-white p-4">
+          <div className="raviion-card-shadow mt-5 rounded-2xl border border-border-soft bg-white p-4">
             <div className="grid gap-2 sm:grid-cols-2">
               <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Campaign name" className="rounded-xl border border-border-soft px-3 py-2.5 text-sm sm:col-span-2" />
               <input value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description (optional)" className="rounded-xl border border-border-soft px-3 py-2.5 text-sm sm:col-span-2" />
@@ -122,7 +122,7 @@ export function CampaignsClient() {
                 <input value={endDate} onChange={(e) => setEndDate(e.target.value)} type="date" className="w-full rounded-xl border border-border-soft px-3 py-2.5 text-sm" />
               </div>
             </div>
-            <button onClick={createCampaign} disabled={busy} className="mt-3 rounded-xl bg-konek-green px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50">
+            <button onClick={createCampaign} disabled={busy} className="mt-3 rounded-xl bg-raviion-green px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50">
               {busy ? "Creating…" : "Create campaign"}
             </button>
             {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
@@ -135,7 +135,7 @@ export function CampaignsClient() {
             const spentMinor = Number(c.spent_minor);
             const pct = budgetMinor ? Math.min(100, Math.round((spentMinor / budgetMinor) * 100)) : null;
             return (
-              <div key={c.id} className="konek-card-shadow rounded-2xl bg-white p-5">
+              <div key={c.id} className="raviion-card-shadow rounded-2xl bg-white p-5">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="font-heading text-base font-bold text-indigo">{c.name}</p>
@@ -154,7 +154,7 @@ export function CampaignsClient() {
                 {pct != null && (
                   <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-indigo/10">
                     <div
-                      className={`h-full rounded-full ${pct >= 100 ? "bg-red-500" : "bg-konek-green"}`}
+                      className={`h-full rounded-full ${pct >= 100 ? "bg-red-500" : "bg-raviion-green"}`}
                       style={{ width: `${pct}%` }}
                     />
                   </div>
@@ -175,7 +175,7 @@ export function CampaignsClient() {
             );
           })}
           {campaigns !== null && campaigns.length === 0 && (
-            <p className="konek-card-shadow rounded-2xl bg-white px-6 py-12 text-center text-sm text-text-secondary">
+            <p className="raviion-card-shadow rounded-2xl bg-white px-6 py-12 text-center text-sm text-text-secondary">
               No campaigns yet. Create one, then link distributions to it from the Distributions page.
             </p>
           )}

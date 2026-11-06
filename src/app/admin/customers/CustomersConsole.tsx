@@ -54,9 +54,9 @@ export function CustomersConsole() {
     <>
       <PageHeader
         title="Customers"
-        description="Everyone on Konek. Search, review balances and verification, and suspend, reactivate or close an account. Accounts are never hard deleted; a closed account keeps its financial history but loses access."
+        description="Everyone on raviion. Search, review balances and verification, and suspend, reactivate or close an account. Accounts are never hard deleted; a closed account keeps its financial history but loses access."
       />
-      {msg && <p className="mb-3 text-sm font-semibold text-konek-green">{msg}</p>}
+      {msg && <p className="mb-3 text-sm font-semibold text-raviion-green">{msg}</p>}
 
       <Card
         title="Directory"
@@ -108,7 +108,7 @@ export function CustomersConsole() {
                           Suspend
                         </button>
                       ) : (
-                        <button onClick={() => setStatus(c, "active", "Reactivate")} disabled={busy === c.id} className="text-xs font-semibold text-konek-green">
+                        <button onClick={() => setStatus(c, "active", "Reactivate")} disabled={busy === c.id} className="text-xs font-semibold text-raviion-green">
                           Reactivate
                         </button>
                       )}

@@ -76,7 +76,7 @@ export async function createBusinessNairaAccount(businessId: string, legalName: 
   const account = await adapter.createAccount({
     userId: businessId,
     name: legalName,
-    email: ownerRows[0]?.email ?? `${businessId}@konek.app`,
+    email: ownerRows[0]?.email ?? `${businessId}@raviion.app`,
   });
   const { rows } = await query<{ id: string }>(
     `INSERT INTO business_virtual_accounts (business_account_id, provider, provider_ref, currency, account_number, bank_name)

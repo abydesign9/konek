@@ -42,7 +42,7 @@ export function PageHeader({
           type="button"
           onClick={goBack}
           aria-label={backLabel}
-          className="konek-card-shadow flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-indigo transition-transform duration-100 active:scale-90"
+          className="raviion-card-shadow flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-indigo transition-transform duration-100 active:scale-90"
           style={{ touchAction: "manipulation" }}
         >
           <IconArrowLeft className="h-6 w-6" />

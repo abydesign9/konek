@@ -106,7 +106,7 @@ export default function IdentityChecksPage() {
                     BVN Verification
                   </span>
 
-                  <span className="text-konek-green font-bold">
+                  <span className="text-raviion-green font-bold">
                     ✓ Verified
                   </span>
 
@@ -121,7 +121,7 @@ export default function IdentityChecksPage() {
                     Personal Information
                   </span>
 
-                  <span className="text-konek-green font-bold">
+                  <span className="text-raviion-green font-bold">
                     ✓ Complete
                   </span>
 
@@ -201,7 +201,7 @@ export default function IdentityChecksPage() {
 
                 href="/kyc/government-upload"
 
-                className="block w-full rounded-xl bg-konek-green text-white text-center py-3 font-semibold"
+                className="block w-full rounded-xl bg-raviion-green text-white text-center py-3 font-semibold"
 
               >
 

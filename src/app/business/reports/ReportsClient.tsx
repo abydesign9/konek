@@ -46,22 +46,22 @@ export function ReportsClient() {
         </div>
 
         <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3">
-          <div className="konek-card-shadow rounded-2xl bg-white p-5">
+          <div className="raviion-card-shadow rounded-2xl bg-white p-5">
             <p className="font-heading text-xl font-bold text-indigo">{naira(reports?.monthMinor ?? 0)}</p>
             <p className="mt-1 text-sm text-text-secondary">This month</p>
           </div>
-          <div className="konek-card-shadow rounded-2xl bg-white p-5">
+          <div className="raviion-card-shadow rounded-2xl bg-white p-5">
             <p className="font-heading text-xl font-bold text-indigo">{naira(reports?.allTimeMinor ?? 0)}</p>
             <p className="mt-1 text-sm text-text-secondary">All time · {reports?.batchCount ?? 0} distributions</p>
           </div>
-          <div className="konek-card-shadow rounded-2xl bg-white p-5">
+          <div className="raviion-card-shadow rounded-2xl bg-white p-5">
             <p className="font-heading text-xl font-bold text-indigo">{successRate.toFixed(1)}%</p>
             <p className="mt-1 text-sm text-text-secondary">Distribution success</p>
           </div>
         </div>
 
         <h2 className="mt-8 font-heading text-base font-bold text-indigo">Connectivity spend by service</h2>
-        <div className="konek-card-shadow mt-3 divide-y divide-border-soft rounded-2xl bg-white">
+        <div className="raviion-card-shadow mt-3 divide-y divide-border-soft rounded-2xl bg-white">
           {(reports?.byService.length ?? 0) === 0 && (
             <p className="px-5 py-8 text-center text-sm text-text-secondary">No spend recorded yet.</p>
           )}
@@ -76,7 +76,7 @@ export function ReportsClient() {
         </div>
 
         <h2 className="mt-8 font-heading text-base font-bold text-indigo">By distribution name</h2>
-        <div className="konek-card-shadow mt-3 divide-y divide-border-soft rounded-2xl bg-white">
+        <div className="raviion-card-shadow mt-3 divide-y divide-border-soft rounded-2xl bg-white">
           {(reports?.byPurpose.length ?? 0) === 0 && (
             <p className="px-5 py-8 text-center text-sm text-text-secondary">No distributions yet.</p>
           )}

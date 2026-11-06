@@ -3,8 +3,8 @@ import { LegalShell } from "../(legal)/LegalShell";
 import { PrivacyPolicyContent } from "./PrivacyPolicyContent";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — Konek",
-  description: "How Konek collects, uses and protects your data.",
+  title: "Privacy Policy — raviion",
+  description: "How raviion collects, uses and protects your data.",
 };
 
 export default function PrivacyPage() {

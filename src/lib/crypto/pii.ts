@@ -3,7 +3,7 @@ import crypto from "node:crypto";
 // ============================================================================
 // Platform PII envelope encryption (AES-256-GCM).
 //
-// This is the standard for storing sensitive PII at rest across KONEK (KYC
+// This is the standard for storing sensitive PII at rest across raviion (KYC
 // provider payloads, and any other regulated personal data). Do not store such
 // payloads in plaintext — encrypt with encryptPii() and keep only the minimal
 // operational fields (provider, reference, status, etc.) in plaintext columns.

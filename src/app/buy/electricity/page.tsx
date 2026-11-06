@@ -141,7 +141,7 @@ export default function ElectricityPage() {
     <main className="min-h-screen bg-background">
       <PageHeader title="Electricity" backHref="/home" />
       <div className="max-w-lg mx-auto px-5 py-6">
-        <p className="text-sm text-indigo/60 mb-6">Pay electricity bills instantly from your Konek wallet.</p>
+        <p className="text-sm text-indigo/60 mb-6">Pay electricity bills instantly from your raviion wallet.</p>
 
         <label className="mb-2 block text-sm font-semibold text-indigo">Provider</label>
         <div className="grid grid-cols-2 gap-3 mb-5">
@@ -164,7 +164,7 @@ export default function ElectricityPage() {
               key={t}
               onClick={() => { setMeterType(t); resetVerification(); }}
               className={`rounded-xl py-3 font-semibold capitalize ${
-                meterType === t ? "bg-konek-green/20 border border-konek-green text-indigo" : "bg-white border border-indigo/15 text-indigo"
+                meterType === t ? "bg-raviion-green/20 border border-raviion-green text-indigo" : "bg-white border border-indigo/15 text-indigo"
               }`}
             >
               {t}
@@ -190,8 +190,8 @@ export default function ElectricityPage() {
           </button>
         </div>
         {customerName ? (
-          <div className="mb-6 flex items-center gap-2 rounded-xl bg-konek-green/10 px-4 py-2.5 text-sm">
-            <span className="text-konek-green">✓</span>
+          <div className="mb-6 flex items-center gap-2 rounded-xl bg-raviion-green/10 px-4 py-2.5 text-sm">
+            <span className="text-raviion-green">✓</span>
             <span className="font-semibold text-indigo">{customerName}</span>
           </div>
         ) : (
@@ -205,7 +205,7 @@ export default function ElectricityPage() {
               key={item}
               onClick={() => setAmount(item)}
               className={`rounded-xl border py-3 font-semibold ${
-                amount === item ? "border-konek-green bg-konek-green/10 text-indigo" : "border-indigo/20 text-indigo"
+                amount === item ? "border-raviion-green bg-raviion-green/10 text-indigo" : "border-indigo/20 text-indigo"
               }`}
             >
               {money(item)}

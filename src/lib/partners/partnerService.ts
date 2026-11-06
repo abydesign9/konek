@@ -15,7 +15,7 @@ export async function createPartnerAccount(
   allowedServices: string[],
   adminActor: string
 ): Promise<{ partnerId: string; apiKey: string }> {
-  const rawKey = `konek_live_${crypto.randomBytes(24).toString("hex")}`;
+  const rawKey = `raviion_live_${crypto.randomBytes(24).toString("hex")}`;
   const apiKeyHash = hashApiKey(rawKey);
 
   const { rows } = await query<{ id: string }>(

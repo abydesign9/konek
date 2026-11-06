@@ -67,12 +67,12 @@ export function SessionsClient() {
         {sessions?.map((s) => {
           const isCurrent = s.id === currentId;
           return (
-            <div key={s.id} className="konek-card-shadow flex items-center gap-3 rounded-2xl bg-white px-4 py-3.5">
+            <div key={s.id} className="raviion-card-shadow flex items-center gap-3 rounded-2xl bg-white px-4 py-3.5">
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-semibold text-indigo">
                   {deviceLabel(s.user_agent)}
                   {isCurrent && (
-                    <span className="ml-2 rounded-full bg-konek-green/15 px-2 py-0.5 text-[11px] font-semibold text-konek-green">
+                    <span className="ml-2 rounded-full bg-raviion-green/15 px-2 py-0.5 text-[11px] font-semibold text-raviion-green">
                       This device
                     </span>
                   )}

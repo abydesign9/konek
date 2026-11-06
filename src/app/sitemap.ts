@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { BLOG_POSTS } from "@/lib/marketing/blogPosts";
 
-const BASE = (process.env.NEXT_PUBLIC_APP_URL ?? "https://konekapp.vercel.app").replace(/\/$/, "");
+const BASE = (process.env.NEXT_PUBLIC_APP_URL ?? "https://raviion.vercel.app").replace(/\/$/, "");
 
 // Public, indexable marketing pages only — never app/authenticated routes.
 const STATIC_PATHS = [

@@ -52,7 +52,7 @@ export function AgentProgramConsole() {
         title="Agent program"
         description="Affiliates, campus ambassadors and marketing partners refer customers and earn commission on those customers' purchases across the whole catalogue, with fee and limit perks. Every setting here is live and can be switched off — nothing is hardcoded."
       />
-      {msg && <p className="mb-3 text-sm font-semibold text-konek-green">{msg}</p>}
+      {msg && <p className="mb-3 text-sm font-semibold text-raviion-green">{msg}</p>}
 
       {stats && (
         <div className="mb-6 grid grid-cols-3 gap-3">

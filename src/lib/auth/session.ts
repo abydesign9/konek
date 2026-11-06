@@ -2,7 +2,7 @@ import crypto from "node:crypto";
 import { cookies } from "next/headers";
 import { query } from "@/lib/db";
 
-const SESSION_COOKIE = "konek_session";
+const SESSION_COOKIE = "raviion_session";
 const SESSION_TTL_DAYS = 30;
 
 function hashToken(token: string) {
@@ -24,7 +24,7 @@ export async function createSession(userId: string, meta?: { userAgent?: string 
   cookies().set(SESSION_COOKIE, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    sameSite: "strict",
     expires: expiresAt,
     path: "/",
   });

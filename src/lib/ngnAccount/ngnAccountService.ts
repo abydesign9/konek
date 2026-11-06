@@ -59,15 +59,15 @@ export async function createNairaAccount(userId: string): Promise<{ virtualAccou
   );
   if (existing[0]) throw new AlreadyHasAccountError();
 
-  // Production Monnify requires the user's BVN to reserve an account. Konek does
+  // Production Monnify requires the user's BVN to reserve an account. raviion does
   // not store the raw BVN (PII is encrypted and not recoverable as plaintext by
   // design), so when the live adapter is enabled, capture the BVN at
   // provisioning time and pass it here. The mock reserves without it.
   const adapter = ngnAccountAdapter();
   const account = await adapter.createAccount({
     userId,
-    name: user?.full_name ?? "Konek User",
-    email: user?.email ?? `${userId}@konek.app`,
+    name: user?.full_name ?? "raviion User",
+    email: user?.email ?? `${userId}@raviion.app`,
   });
 
   const { rows } = await query<{ id: string }>(

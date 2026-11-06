@@ -97,7 +97,7 @@ const PRIORITY_COLOR: Record<string, string> = {
 };
 
 const STATUS_COLOR: Record<string, string> = {
-  delivered: "text-konek-green",
+  delivered: "text-raviion-green",
   failed: "text-red-600",
   refunded: "text-gold",
   pending_vendor: "text-indigo/60",
@@ -336,7 +336,7 @@ export function AdminConsole() {
                 <>
                   <button
                     onClick={() => resolveFraudItem(item.id, "resolved")}
-                    className="text-xs font-semibold text-konek-green underline mr-3"
+                    className="text-xs font-semibold text-raviion-green underline mr-3"
                   >
                     Resolve
                   </button>
@@ -379,7 +379,7 @@ export function AdminConsole() {
                     <button onClick={() => sendSupportReply(m.id, false)} className="text-xs font-semibold text-indigo underline">
                       Reply
                     </button>
-                    <button onClick={() => sendSupportReply(m.id, true)} className="text-xs font-semibold text-konek-green underline">
+                    <button onClick={() => sendSupportReply(m.id, true)} className="text-xs font-semibold text-raviion-green underline">
                       Reply &amp; resolve
                     </button>
                     <button onClick={() => { setOpenReplyId(null); setReplyText(""); }} className="text-xs text-indigo/50 underline">
@@ -415,7 +415,7 @@ export function AdminConsole() {
               <button
                 onClick={() => toggleVendorHealth(v.id, !v.healthy)}
                 className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
-                  v.healthy ? "bg-konek-green/15 text-konek-green" : "bg-red-100 text-red-600"
+                  v.healthy ? "bg-raviion-green/15 text-raviion-green" : "bg-red-100 text-red-600"
                 }`}
               >
                 {v.healthy ? "Healthy" : "Unhealthy"}
@@ -442,7 +442,7 @@ export function AdminConsole() {
                 {a.status === "pending" && (
                   <button
                     onClick={() => approveAgent(a.id)}
-                    className="rounded-full bg-konek-green/15 text-konek-green text-xs font-semibold px-3 py-1.5"
+                    className="rounded-full bg-raviion-green/15 text-raviion-green text-xs font-semibold px-3 py-1.5"
                   >
                     Approve
                   </button>
@@ -477,7 +477,7 @@ export function AdminConsole() {
                 {b.kyb_status !== "verified" && (
                   <button
                     onClick={() => approveBusiness(b.id)}
-                    className="rounded-full bg-konek-green/15 text-konek-green text-xs font-semibold px-3 py-1.5"
+                    className="rounded-full bg-raviion-green/15 text-raviion-green text-xs font-semibold px-3 py-1.5"
                   >
                     {b.kyb_status === "pending" ? "Approve KYB" : "Reinstate"}
                   </button>
@@ -541,7 +541,7 @@ export function AdminConsole() {
             </button>
           </div>
           {issuedKey && (
-            <p className="text-xs font-mono text-konek-green break-all">
+            <p className="text-xs font-mono text-raviion-green break-all">
               {issuedKey} — copy now, shown once
             </p>
           )}
@@ -557,10 +557,10 @@ export function AdminConsole() {
             loadTxns(e.target.value);
           }}
           placeholder="Search phone, txn id, vendor ref…"
-          className="w-full rounded-xl border border-indigo/20 px-4 py-2.5 text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-konek-green"
+          className="w-full rounded-xl border border-indigo/20 px-4 py-2.5 text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-raviion-green"
         />
 
-        {message && <p className="text-sm text-konek-green font-medium mb-4">{message}</p>}
+        {message && <p className="text-sm text-raviion-green font-medium mb-4">{message}</p>}
 
         <div className="flex flex-col gap-2">
           {txns.map((t) => (
@@ -604,7 +604,7 @@ export function AdminConsole() {
             <div key={i} className="rounded-xl border border-indigo/10 bg-white px-4 py-3">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-indigo">{r.vendor}</span>
-                <span className={`text-xs font-semibold ${Number(r.drift_minor) === 0 ? "text-konek-green" : "text-red-600"}`}>
+                <span className={`text-xs font-semibold ${Number(r.drift_minor) === 0 ? "text-raviion-green" : "text-red-600"}`}>
                   {Number(r.drift_minor) === 0 ? "zero drift" : `drift ${r.drift_minor}`}
                 </span>
               </div>
@@ -638,7 +638,7 @@ export function AdminConsole() {
           <input
             value={newAdminEmail}
             onChange={(e) => setNewAdminEmail(e.target.value)}
-            placeholder="new-admin@konek.app"
+            placeholder="new-admin@raviion.app"
             className="flex-1 rounded-lg border border-indigo/20 px-3 py-2 text-sm"
           />
           <button onClick={inviteAdmin} className="rounded-lg bg-indigo text-white text-sm font-semibold px-4 py-2">

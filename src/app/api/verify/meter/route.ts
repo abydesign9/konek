@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
   // Deterministic placeholder — real disco returns the registered customer name.
   return NextResponse.json({
     verified: true,
-    customerName: "KONEK TEST CUSTOMER",
+    customerName: "raviion TEST CUSTOMER",
     address: "Lagos, NG",
     disco,
     meterType,

@@ -37,7 +37,7 @@ const mockPayoutProvider: PayoutProvider = {
   id: "mock_payout",
   async resolveAccount(bankCode, accountNumber) {
     if (!/^\d{10}$/.test(accountNumber) || !findBank(bankCode)) return null;
-    return { accountName: "KONEK TEST ACCOUNT" };
+    return { accountName: "raviion TEST ACCOUNT" };
   },
   async sendPayout(params) {
     return { status: "paid", vendorRef: `mock_payout_${params.reference}` };

@@ -20,7 +20,7 @@ function row(overrides: Partial<EsimRow> = {}): EsimRow {
     provider: "mock",
     plan_external_id: "us-5gb-30d",
     iccid: "ICCID-1",
-    smdp_address: "smdp.konek.app",
+    smdp_address: "smdp.raviion.app",
     matching_id: "ICCID-1",
     status: "issued",
     total_mb: "5000",

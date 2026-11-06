@@ -9,8 +9,8 @@ export default function HeroFloatingUI() {
 
       <div className={styles.imageFrame}>
         <Image
-          src="/landing/konek_hero_image.jpg"
-          alt="KONEK global connectivity platform showing eSIM, global receiving accounts, virtual cards, airtime, data and business connectivity"
+          src="/landing/raviion_hero_image.jpg"
+          alt="raviion global connectivity platform showing eSIM, global receiving accounts, virtual cards, airtime, data and business connectivity"
           fill
           priority
           sizes="(max-width: 768px) 100vw, 50vw"
@@ -73,7 +73,7 @@ export default function HeroFloatingUI() {
 
       <div className={styles.virtualCard}>
         <div className={styles.cardTop}>
-          <strong>KONEK</strong>
+          <strong>raviion</strong>
           <span>VIRTUAL</span>
         </div>
 
@@ -81,7 +81,7 @@ export default function HeroFloatingUI() {
 
         <div className={styles.cardBottom}>
           <small>TRAVEL &amp; SUBSCRIPTIONS</small>
-          <strong>VISA</strong>
+          <strong>GLOBAL</strong>
         </div>
       </div>
 
@@ -89,7 +89,7 @@ export default function HeroFloatingUI() {
         <span className={styles.businessIcon}>▦</span>
 
         <div>
-          <small>KONEK Business</small>
+          <small>raviion Business</small>
           <strong>Connectivity at scale</strong>
           <p>Bulk airtime · Data · eSIM</p>
         </div>

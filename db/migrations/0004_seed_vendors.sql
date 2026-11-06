@@ -1,5 +1,5 @@
 -- ============================================================
--- KONEK — Migration 0004: seed the sandbox VTU vendor
+-- Raviion — Migration 0004: seed the sandbox VTU vendor
 -- ============================================================
 
 INSERT INTO vendors (id, kind, priority, healthy, config)

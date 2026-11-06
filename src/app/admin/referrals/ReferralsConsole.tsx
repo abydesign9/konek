@@ -57,7 +57,7 @@ export function ReferralsConsole() {
 
   return (
     <>
-      <PageHeader title="Referrals" description="Who's bringing people onto Konek, and what it's costing." />
+      <PageHeader title="Referrals" description="Who's bringing people onto raviion, and what it's costing." />
 
       {!data ? (
         <EmptyState message="Loading…" />
@@ -93,7 +93,7 @@ export function ReferralsConsole() {
                       </div>
                       <div className="text-right">
                         <p className="text-sm font-semibold text-indigo">{r.total_referred} referred</p>
-                        <p className="text-xs text-konek-green">{r.qualified} qualified</p>
+                        <p className="text-xs text-raviion-green">{r.qualified} qualified</p>
                       </div>
                     </div>
                   ))}

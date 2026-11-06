@@ -110,7 +110,7 @@ export default function AirtimePage() {
     <main className="min-h-screen bg-background">
       <PageHeader title="Buy Airtime" backHref="/home" />
       <div className="max-w-lg mx-auto px-5 py-6">
-        <p className="text-sm text-indigo/60 mb-6">Instant mobile recharge from your Konek wallet.</p>
+        <p className="text-sm text-indigo/60 mb-6">Instant mobile recharge from your raviion wallet.</p>
 
         <label className="mb-2 block text-sm font-semibold text-indigo">Network</label>
         <div className="grid grid-cols-4 gap-2 mb-6">
@@ -143,7 +143,7 @@ export default function AirtimePage() {
               key={item}
               onClick={() => setAmount(item)}
               className={`rounded-xl border py-3 font-semibold ${
-                amount === item ? "border-konek-green bg-konek-green/10 text-indigo" : "border-indigo/20 text-indigo"
+                amount === item ? "border-raviion-green bg-raviion-green/10 text-indigo" : "border-indigo/20 text-indigo"
               }`}
             >
               {naira(item)}

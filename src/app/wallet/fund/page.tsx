@@ -170,7 +170,7 @@ export default function FundWalletPage() {
 
               className={`rounded-xl border py-4 font-semibold transition-colors ${
                 amountMinor === minor
-                  ? "border-konek-green bg-konek-green/10 text-indigo"
+                  ? "border-raviion-green bg-raviion-green/10 text-indigo"
                   : "border-indigo/20 text-indigo hover:bg-indigo/5"
               }`}
             >

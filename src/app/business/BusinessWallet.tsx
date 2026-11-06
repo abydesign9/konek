@@ -71,14 +71,14 @@ export function BusinessWallet() {
         {isOwner && !funding && (
           <button
             onClick={() => { setFunding(true); setMsg(null); setError(null); }}
-            className="text-sm font-semibold text-konek-green hover:underline"
+            className="text-sm font-semibold text-raviion-green hover:underline"
           >
             + Add funds
           </button>
         )}
       </div>
 
-      <div className="konek-card-shadow grid grid-cols-2 gap-3 rounded-2xl bg-white p-4 sm:grid-cols-4">
+      <div className="raviion-card-shadow grid grid-cols-2 gap-3 rounded-2xl bg-white p-4 sm:grid-cols-4">
         {(balances ?? []).map((b) => (
           <div key={b.currency} className="rounded-xl bg-indigo/[0.03] p-3">
             <p className="text-xs font-semibold text-indigo/50">
@@ -90,10 +90,10 @@ export function BusinessWallet() {
         {balances === null && <p className="col-span-full py-4 text-center text-sm text-indigo/40">Loading…</p>}
       </div>
 
-      {msg && <p className="mt-3 rounded-xl bg-konek-green/10 px-4 py-2.5 text-sm font-semibold text-konek-green">{msg}</p>}
+      {msg && <p className="mt-3 rounded-xl bg-raviion-green/10 px-4 py-2.5 text-sm font-semibold text-raviion-green">{msg}</p>}
 
       {funding && (
-        <div className="konek-card-shadow mt-3 rounded-2xl border border-indigo/10 bg-white p-4">
+        <div className="raviion-card-shadow mt-3 rounded-2xl border border-indigo/10 bg-white p-4">
           <p className="mb-2 text-sm font-semibold text-indigo">Move money from your personal wallet</p>
           <div className="flex flex-wrap items-center gap-2">
             <select
@@ -123,7 +123,7 @@ export function BusinessWallet() {
           </div>
           {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
           <p className="mt-2 text-xs text-indigo/45">
-            Comes out of your personal Konek wallet.
+            Comes out of your personal raviion wallet.
           </p>
         </div>
       )}
@@ -184,12 +184,12 @@ function BusinessReceivingAccounts({ isOwner }: { isOwner: boolean }) {
 
       <div className="flex flex-col gap-2.5">
         {(accounts ?? []).map((a) => (
-          <div key={a.id} className="konek-card-shadow flex items-center justify-between rounded-2xl border border-indigo/10 bg-white px-4 py-3.5">
+          <div key={a.id} className="raviion-card-shadow flex items-center justify-between rounded-2xl border border-indigo/10 bg-white px-4 py-3.5">
             <div>
-              <p className="text-xs font-semibold text-indigo/50">{FLAG[a.currency]} {a.currency} · {a.bank_name ?? "Konek"}</p>
+              <p className="text-xs font-semibold text-indigo/50">{FLAG[a.currency]} {a.currency} · {a.bank_name ?? "raviion"}</p>
               <p className="mt-0.5 font-heading text-base font-bold tabular-nums text-indigo">{a.account_number}</p>
             </div>
-            <span className="rounded-full bg-konek-green/10 px-2.5 py-1 text-[11px] font-semibold text-konek-green">{a.status}</span>
+            <span className="rounded-full bg-raviion-green/10 px-2.5 py-1 text-[11px] font-semibold text-raviion-green">{a.status}</span>
           </div>
         ))}
 
@@ -201,12 +201,12 @@ function BusinessReceivingAccounts({ isOwner }: { isOwner: boolean }) {
                 key={c}
                 onClick={() => provision(c)}
                 disabled={busyCurrency === c}
-                className="konek-tile flex items-center justify-between rounded-2xl border border-dashed border-indigo/20 px-4 py-3.5 text-left disabled:opacity-50"
+                className="raviion-tile flex items-center justify-between rounded-2xl border border-dashed border-indigo/20 px-4 py-3.5 text-left disabled:opacity-50"
               >
                 <span className="text-sm font-semibold text-indigo">
                   {FLAG[c]} Open a {c} receiving account
                 </span>
-                <span className="text-sm text-konek-green">{busyCurrency === c ? "Opening…" : "Open →"}</span>
+                <span className="text-sm text-raviion-green">{busyCurrency === c ? "Opening…" : "Open →"}</span>
               </button>
             ))}
       </div>

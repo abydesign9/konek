@@ -146,7 +146,7 @@ function BuyRouterMifi() {
         ) : (
           <>
             {brands.length > 1 && (
-              <div className="konek-scrollbar-none mb-4 flex gap-2 overflow-x-auto">
+              <div className="raviion-scrollbar-none mb-4 flex gap-2 overflow-x-auto">
                 {brands.map((b) => (
                   <button
                     key={b}
@@ -169,12 +169,12 @@ function BuyRouterMifi() {
                     key={p.id}
                     onClick={() => setSelected(p)}
                     className={`rounded-2xl border px-4 py-3 text-left transition ${
-                      active ? "border-konek-green bg-konek-green/10" : "border-indigo/15 bg-white"
+                      active ? "border-raviion-green bg-raviion-green/10" : "border-indigo/15 bg-white"
                     }`}
                   >
                     <p className="text-sm font-semibold text-indigo">{p.name}</p>
                     {p.meta?.speed && <p className="text-xs text-indigo/55">{p.meta.speed}</p>}
-                    <p className="mt-1 text-sm font-semibold text-konek-green">{naira(Number(p.price_minor))}</p>
+                    <p className="mt-1 text-sm font-semibold text-raviion-green">{naira(Number(p.price_minor))}</p>
                   </button>
                 );
               })}

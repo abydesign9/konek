@@ -1,5 +1,5 @@
 -- ============================================================
--- KONEK — Migration 0027: generic webhooks + catalog sync + margin protection
+-- Raviion — Migration 0027: generic webhooks + catalog sync + margin protection
 --                          + provider maintenance state
 --
 -- Backend for M3 installment 2. Additive only.

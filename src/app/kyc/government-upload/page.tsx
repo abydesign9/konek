@@ -51,7 +51,7 @@ export default function GovernmentUploadPage() {
         <div className="max-w-lg mx-auto px-5 py-6">
 
 
-          <div className="rounded-2xl bg-white border border-konek-green/30 p-6">
+          <div className="rounded-2xl bg-white border border-raviion-green/30 p-6">
 
 
             <div className="text-5xl mb-4">
@@ -211,7 +211,7 @@ export default function GovernmentUploadPage() {
 
               className={`w-full rounded-xl border p-4 text-left ${
                 frontUploaded
-                  ? "border-konek-green bg-konek-green/10"
+                  ? "border-raviion-green bg-raviion-green/10"
                   : "border-indigo/20"
               }`}
 
@@ -240,7 +240,7 @@ export default function GovernmentUploadPage() {
 
               className={`w-full rounded-xl border p-4 text-left ${
                 backUploaded
-                  ? "border-konek-green bg-konek-green/10"
+                  ? "border-raviion-green bg-raviion-green/10"
                   : "border-indigo/20"
               }`}
 

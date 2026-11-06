@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-const BASE = (process.env.NEXT_PUBLIC_APP_URL ?? "https://konekapp.vercel.app").replace(/\/$/, "");
+const BASE = (process.env.NEXT_PUBLIC_APP_URL ?? "https://raviion.vercel.app").replace(/\/$/, "");
 
 // Let crawlers index the public marketing site, but keep the authenticated app,
 // admin console and API surface out of search results.

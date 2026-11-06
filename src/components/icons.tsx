@@ -13,7 +13,7 @@ export const SERVICE_COLORS: Record<string, { bg: string; fg: string }> = {
   betting:   { bg: "#FDEAEA", fg: "#E0473B" }, // red-orange
   gift:      { bg: "#FFF3D6", fg: "#E2932F" }, // gold (gift box)
   intl:      { bg: "#E6F0FF", fg: "#22315C" }, // indigo (globe)
-  esim:      { bg: "#E8F8F0", fg: "#00C48C" }, // konek green (plane/travel)
+  esim:      { bg: "#E8F8F0", fg: "#00C48C" }, // raviion green (plane/travel)
   dollar:    { bg: "#E8F8F0", fg: "#1E9E6B" }, // green (USD account)
   card:      { bg: "#F3E8FF", fg: "#8E44AD" }, // purple (virtual card)
   wallet:    { bg: "#E6F0FF", fg: "#22315C" },

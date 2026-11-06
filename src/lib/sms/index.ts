@@ -1,6 +1,10 @@
 import type { SmsSender } from "./types";
-import { mockSmsSender } from "./mock";
 
-// TERMII_API_KEY unset in this phase -> always mock. Once the key lands,
-// branch here to a TermiiSmsSender that implements the same interface.
-export const smsSender: SmsSender = mockSmsSender;
+export const smsSender: SmsSender = {
+  async sendOtp(phone: string, code: string) {
+    if (!process.env.TERMII_API_KEY) {
+      throw new Error("Missing TERMII_API_KEY env var");
+    }
+    throw new Error("SMS provider not implemented yet");
+  },
+};

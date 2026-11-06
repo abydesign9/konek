@@ -6,8 +6,8 @@ import path from "node:path";
 const dataDir = path.join(process.cwd(), ".pgdata");
 const pg = new EmbeddedPostgres({
   databaseDir: dataDir,
-  user: "konek",
-  password: "konek",
+  user: "Raviion",
+  password: "Raviion",
   port: 5599,
   persistent: true,
 });
@@ -19,12 +19,12 @@ if (!alreadyInit) {
 }
 await pg.start();
 try {
-  await pg.createDatabase("konek");
-  console.log("created database konek");
+  await pg.createDatabase("Raviion");
+  console.log("created database Raviion");
 } catch {
-  console.log("database konek already exists");
+  console.log("database Raviion already exists");
 }
-console.log("postgres up on 127.0.0.1:5599 (user konek / konek)");
+console.log("postgres up on 127.0.0.1:5599 (user Raviion / Raviion)");
 
 process.on("SIGINT", async () => {
   await pg.stop();

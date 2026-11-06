@@ -165,7 +165,7 @@ export default function GiftCardPage() {
             {/* Brand detail (amount picker) */}
             {brand ? (
               <>
-                <button onClick={() => { setBrand(null); setSelected(null); }} className="mb-3 text-sm font-semibold text-konek-green">
+                <button onClick={() => { setBrand(null); setSelected(null); }} className="mb-3 text-sm font-semibold text-raviion-green">
                   ← All gift cards
                 </button>
                 <h2 className="mb-3 text-center font-heading text-lg font-bold text-indigo">{brand}</h2>
@@ -177,10 +177,10 @@ export default function GiftCardPage() {
                       <button
                         key={p.id}
                         onClick={() => setSelected(p)}
-                        className={`rounded-2xl border px-4 py-3 text-left ${active ? "border-konek-green bg-konek-green/10" : "border-indigo/15 bg-white"}`}
+                        className={`rounded-2xl border px-4 py-3 text-left ${active ? "border-raviion-green bg-raviion-green/10" : "border-indigo/15 bg-white"}`}
                       >
                         <p className="text-sm font-semibold text-indigo">{p.name}</p>
-                        <p className="mt-1 text-sm font-bold text-konek-green">{money(Number(p.price_minor))}</p>
+                        <p className="mt-1 text-sm font-bold text-raviion-green">{money(Number(p.price_minor))}</p>
                       </button>
                     );
                   })}
@@ -216,7 +216,7 @@ export default function GiftCardPage() {
                       <button
                         key={b}
                         onClick={() => { setBrand(b); setSelected(null); }}
-                        className="konek-tile flex h-28 flex-col items-center justify-center gap-2 rounded-2xl border border-indigo/10 bg-white p-4"
+                        className="raviion-tile flex h-28 flex-col items-center justify-center gap-2 rounded-2xl border border-indigo/10 bg-white p-4"
                       >
                         <span className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo/5 text-xl">🎁</span>
                         <span className="text-center text-sm font-semibold text-indigo">{b}</span>
@@ -254,7 +254,7 @@ export default function GiftCardPage() {
                       {c.code && (
                         <button
                           onClick={() => navigator.clipboard.writeText(c.code!)}
-                          className="text-xs font-semibold text-konek-green"
+                          className="text-xs font-semibold text-raviion-green"
                         >
                           Copy
                         </button>

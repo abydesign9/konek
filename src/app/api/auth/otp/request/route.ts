@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isDemoOtpPhone, isValidPhone, requestOtp } from "@/lib/auth/otp";
+import { isValidPhone, requestOtp } from "@/lib/auth/otp";
 import { checkRateLimit, clientIp, RateLimitExceededError } from "@/lib/rateLimit";
 
 export async function POST(req: NextRequest) {
@@ -23,6 +23,6 @@ export async function POST(req: NextRequest) {
     throw err;
   }
 
-  const { code } = await requestOtp(phone);
-  return NextResponse.json(isDemoOtpPhone(phone) ? { ok: true, demoOtp: code } : { ok: true });
+  await requestOtp(phone);
+  return NextResponse.json({ ok: true });
 }

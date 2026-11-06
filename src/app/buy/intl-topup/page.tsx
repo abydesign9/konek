@@ -314,7 +314,7 @@ backHref="/home"
 
 <p className="text-sm text-indigo/60 mb-6">
 
-Send mobile credit internationally from your Konek wallet.
+Send mobile credit internationally from your raviion wallet.
 
 </p>
 
@@ -386,7 +386,7 @@ onClick={()=>setAmount(item)}
 className={`rounded-xl border py-3 font-semibold ${
 amount===item
 ?
-"border-konek-green bg-konek-green/10"
+"border-raviion-green bg-raviion-green/10"
 :
 "bg-white"
 }`}

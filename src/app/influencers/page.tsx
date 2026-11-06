@@ -3,14 +3,14 @@ import { MarketingPage, Hero, Section, FeatureGrid, CTA } from "@/components/mar
 import { ApplicationForm } from "@/components/marketing/ApplicationForm";
 
 export const metadata: Metadata = {
-  title: "Konek Influencers — get paid to create content for Konek",
+  title: "raviion Influencers — get paid to create content for raviion",
   description:
-    "Join the Konek Influencer program and get paid to create content for Konek. Share what you love about global money and connectivity with your audience and earn.",
-  keywords: ["Konek influencer program", "get paid to create content", "fintech influencer Nigeria", "creator partnerships"],
+    "Join the raviion Influencer program and get paid to create content for raviion. Share what you love about global money and connectivity with your audience and earn.",
+  keywords: ["raviion influencer program", "get paid to create content", "fintech influencer Nigeria", "creator partnerships"],
   alternates: { canonical: "/influencers" },
   openGraph: {
-    title: "Konek Influencers",
-    description: "Get paid to create content for Konek.",
+    title: "raviion Influencers",
+    description: "Get paid to create content for raviion.",
     url: "/influencers",
     type: "website",
   },
@@ -21,8 +21,8 @@ export default function InfluencersPage() {
     <MarketingPage>
       <Hero
         eyebrow="Influencers"
-        title={<>Get paid to create <span className="text-konek-green">for Konek.</span></>}
-        subtitle="If your audience trusts your voice, we want to work with you. Join the Konek Influencer program, create content you're proud of, and get paid for the impact you drive."
+        title={<>Get paid to create <span className="text-raviion-green">for raviion.</span></>}
+        subtitle="If your audience trusts your voice, we want to work with you. Join the raviion Influencer program, create content you're proud of, and get paid for the impact you drive."
         primary={{ label: "Apply now", href: "#apply" }}
         secondary={{ label: "Creator Club", href: "/creator-club" }}
       />
@@ -44,7 +44,7 @@ export default function InfluencersPage() {
         <div className="max-w-2xl space-y-4 text-lg leading-relaxed text-indigo/70">
           <p>
             Whether you&apos;re a rising creator or an established voice, what matters is an engaged audience and a
-            genuine connection to what Konek does — global money and connectivity made simple.
+            genuine connection to what raviion does — global money and connectivity made simple.
           </p>
           <p>
             Tell us about you and your platforms when you apply, and we&apos;ll find the right way to work together.

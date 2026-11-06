@@ -77,7 +77,7 @@ export function AccountClient() {
     <div className="mx-auto flex max-w-lg flex-col gap-6 px-5 py-6">
       <section>
         <p className="mb-3 text-xs font-bold uppercase tracking-wide text-indigo/40">Avatar</p>
-        <div className="konek-card-shadow rounded-2xl bg-white px-5 py-5">
+        <div className="raviion-card-shadow rounded-2xl bg-white px-5 py-5">
           <div className="mb-4 flex items-center gap-4">
             <Avatar value={avatarUrl} name={fullName || username} size={56} />
             <p className="text-xs text-indigo/55">Pick an avatar for your profile.</p>
@@ -92,7 +92,7 @@ export function AccountClient() {
                   type="button"
                   aria-label={`Choose ${emoji} avatar`}
                   onClick={() => setAvatarUrl(val)}
-                  className={`rounded-full transition ${active ? "ring-2 ring-konek-green" : "ring-1 ring-indigo/10"}`}
+                  className={`rounded-full transition ${active ? "ring-2 ring-raviion-green" : "ring-1 ring-indigo/10"}`}
                 >
                   <Avatar value={val} size={40} />
                 </button>
@@ -104,7 +104,7 @@ export function AccountClient() {
 
       <section>
         <p className="mb-3 text-xs font-bold uppercase tracking-wide text-indigo/40">Personal details</p>
-        <div className="konek-card-shadow flex flex-col gap-2.5 rounded-2xl bg-white px-5 py-5">
+        <div className="raviion-card-shadow flex flex-col gap-2.5 rounded-2xl bg-white px-5 py-5">
           <div>
             <label className="mb-1 block text-xs font-semibold text-indigo/50">Full name</label>
             <input
@@ -160,7 +160,7 @@ export function AccountClient() {
             </p>
           </div>
           {message && <p className="text-xs text-red-600">{message}</p>}
-          {saved && <p className="text-xs font-semibold text-konek-green">Saved ✓</p>}
+          {saved && <p className="text-xs font-semibold text-raviion-green">Saved ✓</p>}
           <button
             onClick={saveProfile}
             disabled={saving}

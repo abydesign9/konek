@@ -26,7 +26,7 @@ interface TeamMember {
 const TEAM_ROLES = ["admin", "finance", "hr", "marketing", "viewer"];
 
 const KYB_LABEL: Record<string, { label: string; className: string }> = {
-  verified: { label: "Verified", className: "bg-konek-green/15 text-konek-green" },
+  verified: { label: "Verified", className: "bg-raviion-green/15 text-raviion-green" },
   pending: { label: "Pending review", className: "bg-gold/15 text-gold" },
   rejected: { label: "Needs attention", className: "bg-red-100 text-red-600" },
 };
@@ -45,7 +45,7 @@ function ComingSoonRow({ label, sub }: { label: string; sub: string }) {
 
 function LinkRow({ href, label, sub }: { href: string; label: string; sub: string }) {
   return (
-    <Link href={href} className="konek-tile flex items-center justify-between rounded-2xl bg-white px-5 py-3.5">
+    <Link href={href} className="raviion-tile flex items-center justify-between rounded-2xl bg-white px-5 py-3.5">
       <span className="min-w-0 flex-1">
         <span className="block text-sm font-semibold text-indigo">{label}</span>
         <span className="block text-xs text-text-secondary">{sub}</span>
@@ -134,7 +134,7 @@ export function SettingsClient() {
 
         <section className="mt-6">
           <p className="mb-3 text-xs font-bold uppercase tracking-wide text-text-secondary">Company</p>
-          <div className="konek-card-shadow flex items-center gap-4 rounded-2xl bg-white p-5">
+          <div className="raviion-card-shadow flex items-center gap-4 rounded-2xl bg-white p-5">
             {brand && (
               <span
                 style={{ background: brand.bg }}
@@ -153,7 +153,7 @@ export function SettingsClient() {
 
         <section className="mt-6">
           <p className="mb-3 text-xs font-bold uppercase tracking-wide text-text-secondary">Team &amp; roles</p>
-          <div className="konek-card-shadow rounded-2xl bg-white p-5">
+          <div className="raviion-card-shadow rounded-2xl bg-white p-5">
             <div className="mb-4 flex flex-col gap-2">
               {team.length === 0 && <p className="text-sm text-text-secondary">Just you so far.</p>}
               {team.map((m) => (
@@ -216,14 +216,14 @@ export function SettingsClient() {
         {canManageTeam && (
           <section className="mt-6">
             <p className="mb-3 text-xs font-bold uppercase tracking-wide text-text-secondary">Notifications</p>
-            <div className="konek-card-shadow flex flex-col gap-4 rounded-2xl bg-white p-5">
+            <div className="raviion-card-shadow flex flex-col gap-4 rounded-2xl bg-white p-5">
               <label className="flex items-center justify-between gap-3">
                 <span className="text-sm text-indigo">Alert me when a distribution has failures</span>
                 <input
                   type="checkbox"
                   checked={business?.notify_failed_distributions ?? true}
                   onChange={(e) => updatePrefs({ notifyFailedDistributions: e.target.checked })}
-                  className="h-5 w-5 accent-konek-green"
+                  className="h-5 w-5 accent-raviion-green"
                 />
               </label>
               <label className="flex items-center justify-between gap-3">
@@ -232,7 +232,7 @@ export function SettingsClient() {
                   type="checkbox"
                   checked={business?.notify_low_balance ?? true}
                   onChange={(e) => updatePrefs({ notifyLowBalance: e.target.checked })}
-                  className="h-5 w-5 accent-konek-green"
+                  className="h-5 w-5 accent-raviion-green"
                 />
               </label>
               <div className="flex items-center gap-2">
@@ -252,7 +252,7 @@ export function SettingsClient() {
         {canManageTeam && (
           <section className="mt-6">
             <p className="mb-3 text-xs font-bold uppercase tracking-wide text-text-secondary">Branding</p>
-            <div className="konek-card-shadow rounded-2xl bg-white p-5">
+            <div className="raviion-card-shadow rounded-2xl bg-white p-5">
               <p className="mb-3 text-sm text-text-secondary">Pick a mark for your business — shown across the hub.</p>
               <div className="flex flex-wrap gap-2">
                 {AVATAR_PRESETS.map((emoji) => {
@@ -277,7 +277,7 @@ export function SettingsClient() {
         <section className="mt-6">
           <p className="mb-3 text-xs font-bold uppercase tracking-wide text-text-secondary">More</p>
           <div className="flex flex-col gap-2.5">
-            <LinkRow href="/business/billing" label="Billing" sub="Fee history — Konek has no subscription, just per-action fees" />
+            <LinkRow href="/business/billing" label="Billing" sub="Fee history — raviion has no subscription, just per-action fees" />
             <LinkRow href="/business/security" label="Security" sub="Activity log for your organization (SSO coming soon)" />
             <ComingSoonRow label="Integrations" sub="Connect your HRIS or payroll system — needs a partner decision" />
           </div>

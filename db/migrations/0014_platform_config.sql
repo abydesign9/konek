@@ -1,5 +1,5 @@
 -- ============================================================
--- KONEK — Migration 0014: platform config (M12 Rates Configuration)
+-- Raviion — Migration 0014: platform config (M12 Rates Configuration)
 -- Generic admin-editable key/value config store. First use: the FX rate
 -- and spread that govern every USD-priced product (intl top-up, eSIM,
 -- gift cards, dollar-account conversion) — previously hardcoded constants.

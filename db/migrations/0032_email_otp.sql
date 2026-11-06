@@ -1,5 +1,5 @@
 -- ============================================================
--- KONEK — Migration 0032: email OTP support
+-- Raviion — Migration 0032: email OTP support
 --
 -- Email is the primary identity, and new users must verify their email with a
 -- one-time code before an account is created. otp_codes already stores phone

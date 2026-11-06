@@ -8,7 +8,7 @@ import { DashboardTabs, Section, StatCard, TableCard, naira, pct } from "./ui";
 export const dynamic = "force-dynamic";
 
 // Executive dashboard — the first page after admin login. Answers "how is
-// Konek performing today?" at a glance; every card drills down.
+// raviion performing today?" at a glance; every card drills down.
 export default async function ExecutiveDashboardPage() {
   const session = getAdminSession();
   if (!session) redirect("/admin/login");
@@ -22,7 +22,7 @@ export default async function ExecutiveDashboardPage() {
     <AdminShell adminEmail={session.email}>
       <div className="px-6 py-6">
         <h1 className="mb-1 font-heading text-2xl font-bold text-indigo">Executive dashboard</h1>
-        <p className="mb-5 text-sm text-indigo/55">How is Konek performing today?</p>
+        <p className="mb-5 text-sm text-indigo/55">How is raviion performing today?</p>
         <DashboardTabs active="executive" />
 
         <Section title="Financial">

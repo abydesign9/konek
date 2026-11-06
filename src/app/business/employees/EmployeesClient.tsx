@@ -152,7 +152,7 @@ export function EmployeesClient() {
         </div>
 
         {showAdd === "single" && (
-          <div className="konek-card-shadow mt-5 rounded-2xl bg-white p-5">
+          <div className="raviion-card-shadow mt-5 rounded-2xl bg-white p-5">
             <p className="mb-3 font-heading text-sm font-bold text-indigo">Add employee</p>
             <div className="grid gap-3 sm:grid-cols-2">
               <input
@@ -198,7 +198,7 @@ export function EmployeesClient() {
         )}
 
         {showAdd === "bulk" && (
-          <div className="konek-card-shadow mt-5 rounded-2xl bg-white p-5">
+          <div className="raviion-card-shadow mt-5 rounded-2xl bg-white p-5">
             <p className="mb-1 font-heading text-sm font-bold text-indigo">Import employee list</p>
             <p className="mb-3 text-xs text-text-secondary">One employee per line: name, department, network, phone</p>
             <textarea
@@ -219,7 +219,7 @@ export function EmployeesClient() {
           </div>
         )}
 
-        <div className="konek-card-shadow mt-5 overflow-hidden rounded-2xl bg-white">
+        <div className="raviion-card-shadow mt-5 overflow-hidden rounded-2xl bg-white">
           {employees === null && <p className="px-5 py-8 text-center text-sm text-text-secondary">Loading…</p>}
           {employees?.length === 0 && (
             <p className="px-5 py-10 text-center text-sm text-text-secondary">
@@ -251,7 +251,7 @@ export function EmployeesClient() {
                     <td className="px-5 py-3.5">
                       <span
                         className={`rounded-full px-2.5 py-1 text-xs font-semibold capitalize ${
-                          e.status === "active" ? "bg-konek-green/15 text-konek-green" : "bg-text-secondary/10 text-text-secondary"
+                          e.status === "active" ? "bg-raviion-green/15 text-raviion-green" : "bg-text-secondary/10 text-text-secondary"
                         }`}
                       >
                         {e.status}

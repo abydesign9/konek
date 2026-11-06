@@ -1,5 +1,5 @@
 -- ============================================================
--- KONEK — Migration 0040: multi-supplier digital product marketplace
+-- Raviion — Migration 0040: multi-supplier digital product marketplace
 --
 -- Separates what the CUSTOMER sees from what we BUY:
 --

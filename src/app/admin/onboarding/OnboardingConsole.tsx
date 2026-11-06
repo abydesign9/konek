@@ -101,7 +101,7 @@ export function OnboardingConsole() {
         <div>
           <h1 className="font-heading text-xl font-bold text-indigo">Onboarding tour</h1>
           <p className="mt-1 text-sm text-text-secondary">
-            The steps shown after &quot;Welcome to Konek&quot; on a user&apos;s first visit to Home. Order, edit or
+            The steps shown after &quot;Welcome to raviion&quot; on a user&apos;s first visit to Home. Order, edit or
             retire steps without a release.
           </p>
         </div>
@@ -202,7 +202,7 @@ export function OnboardingConsole() {
             <span
               className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold capitalize ${
                 s.status === "active"
-                  ? "bg-konek-green/15 text-konek-green"
+                  ? "bg-raviion-green/15 text-raviion-green"
                   : s.status === "draft"
                     ? "bg-gold/15 text-gold"
                     : "bg-text-secondary/10 text-text-secondary"

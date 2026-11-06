@@ -110,9 +110,9 @@ export function KycConfigConsole() {
     <>
       <PageHeader
         title="KYC configuration"
-        description="Konek is global: BVN/NIN apply only to Nigeria, and every country has its own accepted IDs. This matrix decides, per country and tier, which verification methods a customer must complete. Adding a country or provider needs no code change."
+        description="raviion is global: BVN/NIN apply only to Nigeria, and every country has its own accepted IDs. This matrix decides, per country and tier, which verification methods a customer must complete. Adding a country or provider needs no code change."
       />
-      {msg && <p className="mb-3 text-sm font-semibold text-konek-green">{msg}</p>}
+      {msg && <p className="mb-3 text-sm font-semibold text-raviion-green">{msg}</p>}
 
       <Grid>
         <div className="col-span-1 lg:col-span-7">
@@ -208,7 +208,7 @@ export function KycConfigConsole() {
                     </div>
                     <button
                       onClick={() => toggleProvider(p)}
-                      className={`rounded-full px-3 py-1 text-[11px] font-semibold ${p.enabled ? "bg-konek-green/10 text-konek-green" : "bg-disabled-bg text-text-secondary"}`}
+                      className={`rounded-full px-3 py-1 text-[11px] font-semibold ${p.enabled ? "bg-raviion-green/10 text-raviion-green" : "bg-disabled-bg text-text-secondary"}`}
                     >
                       {p.enabled ? "enabled" : "disabled"}
                     </button>

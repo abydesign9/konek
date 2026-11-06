@@ -28,7 +28,7 @@ const EXAM_PLANS: VendorPlan[] = [
 ];
 
 // Gift cards are foreign-brand digital codes priced in USD (charged in NGN via
-// FX at purchase time, same as eSIM/intl top-up). You BUY a code — Konek never
+// FX at purchase time, same as eSIM/intl top-up). You BUY a code — raviion never
 // buys cards back for cash (that would be the airtime-to-cash model it avoids).
 const GIFTCARD_BRANDS = [
   { network: "amazon", name: "Amazon" },

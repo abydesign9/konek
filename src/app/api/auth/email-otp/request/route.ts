@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isValidEmail, requestEmailOtp } from "@/lib/auth/emailOtp";
-import { isEmailDeliveryConfigured } from "@/lib/email";
 import { ProviderHttpError, ProviderNetworkError, ProviderTimeoutError, CircuitOpenError } from "@/lib/http/resilientHttp";
 import { checkRateLimit, clientIp, RateLimitExceededError } from "@/lib/rateLimit";
 import { getSessionUserId } from "@/lib/auth/session";
@@ -34,8 +33,8 @@ export async function POST(req: NextRequest) {
       const { rows } = await query<{ id: string }>(`SELECT id FROM users WHERE email = $1`, [normalized]);
       if (rows[0]) return NextResponse.json({ ok: true });
 
-      const { code } = await requestEmailOtp(normalized, "signup");
-      return NextResponse.json(isEmailDeliveryConfigured() ? { ok: true } : { ok: true, demoOtp: code });
+      await requestEmailOtp(normalized, "signup");
+      return NextResponse.json({ ok: true });
     }
 
     // Sensitive change: always send to the account's own verified email.
@@ -46,8 +45,8 @@ export async function POST(req: NextRequest) {
     if (!email) return NextResponse.json({ error: "No email on file" }, { status: 400 });
 
     await rateLimit(`${purpose}:${userId}`);
-    const { code } = await requestEmailOtp(email, purpose);
-    return NextResponse.json(isEmailDeliveryConfigured() ? { ok: true } : { ok: true, demoOtp: code });
+    await requestEmailOtp(email, purpose);
+    return NextResponse.json({ ok: true });
   } catch (err) {
     if (err instanceof RateLimitExceededError) {
       return NextResponse.json({ error: "Too many requests — try again shortly" }, { status: 429 });
