@@ -3,13 +3,13 @@ import { MarketingPage, Hero, Section, FeatureGrid, Stats, CTA } from "@/compone
 import { ApplicationForm } from "@/components/marketing/ApplicationForm";
 
 export const metadata: Metadata = {
-  title: "Konek Creator Club — the home for creators paid globally",
+  title: "raviion Creator Club — the home for creators paid globally",
   description:
-    "The Konek Creator Club is where African creators who earn internationally get the accounts, cards, perks and community to get paid globally and keep more of what they make.",
-  keywords: ["Konek creator club", "creators paid globally", "receive USD creator", "African creators payments", "creator community"],
+    "The raviion Creator Club is where African creators who earn internationally get the accounts, cards, perks and community to get paid globally and keep more of what they make.",
+  keywords: ["raviion creator club", "creators paid globally", "receive USD creator", "African creators payments", "creator community"],
   alternates: { canonical: "/creator-club" },
   openGraph: {
-    title: "Konek Creator Club",
+    title: "raviion Creator Club",
     description: "The home for African creators paid globally.",
     url: "/creator-club",
     type: "website",
@@ -21,8 +21,8 @@ export default function CreatorClubPage() {
     <MarketingPage>
       <Hero
         eyebrow="Creator Club"
-        title={<>Built for creators <span className="text-konek-green">paid globally.</span></>}
-        subtitle="If you earn from brands, platforms and fans around the world, the Konek Creator Club gives you the accounts, cards, perks and community to get paid globally — and keep more of what you make."
+        title={<>Built for creators <span className="text-raviion-green">paid globally.</span></>}
+        subtitle="If you earn from brands, platforms and fans around the world, the raviion Creator Club gives you the accounts, cards, perks and community to get paid globally — and keep more of what you make."
         primary={{ label: "Join the club", href: "#apply" }}
         secondary={{ label: "Influencer program", href: "/influencers" }}
       />
@@ -43,7 +43,7 @@ export default function CreatorClubPage() {
       <Section tint eyebrow="How it works" title="From audience to income, simplified">
         <FeatureGrid
           items={[
-            { icon: "1️⃣", title: "Open your account", body: "Join Konek, verify once, and set up your global receiving accounts and cards." },
+            { icon: "1️⃣", title: "Open your account", body: "Join raviion, verify once, and set up your global receiving accounts and cards." },
             { icon: "2️⃣", title: "Get paid globally", body: "Share your details with brands and platforms and receive your earnings with less friction and fewer fees." },
             { icon: "3️⃣", title: "Grow with the club", body: "Tap perks, community and resources to earn more and level up your creator business." },
           ]}

@@ -10,9 +10,9 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const post = getPost(params.slug);
-  if (!post) return { title: "Article not found — Konek" };
+  if (!post) return { title: "Article not found — raviion" };
   return {
-    title: `${post.title} — Konek Blog`,
+    title: `${post.title} — raviion Blog`,
     description: post.excerpt,
     alternates: { canonical: `/company/blog/${post.slug}` },
     openGraph: { title: post.title, description: post.excerpt, url: `/company/blog/${post.slug}`, type: "article" },
@@ -53,7 +53,7 @@ function Article({ text }: { text: string }) {
             <ul key={i} className="flex flex-col gap-2">
               {b.items.map((it, j) => (
                 <li key={j} className="relative pl-6 text-lg text-indigo/70">
-                  <span className="absolute left-1 top-3 h-1.5 w-1.5 rounded-sm bg-konek-green" />
+                  <span className="absolute left-1 top-3 h-1.5 w-1.5 rounded-sm bg-raviion-green" />
                   {it}
                 </li>
               ))}
@@ -63,7 +63,7 @@ function Article({ text }: { text: string }) {
           <ol key={i} className="flex flex-col gap-2">
             {b.items.map((it, j) => (
               <li key={j} className="flex gap-3 text-lg text-indigo/70">
-                <span className="font-bold text-konek-green">{j + 1}.</span>
+                <span className="font-bold text-raviion-green">{j + 1}.</span>
                 {it}
               </li>
             ))}
@@ -81,8 +81,8 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
   return (
     <MarketingPage>
       <article className="mx-auto max-w-3xl px-5 pt-14 pb-8 md:pt-20">
-        <Link href="/company/blog" className="text-sm font-semibold text-konek-green hover:text-indigo">← All articles</Link>
-        <p className="mt-6 text-xs font-bold uppercase tracking-wide text-konek-green">{post.category}</p>
+        <Link href="/company/blog" className="text-sm font-semibold text-raviion-green hover:text-indigo">← All articles</Link>
+        <p className="mt-6 text-xs font-bold uppercase tracking-wide text-raviion-green">{post.category}</p>
         <h1 className="mt-3 font-heading text-3xl font-bold leading-tight tracking-tight text-indigo md:text-5xl">{post.title}</h1>
         <p className="mt-4 text-sm text-indigo/50">{formatDate(post.date)} · {post.readMinutes} min read</p>
         <p className="mt-6 text-xl leading-relaxed text-indigo/65">{post.excerpt}</p>
@@ -92,7 +92,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
       </article>
 
       <CTA
-        title="Ready to try Konek?"
+        title="Ready to try raviion?"
         subtitle="Create your account in minutes and put this guide into practice."
         primary={{ label: "Get started", href: "/signup" }}
         secondary={{ label: "More articles", href: "/company/blog" }}

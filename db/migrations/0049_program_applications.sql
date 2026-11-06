@@ -1,4 +1,4 @@
--- Applications to Konek's community programs (Campus Ambassadors, Influencers,
+-- Applications to Raviion's community programs (Campus Ambassadors, Influencers,
 -- Creator Club). These are PUBLIC marketing lead forms — a submission does NOT
 -- create an app account or touch the ledger. Admins review them and export CSV.
 -- Program-specific answers live in `details` (jsonb) so each program can ask its

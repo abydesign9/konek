@@ -47,7 +47,7 @@ export default function InvitePage() {
   const handle = data?.referralHandle ?? data?.referralCode ?? null;
   const inviteLink =
     handle && typeof window !== "undefined" ? `${window.location.origin}/signup?ref=${handle}` : "";
-  const shareText = `Join me on Konek for airtime, data, bills, eSIMs and a USD account: ${inviteLink}`;
+  const shareText = `Join me on raviion for airtime, data, bills, eSIMs and a USD account: ${inviteLink}`;
 
   async function copyLink() {
     if (!inviteLink) return;
@@ -60,7 +60,7 @@ export default function InvitePage() {
     if (!inviteLink) return;
     if (navigator.share) {
       try {
-        await navigator.share({ title: "Join me on Konek", text: shareText, url: inviteLink });
+        await navigator.share({ title: "Join me on raviion", text: shareText, url: inviteLink });
         return;
       } catch {
         // dismissed — fall through to copy
@@ -94,7 +94,7 @@ export default function InvitePage() {
           <p className="text-sm text-white/60">{data.hasUsername ? "Your referral handle" : "Your referral code"}</p>
           <h1 className="mt-2 text-3xl font-bold tracking-wide">{data.hasUsername ? `@${handle}` : handle ?? "—"}</h1>
           <p className="mt-3 text-sm text-white/70">
-            Earn <span className="font-semibold text-konek-green">$10</span> for every friend who joins
+            Earn <span className="font-semibold text-raviion-green">$10</span> for every friend who joins
             with your link and transacts $100 or more.
           </p>
           {!data.hasUsername && (
@@ -134,7 +134,7 @@ export default function InvitePage() {
           </div>
           <div className="rounded-2xl border border-indigo/10 bg-white p-4">
             <p className="text-xs text-indigo/50">Rewards earned</p>
-            <p className="mt-2 text-2xl font-bold text-konek-green">{naira(data.earnedMinor)}</p>
+            <p className="mt-2 text-2xl font-bold text-raviion-green">{naira(data.earnedMinor)}</p>
           </div>
         </div>
 
@@ -152,7 +152,7 @@ export default function InvitePage() {
                     <p className="font-semibold text-indigo">{f.name}</p>
                     <p className="text-xs text-indigo/60">{FRIEND_STATUS[f.status] ?? f.status}</p>
                   </div>
-                  <p className={`font-bold ${f.status === "paid" ? "text-konek-green" : "text-indigo/40"}`}>
+                  <p className={`font-bold ${f.status === "paid" ? "text-raviion-green" : "text-indigo/40"}`}>
                     {f.status === "paid" ? `+${naira(f.rewardMinor)}` : "Pending"}
                   </p>
                 </div>
@@ -164,7 +164,7 @@ export default function InvitePage() {
         <div className="mt-5 rounded-3xl bg-indigo/5 p-5">
           <h3 className="font-bold text-indigo">How rewards work</h3>
           <p className="mt-2 text-sm text-indigo/60">
-            Share your link → your friend joins Konek → they spend $100 or more → you get $10 as wallet
+            Share your link → your friend joins raviion → they spend $100 or more → you get $10 as wallet
             credit at today&apos;s rate. They get a 50-coin welcome on their first purchase too.
           </p>
         </div>

@@ -25,8 +25,8 @@ export async function usdMinorToNgnMinor(usdMinor: number): Promise<number> {
   return Math.round(usdMinor * ngnPerUsd);
 }
 
-// Konek's revenue on USD→NGN conversion is the FX spread: the user is credited
-// naira at a rate slightly below mid-market, and Konek keeps the difference
+// raviion's revenue on USD→NGN conversion is the FX spread: the user is credited
+// naira at a rate slightly below mid-market, and raviion keeps the difference
 // (realized as it holds the USD).
 //
 // NGN (kobo) a user receives for converting a given amount of USD (cents),

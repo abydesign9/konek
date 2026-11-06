@@ -38,7 +38,7 @@ export function NetworkLogo({
   if (src) {
     return (
       <span
-        className={`inline-flex shrink-0 items-center justify-center rounded-full bg-white konek-card-shadow ${className ?? ""}`}
+        className={`inline-flex shrink-0 items-center justify-center rounded-full bg-white raviion-card-shadow ${className ?? ""}`}
         style={{ width: size, height: size, padding: size * 0.16 }}
       >
         <Image src={src} alt={key} width={size} height={size} className="h-full w-full object-contain" />

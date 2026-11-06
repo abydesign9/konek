@@ -21,7 +21,7 @@ INSERT INTO content_pages (slug, title, subtitle, sections) VALUES (
     {
       "label": "What it is",
       "heading": "One place to stay connected and move money",
-      "body": "Konek is a Nigerian diaspora-and-local fintech app. It brings connectivity and payments together: airtime, data, cable, electricity, exam pins, betting, eSIM travel data, a multi-currency wallet, dedicated account numbers and virtual cards.\n\nA global app with a Nigerian heart. Nigerians at home, Nigerians abroad, and international customers all get the right local experience."
+      "body": "Raviion is a Nigerian diaspora-and-local fintech app. It brings connectivity and payments together: airtime, data, cable, electricity, exam pins, betting, eSIM travel data, a multi-currency wallet, dedicated account numbers and virtual cards.\n\nA global app with a Nigerian heart. Nigerians at home, Nigerians abroad, and international customers all get the right local experience."
     },
     {
       "label": "The product",
@@ -41,7 +41,7 @@ INSERT INTO content_pages (slug, title, subtitle, sections) VALUES (
     {
       "label": "For compliance",
       "heading": "Risk and regulatory posture",
-      "body": "- Tiered KYC gates features and limits, configurable per country and product\n- Per-tier transaction limits enforced on every spend\n- Fraud monitoring with risk flags, a review queue and alerts\n- A flagged identity auto-freezes the account and alerts admin\n- IDs, BVN/NIN and card details are encrypted; documents stored privately\n\nMoney-transmission licensing sits with our regulated payment, card and account partners; Konek integrates with them."
+      "body": "- Tiered KYC gates features and limits, configurable per country and product\n- Per-tier transaction limits enforced on every spend\n- Fraud monitoring with risk flags, a review queue and alerts\n- A flagged identity auto-freezes the account and alerts admin\n- IDs, BVN/NIN and card details are encrypted; documents stored privately\n\nMoney-transmission licensing sits with our regulated payment, card and account partners; Raviion integrates with them."
     },
     {
       "label": "For growth",

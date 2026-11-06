@@ -155,7 +155,7 @@ export function UsersConsole() {
               <input
                 value={newEmail}
                 onChange={(e) => setNewEmail(e.target.value)}
-                placeholder="new-admin@konek.app"
+                placeholder="new-admin@raviion.app"
                 className="w-full rounded-lg border border-border-soft px-3 py-2 text-sm sm:flex-1"
               />
               <div className="flex gap-2">
@@ -194,7 +194,7 @@ export function UsersConsole() {
                   <button
                     onClick={() => saveRole(role.name)}
                     disabled={savingRole === role.name}
-                    className="shrink-0 text-xs font-semibold text-konek-green underline disabled:opacity-50 normal-case"
+                    className="shrink-0 text-xs font-semibold text-raviion-green underline disabled:opacity-50 normal-case"
                   >
                     {savingRole === role.name ? "Saving…" : "Save changes"}
                   </button>

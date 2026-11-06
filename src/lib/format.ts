@@ -57,7 +57,7 @@ export const TXN_STATUS_LABEL: Record<string, string> = {
 export const TXN_STATUS_CLASS: Record<string, string> = {
   initiated: "bg-gold/15 text-gold",
   pending_vendor: "bg-gold/15 text-gold",
-  delivered: "bg-konek-green/15 text-konek-green",
+  delivered: "bg-raviion-green/15 text-raviion-green",
   failed: "bg-red-100 text-red-600",
   refunded: "bg-indigo/10 text-indigo",
 };

@@ -2,17 +2,17 @@ import type { Metadata } from "next";
 import { MarketingPage, Hero, Section, FeatureGrid, Stats, CTA } from "@/components/marketing/ui";
 
 export const metadata: Metadata = {
-  title: "Konek for Business — pay teams, collect globally, control spend",
+  title: "raviion for Business | Collect, pay and control spend",
   description:
-    "Run your business on Konek: multi-currency accounts to collect from clients worldwide, batch payouts to staff and contractors, virtual cards with controls, and connectivity for your whole team.",
+    "Run your business on raviion with multi-currency accounts, batch payouts, virtual cards and connectivity for your team.",
   keywords: [
     "business USD account", "pay contractors Nigeria", "bulk payroll Africa",
-    "multi-currency business account", "corporate virtual cards", "Konek for business",
+    "multi-currency business account", "corporate virtual cards", "raviion for business",
   ],
   alternates: { canonical: "/business-solutions" },
   openGraph: {
-    title: "Konek for Business — global money for growing teams",
-    description: "Collect globally, pay your team, and control spend from one dashboard.",
+    title: "raviion for Business | Collect, pay and control spend",
+    description: "Collect globally, pay your team and control spend from one dashboard.",
     url: "/business-solutions",
     type: "website",
   },
@@ -22,9 +22,9 @@ export default function BusinessSolutionsPage() {
   return (
     <MarketingPage>
       <Hero
-        eyebrow="Konek for Business"
-        title={<>Global money for <span className="text-konek-green">growing teams.</span></>}
-        subtitle="Collect from clients in any currency, pay your team and contractors in a single batch, and give everyone the connectivity and cards they need — with the controls finance teams expect."
+        eyebrow="raviion for Business"
+        title={<>Manage money and <span className="text-raviion-green">team access in one place.</span></>}
+        subtitle="Collect from clients in different currencies, pay staff and contractors in one batch and give your team the data, cards and services they need without extra admin."
         primary={{ label: "Start with business", href: "/signup" }}
         secondary={{ label: "See pricing", href: "/pricing" }}
       />
@@ -47,7 +47,7 @@ export default function BusinessSolutionsPage() {
             { icon: "🛡️", title: "Roles & approvals", body: "Give finance, ops and support the access they need — and nothing they don't." },
             { icon: "📊", title: "Clear reporting", body: "Exportable statements and reconciliation so month-end is calm, not chaotic." },
             { icon: "📶", title: "Team connectivity", body: "Airtime, data and eSIM for the whole team, managed centrally." },
-            { icon: "🤝", title: "Grow with agents", body: "Extend your reach with Konek's agent and partner network." },
+            { icon: "🤝", title: "Grow with agents", body: "Extend your reach with raviion's agent and partner network." },
           ]}
         />
       </Section>
@@ -64,7 +64,7 @@ export default function BusinessSolutionsPage() {
       </Section>
 
       <CTA
-        title="Build your business on Konek"
+        title="Build your business on raviion"
         subtitle="Bring collections, payouts, cards and connectivity into one dashboard — and get back to the work that matters."
         primary={{ label: "Get started", href: "/signup" }}
         secondary={{ label: "Talk to us", href: "/faq" }}

@@ -327,7 +327,7 @@ export function NotificationsConsole() {
             <Card
               title="Campaigns"
               action={
-                <button onClick={() => setShowCampaignForm((s) => !s)} className="text-xs font-semibold text-konek-green">
+                <button onClick={() => setShowCampaignForm((s) => !s)} className="text-xs font-semibold text-raviion-green">
                   {showCampaignForm ? "Cancel" : "Create Notification"}
                 </button>
               }
@@ -381,7 +381,7 @@ export function NotificationsConsole() {
                     />
                   )}
                   {audiencePreview !== null && (
-                    <p className="mb-3 text-xs text-konek-green">~{audiencePreview} recipients</p>
+                    <p className="mb-3 text-xs text-raviion-green">~{audiencePreview} recipients</p>
                   )}
 
                   <p className="mb-1.5 text-xs font-semibold text-text-secondary">Scheduling</p>
@@ -411,7 +411,7 @@ export function NotificationsConsole() {
                     />
                   )}
                   {cScheduleType !== "immediate" && (
-                    <p className="mb-2 text-[11px] text-konek-green">
+                    <p className="mb-2 text-[11px] text-raviion-green">
                       Dispatches automatically via the cron worker (once a day in production) once it&apos;s due.
                     </p>
                   )}
@@ -440,7 +440,7 @@ export function NotificationsConsole() {
                     </p>
                     <div className="flex flex-wrap gap-3">
                       {c.status !== "sent" && (
-                        <button onClick={() => sendCampaign(c.id)} className="text-xs font-semibold text-konek-green underline">
+                        <button onClick={() => sendCampaign(c.id)} className="text-xs font-semibold text-raviion-green underline">
                           Send now
                         </button>
                       )}
@@ -478,9 +478,9 @@ export function NotificationsConsole() {
                           <p className="text-[10px] text-text-secondary">Failed</p>
                           <p className="text-sm font-bold text-indigo">0</p>
                         </div>
-                        <div className="col-span-2 rounded-lg bg-konek-green/10 px-2 py-1.5 text-center">
+                        <div className="col-span-2 rounded-lg bg-raviion-green/10 px-2 py-1.5 text-center">
                           <p className="text-[10px] text-text-secondary">Converted (purchase within 48h)</p>
-                          <p className="text-sm font-bold text-konek-green">{analytics.converted} ({analytics.convertedPct}%)</p>
+                          <p className="text-sm font-bold text-raviion-green">{analytics.converted} ({analytics.convertedPct}%)</p>
                         </div>
                       </div>
                     )}
@@ -521,7 +521,7 @@ export function NotificationsConsole() {
                     <p className="text-sm font-medium text-indigo">{t.name}</p>
                     <p className="mb-2 text-xs text-text-secondary">{t.subject}</p>
                     <div className="flex gap-3">
-                      <button onClick={() => applyTemplateToCampaign(t)} className="text-xs font-semibold text-konek-green underline">
+                      <button onClick={() => applyTemplateToCampaign(t)} className="text-xs font-semibold text-raviion-green underline">
                         Use in campaign
                       </button>
                       <button onClick={() => editTemplate(t)} className="text-xs font-semibold text-indigo underline">
@@ -546,7 +546,7 @@ export function NotificationsConsole() {
             <Card
               title="In-app messages"
               action={
-                <button onClick={() => setShowInAppForm((s) => !s)} className="text-xs font-semibold text-konek-green">
+                <button onClick={() => setShowInAppForm((s) => !s)} className="text-xs font-semibold text-raviion-green">
                   {showInAppForm ? "Cancel" : "New in app message"}
                 </button>
               }

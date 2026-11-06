@@ -58,12 +58,12 @@ button,
   }
 }
 /* Hero balance card texture — subtle geometric pattern, not literal flags */
-.konek-hero {
+.raviion-hero {
   background: linear-gradient(135deg, #22315C 0%, #2E4079 55%, #1A2647 100%);
   position: relative;
   overflow: hidden;
 }
-.konek-hero::before {
+.raviion-hero::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -72,7 +72,7 @@ button,
     radial-gradient(circle at 100% 100%, rgba(0,196,140,0.18) 0%, transparent 50%);
   pointer-events: none;
 }
-.konek-hero::after {
+.raviion-hero::after {
   content: "";
   position: absolute;
   right: -30px;
@@ -84,26 +84,26 @@ button,
   pointer-events: none;
 }
 
-.konek-card-shadow {
+.raviion-card-shadow {
   box-shadow: 0 8px 24px -8px rgba(34, 49, 92, 0.18), 0 2px 6px -2px rgba(34, 49, 92, 0.10);
 }
 
-.konek-tile {
+.raviion-tile {
   transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
-.konek-tile:active {
+.raviion-tile:active {
   transform: scale(0.94);
 }
 
-.konek-scrollbar-none::-webkit-scrollbar { display: none; }
-.konek-scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+.raviion-scrollbar-none::-webkit-scrollbar { display: none; }
+.raviion-scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
 
 /* Floating decorative badges on the landing page — each instance offsets
    its own animation-delay so a cluster doesn't bob in lockstep. */
-@keyframes konek-float {
+@keyframes raviion-float {
   0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(-10px); }
 }
-.konek-float {
-  animation: konek-float 4.5s ease-in-out infinite;
+.raviion-float {
+  animation: raviion-float 4.5s ease-in-out infinite;
 }

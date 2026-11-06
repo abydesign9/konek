@@ -36,7 +36,7 @@ export function NavProgress() {
   return (
     <div aria-hidden="true" className="pointer-events-none fixed inset-x-0 top-0 z-[200] h-0.5">
       <div
-        className="h-full rounded-r-full bg-gradient-to-r from-indigo to-konek-green transition-[width,opacity] duration-300 ease-out"
+        className="h-full rounded-r-full bg-gradient-to-r from-indigo to-raviion-green transition-[width,opacity] duration-300 ease-out"
         style={{ width: active ? "92%" : "0%", opacity: active ? 1 : 0 }}
       />
     </div>

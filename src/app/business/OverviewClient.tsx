@@ -40,7 +40,7 @@ function naira(minor: number | string) {
 
 function KpiCard({ label, value, Icon }: { label: string; value: string; Icon: (p: { className?: string }) => JSX.Element }) {
   return (
-    <div className="konek-card-shadow rounded-2xl bg-white p-5">
+    <div className="raviion-card-shadow rounded-2xl bg-white p-5">
       <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-xl bg-indigo/10">
         <Icon className="h-[18px] w-[18px] text-indigo" />
       </div>
@@ -117,7 +117,7 @@ export function OverviewClient() {
   if (!business) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-ivory px-5">
-        <div className="konek-card-shadow w-full max-w-md rounded-2xl bg-white p-6">
+        <div className="raviion-card-shadow w-full max-w-md rounded-2xl bg-white p-6">
           <p className="mb-1 font-heading text-lg font-bold text-indigo">Set up your business</p>
           <p className="mb-5 text-sm text-text-secondary">
             Apply for a business account to manage workforce connectivity — airtime, data and benefits
@@ -195,7 +195,7 @@ export function OverviewClient() {
             View all →
           </Link>
         </div>
-        <div className="konek-card-shadow mt-3 divide-y divide-border-soft rounded-2xl bg-white">
+        <div className="raviion-card-shadow mt-3 divide-y divide-border-soft rounded-2xl bg-white">
           {batches.length === 0 && (
             <p className="px-5 py-8 text-center text-sm text-text-secondary">
               No distributions yet. Create your first employee benefit to get started.
@@ -205,7 +205,7 @@ export function OverviewClient() {
             <div key={b.id} className="flex items-center gap-3 px-5 py-4">
               <span
                 className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold ${
-                  b.status === "completed" ? "bg-konek-green/15 text-konek-green" : "bg-gold/15 text-gold"
+                  b.status === "completed" ? "bg-raviion-green/15 text-raviion-green" : "bg-gold/15 text-gold"
                 }`}
               >
                 {b.status === "completed" ? "✓" : "…"}
@@ -222,14 +222,14 @@ export function OverviewClient() {
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Link
             href="/business/distributions"
-            className="konek-card-shadow konek-tile rounded-2xl bg-indigo px-5 py-4 text-white"
+            className="raviion-card-shadow raviion-tile rounded-2xl bg-indigo px-5 py-4 text-white"
           >
             <p className="font-heading text-sm font-bold">Create Employee Benefit</p>
             <p className="mt-1 text-xs text-white/70">Airtime, data or eSIM for your team, right now.</p>
           </Link>
           <Link
             href="/business/employees"
-            className="konek-card-shadow konek-tile rounded-2xl border border-border-soft bg-white px-5 py-4"
+            className="raviion-card-shadow raviion-tile rounded-2xl border border-border-soft bg-white px-5 py-4"
           >
             <p className="font-heading text-sm font-bold text-indigo">Manage Employees</p>
             <p className="mt-1 text-xs text-text-secondary">
@@ -238,14 +238,14 @@ export function OverviewClient() {
           </Link>
           <Link
             href="/business/cards"
-            className="konek-card-shadow konek-tile rounded-2xl border border-border-soft bg-white px-5 py-4"
+            className="raviion-card-shadow raviion-tile rounded-2xl border border-border-soft bg-white px-5 py-4"
           >
             <p className="font-heading text-sm font-bold text-indigo">Business cards</p>
             <p className="mt-1 text-xs text-text-secondary">Issue virtual cards for ops, ads and subscriptions.</p>
           </Link>
           <Link
             href="/business/vendors"
-            className="konek-card-shadow konek-tile rounded-2xl border border-border-soft bg-white px-5 py-4"
+            className="raviion-card-shadow raviion-tile rounded-2xl border border-border-soft bg-white px-5 py-4"
           >
             <p className="font-heading text-sm font-bold text-indigo">Vendor transfers</p>
             <p className="mt-1 text-xs text-text-secondary">Save vendors and pay them from the business wallet.</p>

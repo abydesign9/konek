@@ -1,5 +1,5 @@
 -- ============================================================
--- KONEK — Migration 0006: referral codes
+-- Raviion — Migration 0006: referral codes
 -- ============================================================
 
 ALTER TABLE users ADD COLUMN referral_code text UNIQUE;

@@ -331,7 +331,7 @@ export function CatalogTable({
             <button
               onClick={applyMarkup}
               disabled={busy}
-              className="rounded-lg bg-konek-green px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50"
+              className="rounded-lg bg-raviion-green px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50"
             >
               Apply to {preview.count}
             </button>
@@ -344,7 +344,7 @@ export function CatalogTable({
       {selected.size > 0 && (
         <div className="mb-3 flex flex-wrap items-center gap-2 rounded-xl border border-indigo/20 bg-white px-3 py-2.5">
           <span className="text-xs font-semibold text-indigo">{selected.size} selected</span>
-          <button onClick={() => bulk("enable")} disabled={busy} className="rounded-lg bg-konek-green/10 px-3 py-1.5 text-xs font-semibold text-konek-green">
+          <button onClick={() => bulk("enable")} disabled={busy} className="rounded-lg bg-raviion-green/10 px-3 py-1.5 text-xs font-semibold text-raviion-green">
             Enable
           </button>
           <button onClick={() => bulk("disable")} disabled={busy} className="rounded-lg bg-gold/10 px-3 py-1.5 text-xs font-semibold text-gold">
@@ -436,7 +436,7 @@ export function CatalogTable({
               <button
                 onClick={runImport}
                 disabled={busy}
-                className="rounded-lg bg-konek-green px-4 py-2 text-xs font-semibold text-white disabled:opacity-50"
+                className="rounded-lg bg-raviion-green px-4 py-2 text-xs font-semibold text-white disabled:opacity-50"
               >
                 {busy ? "Importing…" : `Import ${importRows.length} row(s)`}
               </button>
@@ -445,7 +445,7 @@ export function CatalogTable({
         </div>
       )}
 
-      {message && <p className="mb-3 text-xs font-semibold text-konek-green">{message}</p>}
+      {message && <p className="mb-3 text-xs font-semibold text-raviion-green">{message}</p>}
 
       {/* Table */}
       <div className="overflow-x-auto">
@@ -508,14 +508,14 @@ export function CatalogTable({
                       onChange={(e) => setPriceDrafts((d) => ({ ...d, [item.id]: e.target.value.replace(/[^\d.]/g, "") }))}
                       onBlur={() => draft != null && savePrice(item)}
                       className={`w-24 rounded-lg border px-2 py-1 text-right text-xs tabular-nums ${
-                        draft != null ? "border-konek-green" : "border-border-soft"
+                        draft != null ? "border-raviion-green" : "border-border-soft"
                       }`}
                       disabled={savingId === item.id}
                     />
                   </td>
                   <td
                     className={`py-2 pr-3 text-right text-xs tabular-nums ${
-                      m === null ? "text-text-secondary" : m < 0 ? "text-red-600" : m < 5 ? "text-gold" : "text-konek-green"
+                      m === null ? "text-text-secondary" : m < 0 ? "text-red-600" : m < 5 ? "text-gold" : "text-raviion-green"
                     }`}
                   >
                     {m === null ? "—" : `${m.toFixed(0)}%`}
@@ -524,7 +524,7 @@ export function CatalogTable({
                     <button
                       onClick={() => toggleActive(item)}
                       className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${
-                        item.active ? "bg-konek-green/10 text-konek-green" : "bg-red-50 text-red-600"
+                        item.active ? "bg-raviion-green/10 text-raviion-green" : "bg-red-50 text-red-600"
                       }`}
                     >
                       {item.active ? "Active" : "Disabled"}

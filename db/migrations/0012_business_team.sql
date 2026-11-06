@@ -1,6 +1,6 @@
 -- ============================================================
--- KONEK — Migration 0012: business team members (M9 Team Management)
--- A business account can grant existing Konek users a role on the business.
+-- Raviion — Migration 0012: business team members (M9 Team Management)
+-- A business account can grant existing Raviion users a role on the business.
 -- The owner (business_accounts.owner_user_id) is implicit and not stored here.
 -- Roles per the PRD: admin | finance | hr | marketing | viewer.
 -- Money still moves only from the owner's prepaid balance; membership only

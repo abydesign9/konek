@@ -48,8 +48,6 @@ function Signup() {
       setError(data.error ?? "Couldn't send the code — try again");
       return;
     }
-    const data = await res.json().catch(() => ({}));
-    if (data.demoOtp) setCode(String(data.demoOtp)); // dev mode: no real email configured yet
     setStep("verify");
   }
 
@@ -81,21 +79,21 @@ function Signup() {
     <main className="min-h-screen bg-background md:grid md:grid-cols-[1.1fr_1fr]">
       {/* Brand panel */}
       <aside className="relative hidden flex-col justify-between overflow-hidden bg-indigo p-12 md:flex">
-        <div aria-hidden className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-konek-green/20 blur-3xl" />
+        <div aria-hidden className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-raviion-green/20 blur-3xl" />
         <div aria-hidden className="absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-gold/20 blur-3xl" />
 
         <Link href="/" className="relative flex w-fit items-center gap-3">
           <span className="flex h-12 w-11 items-center justify-center rounded-xl bg-white p-1.5">
-            <Image src="/brand/logo.png" alt="Konek logo" width={32} height={40} />
+            <Image src="/brand/logo.png" alt="raviion logo" width={32} height={40} />
           </span>
-          <span className="font-heading text-2xl font-bold text-white">Konek</span>
+          <span className="font-heading text-2xl font-bold text-white">raviion</span>
         </Link>
 
         <div className="relative">
           <div className="relative mb-8 aspect-[2000/1125] w-full max-w-md overflow-hidden rounded-3xl shadow-2xl shadow-black/40">
             <Image
-              src="/landing/konek_hero_image.jpg"
-              alt="The Konek app connecting a phone to family, money, travel, bills, eSIM and card"
+              src="/landing/raviion_hero_image.jpg"
+              alt="The raviion app connecting a phone to family, money, travel, bills, eSIM and card"
               fill
               sizes="400px"
               className="object-cover"
@@ -131,15 +129,15 @@ function Signup() {
       <section className="flex min-h-screen flex-col items-center justify-center px-6 py-12 md:min-h-0">
         <div className="w-full max-w-sm">
           <Link href="/" className="mb-10 flex items-center justify-center gap-2 md:hidden">
-            <Image src="/brand/logo.png" alt="Konek logo" width={30} height={37} className="mix-blend-multiply" />
-            <span className="font-heading text-xl font-bold text-indigo">Konek</span>
+            <Image src="/brand/logo.png" alt="raviion logo" width={30} height={37} className="mix-blend-multiply" />
+            <span className="font-heading text-xl font-bold text-indigo">raviion</span>
           </Link>
 
           <h2 className="mb-1.5 font-heading text-2xl font-bold text-indigo">Create your account</h2>
           <p className="mb-8 text-sm text-indigo/60">Your full name, email, and a password is all it takes.</p>
 
           {referralCode && (
-            <p className="mb-6 rounded-xl border border-konek-green/20 bg-konek-green/10 px-4 py-3 text-sm font-semibold text-konek-green">
+            <p className="mb-6 rounded-xl border border-raviion-green/20 bg-raviion-green/10 px-4 py-3 text-sm font-semibold text-raviion-green">
               Invited with code {referralCode} — enjoy a 50-coin welcome on your first purchase.
             </p>
           )}
@@ -157,7 +155,7 @@ function Signup() {
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               required
-              className="w-full rounded-xl border border-indigo/20 bg-white px-4 py-3.5 text-base focus:outline-none focus:ring-2 focus:ring-konek-green"
+              className="w-full rounded-xl border border-indigo/20 bg-white px-4 py-3.5 text-base focus:outline-none focus:ring-2 focus:ring-raviion-green"
             />
 
             <label className="mt-2 text-sm font-medium text-indigo/70" htmlFor="email">
@@ -170,7 +168,7 @@ function Signup() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full rounded-xl border border-indigo/20 bg-white px-4 py-3.5 text-base focus:outline-none focus:ring-2 focus:ring-konek-green"
+              className="w-full rounded-xl border border-indigo/20 bg-white px-4 py-3.5 text-base focus:outline-none focus:ring-2 focus:ring-raviion-green"
             />
 
             <label className="mt-2 text-sm font-medium text-indigo/70" htmlFor="password">
@@ -185,7 +183,7 @@ function Signup() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={MIN_PASSWORD_LENGTH}
-                className="w-full rounded-xl border border-indigo/20 bg-white px-4 py-3.5 pr-12 text-base focus:outline-none focus:ring-2 focus:ring-konek-green"
+                className="w-full rounded-xl border border-indigo/20 bg-white px-4 py-3.5 pr-12 text-base focus:outline-none focus:ring-2 focus:ring-raviion-green"
               />
               <button
                 type="button"
@@ -214,10 +212,10 @@ function Signup() {
                 type="checkbox"
                 checked={agreed}
                 onChange={(e) => setAgreed(e.target.checked)}
-                className="mt-0.5 h-4 w-4 rounded border-indigo/30 text-konek-green focus:ring-konek-green"
+                className="mt-0.5 h-4 w-4 rounded border-indigo/30 text-raviion-green focus:ring-raviion-green"
               />
               <span>
-                I agree to Konek&rsquo;s{" "}
+                I agree to raviion&rsquo;s{" "}
                 <Link href="/terms" className="text-indigo underline">
                   Terms of Service
                 </Link>{" "}
@@ -246,7 +244,7 @@ function Signup() {
                   value={code}
                   onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
                   required
-                  className="w-full rounded-xl border border-indigo/20 bg-white px-4 py-3.5 text-center text-2xl font-bold tracking-[0.4em] focus:outline-none focus:ring-2 focus:ring-konek-green"
+                  className="w-full rounded-xl border border-indigo/20 bg-white px-4 py-3.5 text-center text-2xl font-bold tracking-[0.4em] focus:outline-none focus:ring-2 focus:ring-raviion-green"
                 />
                 <div className="flex items-center justify-between text-xs">
                   <button type="button" onClick={() => { setStep("details"); setCode(""); setError(null); }} className="text-indigo underline">

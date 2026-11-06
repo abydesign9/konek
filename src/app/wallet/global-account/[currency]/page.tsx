@@ -201,7 +201,7 @@ backHref="/wallet/dollar-account"
 
 
 <p className="text-xs uppercase text-white/60">
-Konek Global Account
+raviion Global Account
 </p>
 
 
@@ -361,11 +361,11 @@ Why use this account?
 </p>
 
 <p>
-✓ Manage your global money from Konek
+✓ Manage your global money from raviion
 </p>
 
 <p>
-✓ Spend through Konek services
+✓ Spend through raviion services
 </p>
 
 </div>
@@ -424,7 +424,7 @@ className="flex justify-between py-3 border-b border-indigo/10 last:border-0"
 
 
 
-<p className="font-bold text-konek-green">
+<p className="font-bold text-raviion-green">
 
 +
 {(Number(item.amount_minor)/100)
@@ -445,7 +445,7 @@ className="flex justify-between py-3 border-b border-indigo/10 last:border-0"
 
 
 
-<div className="mt-6 rounded-3xl bg-konek-green/10 p-5">
+<div className="mt-6 rounded-3xl bg-raviion-green/10 p-5">
 
 
 <p className="font-bold text-indigo">

@@ -53,9 +53,9 @@ export function SiteFooter() {
       <div className="mx-auto max-w-6xl px-5 py-14">
         <div className="grid grid-cols-2 gap-8 md:grid-cols-6">
           <div className="col-span-2 md:col-span-1">
-            <span className="font-heading text-lg font-bold text-indigo">KONEK</span>
+            <span className="font-heading text-lg font-bold text-indigo">raviion</span>
             <p className="mt-3 max-w-xs text-sm text-indigo/60">
-              Global connectivity and payments for Africans at home and abroad — accounts, cards, eSIM and everyday bills in one app.
+              Accounts, cards, eSIM data and everyday essentials for life across borders.
             </p>
           </div>
           {COLS.map((c) => (
@@ -64,7 +64,7 @@ export function SiteFooter() {
               <ul className="flex flex-col gap-2.5">
                 {c.links.map((l) => (
                   <li key={l.href}>
-                    <Link href={l.href} className="text-sm text-indigo/70 transition-colors hover:text-konek-green">
+                    <Link href={l.href} className="text-sm text-indigo/70 transition-colors hover:text-raviion-green">
                       {l.label}
                     </Link>
                   </li>
@@ -74,8 +74,8 @@ export function SiteFooter() {
           ))}
         </div>
         <div className="mt-12 flex flex-col gap-2 border-t border-indigo/10 pt-6 text-xs text-indigo/50 md:flex-row md:items-center md:justify-between">
-          <p>© {new Date().getFullYear()} KONEK. All rights reserved.</p>
-          <p>Konek is a product of Topton Global Consult.</p>
+          <p>© {new Date().getFullYear()} raviion. All rights reserved.</p>
+          <p>raviion is a product of Topton Global Consult.</p>
         </div>
       </div>
     </footer>

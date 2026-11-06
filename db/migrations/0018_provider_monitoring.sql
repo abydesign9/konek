@@ -1,5 +1,5 @@
 -- ============================================================
--- KONEK — Migration 0018: Provider Monitoring
+-- Raviion — Migration 0018: Provider Monitoring
 -- Vendor health checks have run since 0001 (vendors.healthy,
 -- last_health_check) but latency was never captured and nothing built a
 -- real ops page on top of it. Adds the one missing column; the health

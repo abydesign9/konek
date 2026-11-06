@@ -43,7 +43,7 @@ export function PinPad({
           <div
             key={i}
             className={`w-12 h-14 rounded-xl border flex items-center justify-center text-xl font-bold ${
-              i < value.length ? "border-konek-green bg-konek-green/10" : "border-indigo/20"
+              i < value.length ? "border-raviion-green bg-raviion-green/10" : "border-indigo/20"
             }`}
           >
             {value[i] ? "•" : ""}
@@ -64,7 +64,7 @@ export function PinPad({
         data-1p-ignore="true"
         data-lpignore="true"
         data-bwignore="true"
-        name="konek-transaction-pin"
+        name="raviion-transaction-pin"
         value={value}
         onChange={(e) => {
           const digits = e.target.value.replace(/\D/g, "").slice(0, length);

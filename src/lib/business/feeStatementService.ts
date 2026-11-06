@@ -9,7 +9,7 @@ export interface FeeEntry {
   created_at: string;
 }
 
-// Konek has no subscription/billing plan — a business only ever pays
+// raviion has no subscription/billing plan — a business only ever pays
 // per-action fees (card creation, etc.). This is that statement: every fee
 // already recorded in business_wallet_events, no separate billing system
 // needed. Vendor transfers move the business's own money (not a fee) so

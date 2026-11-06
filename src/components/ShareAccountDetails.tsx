@@ -22,7 +22,7 @@ export default function ShareAccountDetails({
 
 
   const details = `
-Konek Global Account
+raviion Global Account
 
 Currency: ${currency}
 
@@ -51,7 +51,7 @@ Use these details to send ${currency} payments.
     if (navigator.share) {
 
       await navigator.share({
-        title: `Konek ${currency} Account Details`,
+        title: `raviion ${currency} Account Details`,
         text: details,
       });
 

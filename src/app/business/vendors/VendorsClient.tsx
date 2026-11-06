@@ -28,7 +28,7 @@ function naira(minor: number | string) {
 }
 
 const STATUS_TONE: Record<string, string> = {
-  delivered: "bg-konek-green/10 text-konek-green",
+  delivered: "bg-raviion-green/10 text-raviion-green",
   pending_vendor: "bg-gold/15 text-gold",
   initiated: "bg-gold/15 text-gold",
   failed: "bg-red-50 text-red-600",
@@ -119,7 +119,7 @@ export function VendorsClient() {
       </div>
 
       {showAddVendor && (
-        <div className="konek-card-shadow mb-5 rounded-2xl border border-border-soft bg-white p-4">
+        <div className="raviion-card-shadow mb-5 rounded-2xl border border-border-soft bg-white p-4">
           <div className="grid gap-2 sm:grid-cols-3">
             <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Vendor name" className="rounded-xl border border-border-soft px-3 py-2.5 text-sm" />
             <select value={bankCode} onChange={(e) => setBankCode(e.target.value)} className="rounded-xl border border-border-soft px-3 py-2.5 text-sm">
@@ -136,16 +136,16 @@ export function VendorsClient() {
               className="rounded-xl border border-border-soft px-3 py-2.5 text-sm"
             />
           </div>
-          <button onClick={addVendor} disabled={addBusy} className="mt-3 rounded-xl bg-konek-green px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50">
+          <button onClick={addVendor} disabled={addBusy} className="mt-3 rounded-xl bg-raviion-green px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50">
             {addBusy ? "Verifying…" : "Save vendor"}
           </button>
           {addError && <p className="mt-2 text-sm text-red-600">{addError}</p>}
         </div>
       )}
 
-      {sendMsg && <p className="mb-4 rounded-xl bg-konek-green/10 px-4 py-2.5 text-sm font-semibold text-konek-green">{sendMsg}</p>}
+      {sendMsg && <p className="mb-4 rounded-xl bg-raviion-green/10 px-4 py-2.5 text-sm font-semibold text-raviion-green">{sendMsg}</p>}
 
-      <div className="konek-card-shadow mb-8 divide-y divide-border-soft rounded-2xl bg-white">
+      <div className="raviion-card-shadow mb-8 divide-y divide-border-soft rounded-2xl bg-white">
         {(vendors ?? []).map((v) => (
           <div key={v.id} className="p-4">
             <div className="flex items-center justify-between gap-3">
@@ -169,7 +169,7 @@ export function VendorsClient() {
                   placeholder="Amount (₦)"
                   className="min-w-0 flex-1 rounded-xl border border-border-soft px-3 py-2 text-sm"
                 />
-                <button onClick={() => sendTransfer(v.id)} disabled={sendBusy} className="rounded-xl bg-konek-green px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">
+                <button onClick={() => sendTransfer(v.id)} disabled={sendBusy} className="rounded-xl bg-raviion-green px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">
                   {sendBusy ? "Sending…" : "Send"}
                 </button>
               </div>
@@ -183,7 +183,7 @@ export function VendorsClient() {
       </div>
 
       <p className="mb-3 text-sm font-semibold text-indigo">Transfer history</p>
-      <div className="konek-card-shadow divide-y divide-border-soft rounded-2xl bg-white">
+      <div className="raviion-card-shadow divide-y divide-border-soft rounded-2xl bg-white">
         {(transfers ?? []).map((t) => (
           <div key={t.id} className="flex items-center justify-between p-4">
             <div>

@@ -9,8 +9,8 @@ import { CreateAccountResult, DollarAccountAdapter, InflowVerifyResult } from ".
 // Hung off globalThis so it survives across Next's per-route bundles — the
 // mock-inflow route registers here and the webhook route (a separate bundle)
 // reads it back; a plain module-level Map isn't shared between them in dev.
-const globalStore = globalThis as unknown as { __konekMockInflows?: Map<string, InflowVerifyResult> };
-const inflows = (globalStore.__konekMockInflows ??= new Map<string, InflowVerifyResult>());
+const globalStore = globalThis as unknown as { __raviionMockInflows?: Map<string, InflowVerifyResult> };
+const inflows = (globalStore.__raviionMockInflows ??= new Map<string, InflowVerifyResult>());
 
 export function registerMockInflow(inflowRef: string, result: InflowVerifyResult) {
   inflows.set(inflowRef, result);

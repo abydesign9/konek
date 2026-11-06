@@ -1,6 +1,6 @@
 -- Global, configurable KYC.
 --
--- Konek is a global app: BVN/NIN are Nigeria-only methods, every other country
+-- Raviion is a global app: BVN/NIN are Nigeria-only methods, every other country
 -- has its own regulator-accepted IDs. This replaces the hardcoded BVN/NIN + tier
 -- promotion with a data-driven model, mirroring how Wise/Revolut/Sumsub operate:
 --   * verification_methods  — registry of every method we can ask for

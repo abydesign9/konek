@@ -1,7 +1,7 @@
 // A small emoji-in-a-circle that bobs gently — the recurring "floating
 // icon" motif used on the landing page and both auth screens. Each
 // instance should get its own `delay` so a cluster doesn't move in
-// lockstep (see the konek-float keyframe in globals.css).
+// lockstep (see the raviion-float keyframe in globals.css).
 export function FloatingBadge({
   icon,
   className,
@@ -16,7 +16,7 @@ export function FloatingBadge({
   const dims = size === "lg" ? "h-16 w-16 text-2xl" : size === "sm" ? "h-9 w-9 text-sm" : "h-12 w-12 text-lg";
   return (
     <div
-      className={`konek-float absolute z-10 flex ${dims} items-center justify-center rounded-full bg-white konek-card-shadow ${className ?? ""}`}
+      className={`raviion-float absolute z-10 flex ${dims} items-center justify-center rounded-full bg-white raviion-card-shadow ${className ?? ""}`}
       style={{ animationDelay: `${delay}s` }}
       aria-hidden
     >

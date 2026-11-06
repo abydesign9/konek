@@ -1,5 +1,5 @@
 -- ============================================================
--- KONEK — Migration 0030: card dispute dedup guard (M7)
+-- Raviion — Migration 0030: card dispute dedup guard (M7)
 --
 -- Backstops the application check in fileDispute: at most one OPEN dispute per
 -- card transaction, so the ~20% deterrent fee can't be charged repeatedly.

@@ -1,4 +1,4 @@
-# Konek
+# raviion
 
 A Nigerian diaspora and local fintech PWA: local VTU (airtime, data, cable,
 electricity, exam pins, betting), international top up, eSIM, and a NGN + USD

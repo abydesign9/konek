@@ -61,7 +61,7 @@ export function CustomAmountField({
 
   return (
     <div className="mt-3">
-      <div className="flex items-center rounded-2xl border border-indigo/15 bg-white px-4 py-3 konek-card-shadow focus-within:ring-2 focus-within:ring-konek-green">
+      <div className="flex items-center rounded-2xl border border-indigo/15 bg-white px-4 py-3 raviion-card-shadow focus-within:ring-2 focus-within:ring-raviion-green">
         <span className="mr-1 font-heading text-lg font-bold text-indigo/50">₦</span>
         <input
           type="text"

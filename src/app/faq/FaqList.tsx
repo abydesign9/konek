@@ -44,7 +44,7 @@ export function FaqList() {
 
       {Object.entries(grouped).map(([category, items]) => (
         <section key={category} className="mb-8">
-          <p className="mb-3 text-xs font-bold uppercase tracking-wide text-konek-green">
+          <p className="mb-3 text-xs font-bold uppercase tracking-wide text-raviion-green">
             {CATEGORY_LABEL[category] ?? category}
           </p>
           <div className="flex flex-col gap-2.5">
@@ -52,7 +52,7 @@ export function FaqList() {
               <details key={f.id} className="group rounded-2xl border border-indigo/10 bg-white px-5 py-4">
                 <summary className="flex cursor-pointer list-none items-center justify-between text-sm font-semibold text-indigo">
                   {f.question}
-                  <span className="ml-3 text-lg leading-none text-konek-green transition-transform group-open:rotate-45">
+                  <span className="ml-3 text-lg leading-none text-raviion-green transition-transform group-open:rotate-45">
                     +
                   </span>
                 </summary>

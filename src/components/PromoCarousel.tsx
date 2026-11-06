@@ -19,7 +19,7 @@ interface Slide {
 const SLIDES: Slide[] = [
   {
     href: "/invite",
-    gradient: "from-konek-green to-indigo",
+    gradient: "from-raviion-green to-indigo",
     eyebrow: "Rewards",
     title: "You have $10 waiting",
     body: "Earn $10 for every friend who joins and transacts $100 or more.",
@@ -30,7 +30,7 @@ const SLIDES: Slide[] = [
     gradient: "from-indigo to-[#0d1b3e]",
     eyebrow: "USD Account",
     title: "Open a US bank account",
-    body: "Start receiving money in USD, straight to your Konek wallet.",
+    body: "Start receiving money in USD, straight to your raviion wallet.",
     cta: "Get started",
   },
   {
@@ -43,7 +43,7 @@ const SLIDES: Slide[] = [
   },
   {
     href: "/cards",
-    gradient: "from-indigo to-konek-green",
+    gradient: "from-indigo to-raviion-green",
     eyebrow: "Virtual Cards",
     title: "Pay bills & shop online",
     body: "Create a virtual card for your subscriptions and everyday spend.",
@@ -86,13 +86,13 @@ export default function PromoCarousel() {
         onScroll={onScroll}
         onTouchStart={() => (pausedRef.current = true)}
         onTouchEnd={() => (pausedRef.current = false)}
-        className="konek-scrollbar-none flex snap-x snap-mandatory overflow-x-auto"
+        className="raviion-scrollbar-none flex snap-x snap-mandatory overflow-x-auto"
       >
         {SLIDES.map((s) => (
           <Link
             key={s.href}
             href={s.href}
-            className={`konek-card-shadow konek-tile block w-full shrink-0 snap-center rounded-2xl bg-gradient-to-r ${s.gradient} px-5 py-4 text-white`}
+            className={`raviion-card-shadow raviion-tile block w-full shrink-0 snap-center rounded-2xl bg-gradient-to-r ${s.gradient} px-5 py-4 text-white`}
           >
             <p className="text-[11px] font-semibold uppercase tracking-wide text-white/70">{s.eyebrow}</p>
             <p className="mt-1 font-heading text-base font-bold leading-tight">{s.title}</p>

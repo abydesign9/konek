@@ -1,5 +1,5 @@
 -- ============================================================
--- KONEK — Migration 0017: Notification Center (M12 slice 5)
+-- Raviion — Migration 0017: Notification Center (M12 slice 5)
 -- Templates, campaigns (with audience/scheduling/analytics), and an
 -- in-app-message CMS. Actual timed dispatch of scheduled/recurring
 -- campaigns needs a background worker that doesn't exist yet — this is

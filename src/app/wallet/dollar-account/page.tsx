@@ -45,7 +45,7 @@ backHref="/wallet"
 
 
 <p className="text-xs uppercase tracking-wide text-white/60">
-Konek Global Banking
+raviion Global Banking
 </p>
 
 
@@ -145,7 +145,7 @@ Personal virtual account
 </span>
 
 
-<span className="text-sm font-semibold text-konek-green">
+<span className="text-sm font-semibold text-raviion-green">
 Create →
 </span>
 
@@ -168,7 +168,7 @@ Create →
 
 
 
-<div className="mt-7 rounded-3xl bg-konek-green/10 p-5">
+<div className="mt-7 rounded-3xl bg-raviion-green/10 p-5">
 
 
 <h3 className="font-bold text-indigo">

@@ -171,7 +171,7 @@ right={
 
 <ShareReceiptButton
 
-title="Konek eSIM"
+title="raviion eSIM"
 
 text={`${place} eSIM · ${(totalMb/1000).toFixed(1)}GB`}
 
@@ -289,7 +289,7 @@ Data usage
 
 <div
 
-className="h-full bg-konek-green"
+className="h-full bg-raviion-green"
 
 style={{
 width:`${percentage}%`

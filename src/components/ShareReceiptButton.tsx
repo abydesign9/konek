@@ -31,7 +31,7 @@ export function ShareReceiptButton({ title, text }: { title: string; text: strin
     <button
       type="button"
       onClick={share}
-      className="text-sm font-semibold text-konek-green hover:underline"
+      className="text-sm font-semibold text-raviion-green hover:underline"
     >
       {copied ? "Copied" : "Share"}
     </button>

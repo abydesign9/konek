@@ -1,5 +1,5 @@
 -- ============================================================
--- KONEK — Migration 0016: Customer Support upgrade (M12 slice 4)
+-- Raviion — Migration 0016: Customer Support upgrade (M12 slice 4)
 -- Upgrades the M11 support ticket/reply model toward the requested
 -- Zendesk-style shape: category, priority, explicit assignment, internal
 -- (admin-only) notes, a real status pipeline, an SLA timer, and a status

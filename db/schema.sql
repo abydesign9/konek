@@ -1,5 +1,5 @@
 -- ============================================================
--- KONEK — Core Schema v1  (Postgres)
+-- Raviion — Core Schema v1  (Postgres)
 -- Money rules: integers in minor units; double-entry ledger;
 -- no deletes on financial tables; reversals only.
 -- ============================================================

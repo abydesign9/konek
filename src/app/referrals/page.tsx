@@ -2,14 +2,14 @@ import type { Metadata } from "next";
 import { MarketingPage, Hero, Section, FeatureGrid, Stats, CTA } from "@/components/marketing/ui";
 
 export const metadata: Metadata = {
-  title: "Konek Referrals — invite friends and earn",
+  title: "raviion Referrals — invite friends and earn",
   description:
-    "Share Konek and earn rewards when your friends join and transact. Simple, transparent referral rewards paid straight to your wallet.",
-  keywords: ["Konek referral", "refer and earn", "invite friends Konek", "referral rewards Nigeria"],
+    "Share raviion and earn rewards when your friends join and transact. Simple, transparent referral rewards paid straight to your wallet.",
+  keywords: ["raviion referral", "refer and earn", "invite friends raviion", "referral rewards Nigeria"],
   alternates: { canonical: "/referrals" },
   openGraph: {
-    title: "Konek Referrals — invite friends and earn",
-    description: "Share Konek and get rewarded when friends join and transact.",
+    title: "raviion Referrals — invite friends and earn",
+    description: "Share raviion and get rewarded when friends join and transact.",
     url: "/referrals",
     type: "website",
   },
@@ -20,8 +20,8 @@ export default function ReferralsPage() {
     <MarketingPage>
       <Hero
         eyebrow="Referrals"
-        title={<>Share Konek, <span className="text-konek-green">earn rewards.</span></>}
-        subtitle="Everyone you know could use easier money and connectivity. Invite them to Konek and get rewarded when they join and start transacting — paid straight to your wallet."
+        title={<>Share raviion, <span className="text-raviion-green">earn rewards.</span></>}
+        subtitle="Everyone you know could use easier money and connectivity. Invite them to raviion and get rewarded when they join and start transacting — paid straight to your wallet."
         primary={{ label: "Start referring", href: "/signup" }}
         secondary={{ label: "How it works", href: "#how" }}
       />
@@ -30,7 +30,7 @@ export default function ReferralsPage() {
         <FeatureGrid
           items={[
             { icon: "🔗", title: "Share your link", body: "Grab your unique invite link from the app and share it with friends and family." },
-            { icon: "📲", title: "They join Konek", body: "Your friend signs up with your link, verifies, and starts using Konek." },
+            { icon: "📲", title: "They join raviion", body: "Your friend signs up with your link, verifies, and starts using raviion." },
             { icon: "🎉", title: "You get rewarded", body: "When they transact, your reward lands in your wallet — clear and automatic." },
           ]}
         />
@@ -59,7 +59,7 @@ export default function ReferralsPage() {
 
       <CTA
         title="Turn your network into rewards"
-        subtitle="Create your account, grab your invite link, and start earning by sharing Konek."
+        subtitle="Create your account, grab your invite link, and start earning by sharing raviion."
         primary={{ label: "Get my invite link", href: "/signup" }}
         secondary={{ label: "See Creator Club", href: "/creator-club" }}
       />

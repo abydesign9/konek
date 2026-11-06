@@ -30,10 +30,10 @@ const STORY_CARDS: StoryCard[] = [
     eyebrow: "Everything in one app",
     title: "Your connected world, all in one place.",
     description:
-      "Access global receiving accounts, eSIM connectivity, virtual cards, airtime, data and essential digital services through one KONEK experience.",
-    image: "/landing/konek-stack-everything.jpg",
+      "Access global receiving accounts, eSIM connectivity, virtual cards, airtime, data and essential digital services through one raviion experience.",
+    image: "/landing/raviion-stack-everything.jpg",
     imageAlt:
-      "KONEK global connectivity services presented on mobile devices",
+      "raviion global connectivity services presented on mobile devices",
     accent: "#006747",
     soft: "#E4F1EC",
     bullets: [
@@ -42,7 +42,7 @@ const STORY_CARDS: StoryCard[] = [
       "Virtual cards and global eSIMs",
     ],
     statusTitle: "Everything connected",
-    statusText: "One account. One KONEK experience.",
+    statusText: "One account. One raviion experience.",
   },
   {
     number: "02",
@@ -50,9 +50,9 @@ const STORY_CARDS: StoryCard[] = [
     title: "Stay connected wherever your journey takes you.",
     description:
       "Choose a destination, select a data plan and activate your eSIM digitally without replacing your physical SIM card.",
-    image: "/landing/konek-stack-esim.jpg",
+    image: "/landing/raviion-stack-esim.jpg",
     imageAlt:
-      "A traveller using KONEK global eSIM connectivity",
+      "A traveller using raviion global eSIM connectivity",
     accent: "#006747",
     soft: "#E4F1EC",
     bullets: [
@@ -69,9 +69,9 @@ const STORY_CARDS: StoryCard[] = [
     title: "Keep every part of your day connected.",
     description:
       "Purchase airtime and mobile data, pay essential bills and access the services that keep your connected life moving.",
-    image: "/landing/konek-stack-lifestyle.jpg",
+    image: "/landing/raviion-stack-lifestyle.jpg",
     imageAlt:
-      "A professional using KONEK for everyday digital services",
+      "A professional using raviion for everyday digital services",
     accent: "#D4A33A",
     soft: "#F6E8C5",
     bullets: [
@@ -84,13 +84,13 @@ const STORY_CARDS: StoryCard[] = [
   },
   {
     number: "04",
-    eyebrow: "KONEK Business",
+    eyebrow: "raviion Business",
     title: "Global payments and connectivity for modern teams.",
     description:
       "Receive supported global payments and provide airtime, data, eSIMs and virtual cards through one connected business workspace.",
-    image: "/landing/konek-stack-business.jpg",
+    image: "/landing/raviion-stack-business.jpg",
     imageAlt:
-      "KONEK Business global payments and connectivity dashboard",
+      "raviion Business global payments and connectivity dashboard",
     accent: "#D4A33A",
     soft: "#F6E8C5",
     bullets: [
@@ -219,7 +219,7 @@ const BUSINESS_CAPABILITIES = [
     icon: "✈",
     title: "Global eSIM connectivity",
     description:
-      "Activate local, regional and international data plans directly from the KONEK app.",
+      "Activate local, regional and international data plans directly from the raviion app.",
     tag: "Travel connectivity",
   },
   {
@@ -251,8 +251,8 @@ const BUSINESS_CAPABILITIES = [
     icon: "◉",
     title: "Bulk team connectivity",
     description:
-      "Provide airtime, data and eSIM connectivity to teams through KONEK Business.",
-    tag: "KONEK Business",
+      "Provide airtime, data and eSIM connectivity to teams through raviion Business.",
+    tag: "raviion Business",
   },
   {
     number: "08",
@@ -264,14 +264,14 @@ const BUSINESS_CAPABILITIES = [
   },
 ];
 
-export default function TimonPreviewPage() {
+export default function RaviionHomePage() {
   const [activeCard, setActiveCard] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const elements = Array.from(
       document.querySelectorAll<HTMLElement>(
-        "[data-konek-story]",
+        "[data-raviion-story]",
       ),
     );
 
@@ -292,7 +292,7 @@ export default function TimonPreviewPage() {
         }
 
         const index = Number(
-          current.target.getAttribute("data-konek-story"),
+          current.target.getAttribute("data-raviion-story"),
         );
 
         if (!Number.isNaN(index)) {
@@ -312,7 +312,7 @@ export default function TimonPreviewPage() {
 
   const scrollToStory = (index: number) => {
     const element = document.querySelector<HTMLElement>(
-      `[data-konek-story="${index}"]`,
+      `[data-raviion-story="${index}"]`,
     );
 
     element?.scrollIntoView({
@@ -327,16 +327,16 @@ export default function TimonPreviewPage() {
         <Link href="/" className={styles.brand}>
           <span className={styles.logoWrap}>
             <Image
-              src="/brand/konek-logo.svg"
+              src="/brand/raviion-logo.svg"
               unoptimized
-              alt="KONEK logo"
+              alt="raviion logo"
               fill
               sizes="42px"
               className={styles.logoImage}
             />
           </span>
 
-          <strong>KONEK</strong>
+          <strong>raviion</strong>
         </Link>
 
         <div className={styles.desktopLinks}>
@@ -459,7 +459,7 @@ export default function TimonPreviewPage() {
               href="#experience"
               className={styles.secondaryButton}
             >
-              Explore KONEK
+              Explore raviion
             </a>
           </div>
 
@@ -494,7 +494,7 @@ export default function TimonPreviewPage() {
             <div className={styles.phoneBrand}>
               <span className={styles.phoneLogo}>
                 <Image
-                  src="/brand/konek-logo.svg"
+                  src="/brand/raviion-logo.svg"
                   unoptimized
                   alt=""
                   fill
@@ -503,7 +503,7 @@ export default function TimonPreviewPage() {
                 />
               </span>
 
-              <strong>KONEK</strong>
+              <strong>raviion</strong>
               <button type="button" aria-label="Notifications">
                 •
               </button>
@@ -568,9 +568,9 @@ export default function TimonPreviewPage() {
           </div>
 
           <div className={styles.heroVirtualCard}>
-            <small>KONEK VIRTUAL</small>
+            <small>raviion VIRTUAL</small>
             <strong>•••• 4827</strong>
-            <span>VISA</span>
+            <span>GLOBAL</span>
           </div>
         </div>
 
@@ -592,7 +592,7 @@ export default function TimonPreviewPage() {
         </h2>
 
         <div>
-          Keep scrolling. Each KONEK experience will rise from the
+          Keep scrolling. Each raviion experience will rise from the
           bottom and cover the previous one.
         </div>
       </section>
@@ -619,7 +619,7 @@ export default function TimonPreviewPage() {
           return (
             <article
               key={card.number}
-              data-konek-story={index}
+              data-raviion-story={index}
               className={styles.storyPanel}
               style={variables}
             >
@@ -652,7 +652,7 @@ export default function TimonPreviewPage() {
                     </span>
 
                     <div>
-                      <small>KONEK</small>
+                      <small>raviion</small>
                       <strong>{card.statusTitle}</strong>
                       <p>{card.statusText}</p>
                     </div>
@@ -728,7 +728,7 @@ export default function TimonPreviewPage() {
 
             <h2>
               Your world is bigger with
-              <span> KONEK.</span>
+              <span> raviion.</span>
             </h2>
           </div>
 
@@ -756,7 +756,7 @@ export default function TimonPreviewPage() {
               <div className={styles.worldCenter}>
                 <span className={styles.logoWrap}>
                   <Image
-                    src="/brand/konek-logo.svg"
+                    src="/brand/raviion-logo.svg"
                     unoptimized
                     alt=""
                     fill
@@ -765,7 +765,7 @@ export default function TimonPreviewPage() {
                   />
                 </span>
 
-                <strong>KONEK</strong>
+                <strong>raviion</strong>
                 <small>Globally connected</small>
               </div>
             </div>
@@ -843,7 +843,7 @@ export default function TimonPreviewPage() {
       <section className={styles.ecosystemSection}>
         <div className={styles.ecosystemHeading}>
           <div>
-            <p>THE KONEK ECOSYSTEM</p>
+            <p>THE raviion ECOSYSTEM</p>
 
             <h2>
               Everything your connected life and
@@ -852,7 +852,7 @@ export default function TimonPreviewPage() {
           </div>
 
           <div>
-            KONEK brings global payment receiving, digital
+            raviion brings global payment receiving, digital
             connectivity and essential services into one modern
             platform.
           </div>
@@ -886,7 +886,7 @@ export default function TimonPreviewPage() {
 
       <section className={styles.businessExperience}>
         <div className={styles.businessExperienceCopy}>
-          <p>KONEK BUSINESS</p>
+          <p>raviion BUSINESS</p>
 
           <h2>
             Built for businesses that operate beyond borders.
@@ -921,7 +921,7 @@ export default function TimonPreviewPage() {
           </ul>
 
           <Link href="/signup">
-            Explore KONEK Business
+            Explore raviion Business
             <span>→</span>
           </Link>
         </div>
@@ -931,7 +931,7 @@ export default function TimonPreviewPage() {
             <div>
               <span className={styles.logoWrap}>
                 <Image
-                  src="/brand/konek-logo.svg"
+                  src="/brand/raviion-logo.svg"
                   unoptimized
                   alt=""
                   fill
@@ -941,7 +941,7 @@ export default function TimonPreviewPage() {
               </span>
 
               <div>
-                <strong>KONEK Business</strong>
+                <strong>raviion Business</strong>
                 <small>Connected workspace</small>
               </div>
             </div>
@@ -1052,7 +1052,7 @@ export default function TimonPreviewPage() {
             <strong>Protected access</strong>
             <p>
               Secure account controls designed to protect your
-              KONEK experience.
+              raviion experience.
             </p>
           </article>
 
@@ -1061,7 +1061,7 @@ export default function TimonPreviewPage() {
             <strong>Clear verification</strong>
             <p>
               Structured identity and business verification for
-              supported KONEK services.
+              supported raviion services.
             </p>
           </article>
 
@@ -1079,7 +1079,7 @@ export default function TimonPreviewPage() {
             <strong>Customer support</strong>
             <p>
               Get help with your account, eSIM connectivity and
-              supported KONEK services.
+              supported raviion services.
             </p>
           </article>
         </div>
@@ -1098,7 +1098,7 @@ export default function TimonPreviewPage() {
           </h2>
 
           <div>
-            KONEK combines global payment receiving and digital
+            raviion combines global payment receiving and digital
             connectivity in one clear, modern experience.
           </div>
         </div>
@@ -1123,7 +1123,7 @@ export default function TimonPreviewPage() {
 
       <section id="business" className={styles.businessCta}>
         <div>
-          <p>KONEK BUSINESS</p>
+          <p>raviion BUSINESS</p>
 
           <h2>
             Connect your business to a global future.
@@ -1146,9 +1146,9 @@ export default function TimonPreviewPage() {
             <Link href="/" className={styles.footerLogo}>
               <span className={styles.footerLogoImage}>
                 <Image
-                  src="/brand/konek-logo.svg"
+                  src="/brand/raviion-logo.svg"
                   unoptimized
-                  alt="KONEK logo"
+                  alt="raviion logo"
                   fill
                   sizes="58px"
                   className={styles.logoImage}
@@ -1156,7 +1156,7 @@ export default function TimonPreviewPage() {
               </span>
 
               <div>
-                <strong>KONEK</strong>
+                <strong>raviion</strong>
                 <small>Global connectivity, simplified.</small>
               </div>
             </Link>
@@ -1164,46 +1164,46 @@ export default function TimonPreviewPage() {
             <p>
               Global payment receiving and digital connectivity
               for individuals, travellers, professionals and
-              modern businesses. Konek is a product of Topton
+              modern businesses. raviion is a product of Topton
               Global Consult.
             </p>
 
             <div className={styles.footerAppButtons}>
-              <a href="#" aria-label="Download KONEK on App Store">
-                <span>●</span>
+              <Link href="/signup" aria-label="Create your raviion account">
+                <span>✓</span>
 
                 <div>
-                  <small>Download on the</small>
-                  <strong>App Store</strong>
+                  <small>Start with</small>
+                  <strong>Sign up</strong>
                 </div>
-              </a>
+              </Link>
 
-              <a href="#" aria-label="Get KONEK on Google Play">
-                <span>▶</span>
+              <Link href="/pricing" aria-label="Explore raviion pricing">
+                <span>→</span>
 
                 <div>
-                  <small>Get it on</small>
-                  <strong>Google Play</strong>
+                  <small>See our</small>
+                  <strong>Pricing</strong>
                 </div>
-              </a>
+              </Link>
             </div>
 
             <div className={styles.footerSocials}>
-              <a href="#" aria-label="KONEK on Instagram">
-                IG
-              </a>
+              <Link href="/about" aria-label="About raviion">
+                About
+              </Link>
 
-              <a href="#" aria-label="KONEK on X">
-                X
-              </a>
+              <Link href="/company/blog" aria-label="raviion blog">
+                Blog
+              </Link>
 
-              <a href="#" aria-label="KONEK on LinkedIn">
-                IN
-              </a>
+              <Link href="/company/careers" aria-label="Careers at raviion">
+                Careers
+              </Link>
 
-              <a href="#" aria-label="KONEK on Facebook">
-                FB
-              </a>
+              <Link href="/faq" aria-label="raviion help and FAQs">
+                Help
+              </Link>
             </div>
           </div>
 
@@ -1228,7 +1228,7 @@ export default function TimonPreviewPage() {
 
             <div>
               <strong>Business</strong>
-              <a href="#business">KONEK Business</a>
+              <a href="#business">raviion Business</a>
               <a href="#business">Bulk airtime</a>
               <a href="#business">Bulk mobile data</a>
               <a href="#business">Business eSIM</a>
@@ -1237,7 +1237,7 @@ export default function TimonPreviewPage() {
 
             <div>
               <strong>Company</strong>
-              <Link href="/about">About KONEK</Link>
+              <Link href="/about">About raviion</Link>
               <Link href="/company/careers">Careers</Link>
               <Link href="/influencers">Partners</Link>
               <Link href="/company/blog">Newsroom</Link>
@@ -1299,8 +1299,8 @@ export default function TimonPreviewPage() {
 
         <div className={styles.footerBottom}>
           <p>
-            © 2026 KONEK. Global connectivity for people and
-            businesses. Konek is a product of Topton Global Consult.
+            © 2026 raviion. Global connectivity for people and
+            businesses. raviion is a product of Topton Global Consult.
           </p>
 
           <div>

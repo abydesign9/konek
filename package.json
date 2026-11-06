@@ -1,11 +1,11 @@
 {
-  "name": "konek",
+  "name": "raviion",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "node api.js && next dev",
-    "build": "node api.js && next build",
-    "start": "node api.js && next start",
+    "dev": "node init && next dev",
+    "build": "node init && next build",
+    "start": "node init && next start",
     "lint": "next lint",
     "db:migrate": "node -r dotenv/config scripts/migrate.mjs dotenv_config_path=.env.local",
     "test": "vitest run",

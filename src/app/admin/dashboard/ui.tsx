@@ -38,7 +38,7 @@ export function StatCard({
   tone?: "default" | "good" | "warn" | "bad";
 }) {
   const valueClass =
-    tone === "good" ? "text-konek-green" : tone === "warn" ? "text-gold" : tone === "bad" ? "text-red-600" : "text-indigo";
+    tone === "good" ? "text-raviion-green" : tone === "warn" ? "text-gold" : tone === "bad" ? "text-red-600" : "text-indigo";
   const inner = (
     <>
       <p className="text-xs text-indigo/55">{label}</p>
@@ -46,7 +46,7 @@ export function StatCard({
       {sub && <p className="mt-1 text-[11px] text-indigo/45">{sub}</p>}
     </>
   );
-  const className = "rounded-2xl border border-indigo/10 bg-white p-4" + (href ? " konek-tile hover:border-indigo/30" : "");
+  const className = "rounded-2xl border border-indigo/10 bg-white p-4" + (href ? " raviion-tile hover:border-indigo/30" : "");
   return href ? (
     <Link href={href} className={className}>
       {inner}
@@ -70,7 +70,7 @@ export function TableCard({
       <div className="mb-3 flex items-center justify-between">
         <p className="text-sm font-semibold text-indigo">{title}</p>
         {href && (
-          <Link href={href} className="text-xs font-semibold text-konek-green">
+          <Link href={href} className="text-xs font-semibold text-raviion-green">
             View all →
           </Link>
         )}
@@ -115,7 +115,7 @@ export const DASHBOARDS = [
 
 export function DashboardTabs({ active }: { active: (typeof DASHBOARDS)[number]["key"] }) {
   return (
-    <div className="konek-scrollbar-none mb-6 flex gap-2 overflow-x-auto">
+    <div className="raviion-scrollbar-none mb-6 flex gap-2 overflow-x-auto">
       {DASHBOARDS.map((d) => (
         <Link
           key={d.key}

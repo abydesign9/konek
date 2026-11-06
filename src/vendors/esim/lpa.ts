@@ -1,7 +1,7 @@
 // SM-DP+ / LPA activation helpers. Real eSIM activation uses the LPA format the
 // phone camera expects: LPA:1$<smdp-address>$<matching-id>. Provider-agnostic.
 
-const DEFAULT_SMDP = process.env.ESIM_DEFAULT_SMDP ?? "smdp.konek.app";
+const DEFAULT_SMDP = process.env.ESIM_DEFAULT_SMDP ?? "smdp.raviion.app";
 
 export function lpaString(smdpAddress: string, matchingId: string): string {
   return `LPA:1$${smdpAddress}$${matchingId}`;

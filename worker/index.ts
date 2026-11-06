@@ -12,7 +12,7 @@ self.addEventListener("push", (event: PushEvent) => {
     data = { body: event.data?.text() };
   }
 
-  const title = data.title || "Konek";
+  const title = data.title || "raviion";
   const options: NotificationOptions = {
     body: data.body || "",
     icon: "/icon-192.png",

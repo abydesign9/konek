@@ -73,7 +73,7 @@ export function PagesConsole() {
         title="Public pages"
         description="Edit the public About page shown on your website at /about. Changes go live as soon as you save. Section text is plain: start a line with '- ' for a bullet, leave a blank line to start a new paragraph."
       />
-      {msg && <p className="mb-3 text-sm font-semibold text-konek-green">{msg}</p>}
+      {msg && <p className="mb-3 text-sm font-semibold text-raviion-green">{msg}</p>}
 
       <div className="mb-4 flex flex-wrap items-center gap-3">
         <button onClick={save} disabled={saving} className="rounded-lg bg-indigo px-5 py-2 text-sm font-semibold text-white disabled:opacity-50">
@@ -83,7 +83,7 @@ export function PagesConsole() {
           <input type="checkbox" checked={page.published} onChange={(e) => edit({ published: e.target.checked })} />
           Published
         </label>
-        <a href="/about" target="_blank" rel="noreferrer" className="text-sm font-semibold text-konek-green">
+        <a href="/about" target="_blank" rel="noreferrer" className="text-sm font-semibold text-raviion-green">
           View live page ↗
         </a>
       </div>

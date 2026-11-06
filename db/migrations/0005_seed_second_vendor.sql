@@ -1,5 +1,5 @@
 -- ============================================================
--- KONEK — Migration 0005: seed the second sandbox VTU vendor
+-- Raviion — Migration 0005: seed the second sandbox VTU vendor
 -- (enables health-check failover routing)
 -- ============================================================
 

@@ -6,7 +6,7 @@ import { IconCard, IconChevronRight } from "@/components/icons";
 
 function ComingSoonRow({ label, sub }: { label: string; sub: string }) {
   return (
-    <div className="flex w-full items-center justify-between rounded-2xl bg-white px-4 py-3.5 konek-card-shadow opacity-70">
+    <div className="flex w-full items-center justify-between rounded-2xl bg-white px-4 py-3.5 raviion-card-shadow opacity-70">
       <span className="min-w-0 flex-1">
         <span className="block text-sm font-semibold text-indigo">{label}</span>
         <span className="block text-xs text-indigo/50">{sub}</span>
@@ -28,7 +28,7 @@ export function ConnectedAccountsClient() {
           <p className="mb-3 text-xs font-bold uppercase tracking-wide text-indigo/40">Cards</p>
           <Link
             href="/cards"
-            className="flex items-center gap-3 rounded-2xl bg-white px-4 py-3.5 konek-card-shadow konek-tile"
+            className="flex items-center gap-3 rounded-2xl bg-white px-4 py-3.5 raviion-card-shadow raviion-tile"
           >
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo/10">
               <IconCard className="h-5 w-5 text-indigo" />

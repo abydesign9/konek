@@ -38,20 +38,20 @@ export function SettingsConsole() {
     <>
       <PageHeader
         title="Settings"
-        description="Admins sign in with their own Konek account email and password. To change your admin login password, change your Konek account password in the app. To grant someone admin access, add their Konek email under Users & Roles. Customers authenticate with a transaction PIN, which you can reset below."
+        description="Admins sign in with their own raviion account email and password. To change your admin login password, change your raviion account password in the app. To grant someone admin access, add their raviion email under Users & Roles. Customers authenticate with a transaction PIN, which you can reset below."
       />
 
       <Grid>
         <div className="col-span-1 lg:col-span-6">
           <Card
             title="Admin access"
-            description="Admin login is your Konek account (email + password) plus an admin grant."
+            description="Admin login is your raviion account (email + password) plus an admin grant."
           >
             <div className="space-y-2 text-sm text-text-secondary">
-              <p>1. The person signs up on Konek with the email that should be an admin.</p>
+              <p>1. The person signs up on raviion with the email that should be an admin.</p>
               <p>2. A super admin adds that email under Users &amp; Roles and picks a role.</p>
-              <p>3. They log in at /admin with the same email and password they use for Konek.</p>
-              <p className="text-xs">Passwords live on the Konek account, so there is no separate admin password to manage here.</p>
+              <p>3. They log in at /admin with the same email and password they use for raviion.</p>
+              <p className="text-xs">Passwords live on the raviion account, so there is no separate admin password to manage here.</p>
             </div>
           </Card>
         </div>

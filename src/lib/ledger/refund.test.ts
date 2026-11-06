@@ -46,7 +46,7 @@ describe("refundTransaction", () => {
   });
 
   it("refunds a delivered transaction by reversing its net effect once", async () => {
-    const { journalId } = await refundTransaction("txn-1", "admin@konek.io");
+    const { journalId } = await refundTransaction("txn-1", "admin@raviion.io");
     expect(journalId).toBe("rev-journal-1");
     expect(txnStatus).toBe("refunded");
     // Reversal negates the net (+5000 -> -5000).
@@ -55,8 +55,8 @@ describe("refundTransaction", () => {
   });
 
   it("refuses a second refund (idempotent claim)", async () => {
-    await refundTransaction("txn-1", "admin@konek.io");
-    await expect(refundTransaction("txn-1", "admin@konek.io")).rejects.toBeInstanceOf(
+    await refundTransaction("txn-1", "admin@raviion.io");
+    await expect(refundTransaction("txn-1", "admin@raviion.io")).rejects.toBeInstanceOf(
       TransactionNotRefundableError
     );
     expect(postJournalMock).toHaveBeenCalledTimes(1); // no second reversal posted
@@ -64,7 +64,7 @@ describe("refundTransaction", () => {
 
   it("refuses to refund a non-delivered transaction", async () => {
     txnStatus = "failed";
-    await expect(refundTransaction("txn-1", "admin@konek.io")).rejects.toBeInstanceOf(
+    await expect(refundTransaction("txn-1", "admin@raviion.io")).rejects.toBeInstanceOf(
       TransactionNotRefundableError
     );
     expect(postJournalMock).not.toHaveBeenCalled();

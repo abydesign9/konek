@@ -81,7 +81,7 @@ export function FinancialConfigConsole() {
         title="Financial configuration"
         description="Tune the settings the live code actually reads: transaction limits (enforced by the spend checks), fees, account rules, and card controls. Provider API keys are managed in environment variables, never here — this panel only shows which providers are live."
       />
-      {msg && <p className="mb-3 text-sm font-semibold text-konek-green">{msg}</p>}
+      {msg && <p className="mb-3 text-sm font-semibold text-raviion-green">{msg}</p>}
 
       <div className="mb-5 flex gap-2">
         {(["overview", "limits", "fees", "providers"] as Tab[]).map((t) => (

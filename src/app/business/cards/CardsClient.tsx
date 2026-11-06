@@ -93,7 +93,7 @@ export function CardsClient() {
       </div>
 
       {showIssue && (
-        <div className="konek-card-shadow mb-5 rounded-2xl border border-border-soft bg-white p-4">
+        <div className="raviion-card-shadow mb-5 rounded-2xl border border-border-soft bg-white p-4">
           <div className="flex flex-wrap items-center gap-2">
             <select value={productId} onChange={(e) => setProductId(e.target.value)} className="rounded-xl border border-border-soft px-3 py-2.5 text-sm">
               <option value="">Choose a card product…</option>
@@ -109,7 +109,7 @@ export function CardsClient() {
               placeholder="Label (e.g. Ops team)"
               className="min-w-0 flex-1 rounded-xl border border-border-soft px-3 py-2.5 text-sm"
             />
-            <button onClick={issue} disabled={busy} className="rounded-xl bg-konek-green px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50">
+            <button onClick={issue} disabled={busy} className="rounded-xl bg-raviion-green px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50">
               {busy ? "Issuing…" : "Issue"}
             </button>
           </div>
@@ -119,7 +119,7 @@ export function CardsClient() {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {(cards ?? []).map((c) => (
-          <div key={c.id} className="konek-card-shadow rounded-2xl bg-indigo p-5 text-white">
+          <div key={c.id} className="raviion-card-shadow rounded-2xl bg-indigo p-5 text-white">
             <p className="text-xs text-white/60">{c.label ?? "Business card"}</p>
             <p className="mt-2 font-heading text-lg font-bold tracking-wider">
               {revealed[c.id] ? revealed[c.id].pan.replace(/(.{4})/g, "$1 ").trim() : `•••• •••• •••• ${c.last4}`}

@@ -38,9 +38,9 @@ export default function SetupPage() {
           <p className="text-sm text-white/60">Account setup</p>
           <p className="mt-1 font-heading text-3xl font-bold">{status ? `${status.pct}%` : "—"}</p>
           <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-white/15">
-            <div className="h-full rounded-full bg-konek-green transition-all" style={{ width: `${status?.pct ?? 0}%` }} />
+            <div className="h-full rounded-full bg-raviion-green transition-all" style={{ width: `${status?.pct ?? 0}%` }} />
           </div>
-          {status?.complete && <p className="mt-3 text-sm text-konek-green">🎉 You&rsquo;re all set!</p>}
+          {status?.complete && <p className="mt-3 text-sm text-raviion-green">🎉 You&rsquo;re all set!</p>}
         </div>
 
         {status === null ? (
@@ -55,13 +55,13 @@ export default function SetupPage() {
               <Link
                 key={s.key}
                 href={s.href}
-                className={`konek-tile flex items-center gap-4 rounded-2xl border px-4 py-4 ${
-                  s.done ? "border-konek-green/20 bg-konek-green/5" : "border-indigo/10 bg-white"
+                className={`raviion-tile flex items-center gap-4 rounded-2xl border px-4 py-4 ${
+                  s.done ? "border-raviion-green/20 bg-raviion-green/5" : "border-indigo/10 bg-white"
                 }`}
               >
                 <span
                   className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-bold ${
-                    s.done ? "bg-konek-green text-white" : "bg-indigo/10 text-indigo"
+                    s.done ? "bg-raviion-green text-white" : "bg-indigo/10 text-indigo"
                   }`}
                 >
                   {s.done ? "✓" : i + 1}
@@ -72,7 +72,7 @@ export default function SetupPage() {
                   </span>
                   <span className="block text-xs text-indigo/55">{s.description}</span>
                 </span>
-                {!s.done && <span className="shrink-0 text-xs font-semibold text-konek-green">Do it →</span>}
+                {!s.done && <span className="shrink-0 text-xs font-semibold text-raviion-green">Do it →</span>}
               </Link>
             ))}
           </div>

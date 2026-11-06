@@ -69,7 +69,7 @@ export default async function GmvByProductPage({ searchParams }: { searchParams:
                     <p className="font-heading font-bold text-indigo">{naira(p.gmvMinor)}</p>
                   </div>
                   <div className="mb-1 h-2 w-full overflow-hidden rounded-full bg-indigo/10">
-                    <div className="h-full rounded-full bg-konek-green" style={{ width: `${Math.max(share * 100, 2)}%` }} />
+                    <div className="h-full rounded-full bg-raviion-green" style={{ width: `${Math.max(share * 100, 2)}%` }} />
                   </div>
                   <p className="text-xs text-indigo/50">
                     {(share * 100).toFixed(1)}% of GMV · {p.txns.toLocaleString()} transactions →

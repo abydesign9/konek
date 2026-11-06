@@ -3,14 +3,14 @@ import { MarketingPage, Hero, Section, FeatureGrid, Stats, CTA } from "@/compone
 import { ApplicationForm } from "@/components/marketing/ApplicationForm";
 
 export const metadata: Metadata = {
-  title: "Konek Campus Ambassadors — represent Konek and get paid",
+  title: "raviion Campus Ambassadors — represent raviion and get paid",
   description:
-    "Join the Konek Campus Ambassador program: represent Konek at your school, help students go global with accounts, cards and eSIM, build real career skills and earn as you grow.",
-  keywords: ["Konek campus ambassador", "student ambassador program Nigeria", "brand ambassador fintech", "campus rep"],
+    "Join the raviion Campus Ambassador program: represent raviion at your school, help students go global with accounts, cards and eSIM, build real career skills and earn as you grow.",
+  keywords: ["raviion campus ambassador", "student ambassador program Nigeria", "brand ambassador fintech", "campus rep"],
   alternates: { canonical: "/ambassadors" },
   openGraph: {
-    title: "Konek Campus Ambassadors",
-    description: "Represent Konek on campus, build skills, and earn.",
+    title: "raviion Campus Ambassadors",
+    description: "Represent raviion on campus, build skills, and earn.",
     url: "/ambassadors",
     type: "website",
   },
@@ -21,8 +21,8 @@ export default function AmbassadorsPage() {
     <MarketingPage>
       <Hero
         eyebrow="Campus Ambassadors"
-        title={<>Lead Konek <span className="text-konek-green">on your campus.</span></>}
-        subtitle="Be the face of Konek at your school. Help fellow students open accounts, get cards and stay connected — gain real-world career skills, grow your network, and earn while you do it."
+        title={<>Lead raviion <span className="text-raviion-green">on your campus.</span></>}
+        subtitle="Be the face of raviion at your school. Help fellow students open accounts, get cards and stay connected — gain real-world career skills, grow your network, and earn while you do it."
         primary={{ label: "Apply now", href: "#apply" }}
         secondary={{ label: "See referrals", href: "/referrals" }}
       />
@@ -31,10 +31,10 @@ export default function AmbassadorsPage() {
         <FeatureGrid
           items={[
             { icon: "💼", title: "Career skills", body: "Grow real skills in marketing, sales, community and leadership that stand out to future employers." },
-            { icon: "🤝", title: "A powerful network", body: "Connect with ambassadors across campuses and with the Konek team building a fast-growing company." },
+            { icon: "🤝", title: "A powerful network", body: "Connect with ambassadors across campuses and with the raviion team building a fast-growing company." },
             { icon: "💰", title: "Earn as you grow", body: "Get rewarded for the students you bring on and the community you build — paid to your wallet." },
             { icon: "🎓", title: "Exclusive access", body: "Early looks at new features, ambassador-only perks, merch and events." },
-            { icon: "📣", title: "A platform", body: "Build your personal brand as a campus leader with the backing of Konek." },
+            { icon: "📣", title: "A platform", body: "Build your personal brand as a campus leader with the backing of raviion." },
             { icon: "🚀", title: "Room to rise", body: "Standout ambassadors get first shot at internships, roles and bigger opportunities with us." },
           ]}
         />
@@ -43,8 +43,8 @@ export default function AmbassadorsPage() {
       <Section tint eyebrow="What you'll do" title="Your role as an ambassador">
         <div className="max-w-2xl space-y-4 text-lg leading-relaxed text-indigo/70">
           <p>
-            Ambassadors are Konek&apos;s voice on campus. You&apos;ll introduce students to accounts, cards and eSIM,
-            run small activations and share how Konek makes global money and connectivity simple.
+            Ambassadors are raviion&apos;s voice on campus. You&apos;ll introduce students to accounts, cards and eSIM,
+            run small activations and share how raviion makes global money and connectivity simple.
           </p>
           <p>
             It&apos;s flexible and fits around your studies — a few hours a week, your own style, with support,

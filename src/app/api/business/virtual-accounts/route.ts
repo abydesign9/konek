@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
       `SELECT legal_name FROM business_accounts WHERE id = $1`,
       [gate.membership.businessAccountId]
     );
-    const { id } = await createBusinessNairaAccount(gate.membership.businessAccountId, rows[0]?.legal_name ?? "Konek Business", userId);
+    const { id } = await createBusinessNairaAccount(gate.membership.businessAccountId, rows[0]?.legal_name ?? "raviion Business", userId);
     return NextResponse.json({ id });
   } catch (err) {
     if (err instanceof AlreadyHasBusinessAccountError) {

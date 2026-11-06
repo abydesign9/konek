@@ -131,7 +131,7 @@ export function RecurringDistributionsClient() {
         </div>
 
         {showForm && (
-          <div className="konek-card-shadow mt-5 flex flex-col gap-3 rounded-2xl bg-white p-5">
+          <div className="raviion-card-shadow mt-5 flex flex-col gap-3 rounded-2xl bg-white p-5">
             <p className="mb-1 font-heading text-sm font-bold text-indigo">New recurring benefit</p>
             <input
               value={benefitName}
@@ -197,12 +197,12 @@ export function RecurringDistributionsClient() {
         <div className="mt-6 flex flex-col gap-3">
           {schedules === null && <p className="text-sm text-text-secondary">Loading…</p>}
           {schedules?.length === 0 && !showForm && (
-            <p className="konek-card-shadow rounded-2xl bg-white px-5 py-10 text-center text-sm text-text-secondary">
+            <p className="raviion-card-shadow rounded-2xl bg-white px-5 py-10 text-center text-sm text-text-secondary">
               No recurring benefits yet. Set one up and it runs on its own from here on.
             </p>
           )}
           {schedules?.map((s) => (
-            <div key={s.id} className="konek-card-shadow rounded-2xl bg-white p-5">
+            <div key={s.id} className="raviion-card-shadow rounded-2xl bg-white p-5">
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <p className="font-heading text-base font-bold text-indigo">{s.purpose}</p>
@@ -211,7 +211,7 @@ export function RecurringDistributionsClient() {
                     {(Number(s.amount_minor_per_recipient) / 100).toLocaleString()}
                   </p>
                 </div>
-                <span className="shrink-0 rounded-full bg-konek-green/15 px-3 py-1 text-xs font-semibold text-konek-green">Running</span>
+                <span className="shrink-0 rounded-full bg-raviion-green/15 px-3 py-1 text-xs font-semibold text-raviion-green">Running</span>
               </div>
               <p className="mt-2 text-xs text-text-secondary">
                 Next {new Date(s.next_run_at).toLocaleDateString()}

@@ -101,7 +101,7 @@ export default function BvnVerificationPage() {
 
               <p className="text-sm text-indigo/60 mb-4">
                 Your Bank Verification Number helps us confirm your identity
-                and create your secure Konek wallet.
+                and create your secure raviion wallet.
               </p>
 
               {/* CBN / fraud reassurance (Plug.ng-style) */}
@@ -156,12 +156,12 @@ export default function BvnVerificationPage() {
 
               <p className="text-sm text-indigo/60 mb-6">
                 Your banking identity has been confirmed. You can now access
-                your Konek wallet.
+                your raviion wallet.
               </p>
 
               <Link
                 href="/wallet"
-                className="block w-full rounded-xl bg-konek-green text-white text-center py-3 font-semibold"
+                className="block w-full rounded-xl bg-raviion-green text-white text-center py-3 font-semibold"
               >
                 Continue to Wallet
               </Link>

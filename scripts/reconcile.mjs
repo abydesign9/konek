@@ -10,7 +10,7 @@ const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
 
 let failed = false;
 
-console.log("=== Konek ledger reconciliation ===\n");
+console.log("=== Raviion ledger reconciliation ===\n");
 
 // 1. Cached balance vs. recomputed sum, per account.
 const { rows: accounts } = await pool.query(`

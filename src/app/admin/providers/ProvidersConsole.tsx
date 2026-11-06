@@ -69,7 +69,7 @@ const STATE_TONE: Record<ProviderState, "green" | "gold" | "red" | "neutral"> = 
   disabled: "neutral",
 };
 const STATE_DOT: Record<ProviderState, string> = {
-  healthy: "bg-konek-green",
+  healthy: "bg-raviion-green",
   degraded: "bg-gold",
   circuit_open: "bg-red-500",
   low_float: "bg-gold",
@@ -202,7 +202,7 @@ export function ProvidersConsole() {
                       <div>
                         <p className="text-sm font-medium text-indigo">
                           {p.id} <span className="text-text-secondary">· {p.kind} · priority {p.priority}</span>
-                          {p.chosenForKind && <span className="ml-2 text-[11px] font-semibold text-konek-green">◀ routed</span>}
+                          {p.chosenForKind && <span className="ml-2 text-[11px] font-semibold text-raviion-green">◀ routed</span>}
                         </p>
                         <p className="text-xs text-text-secondary">
                           checked {timeAgo(p.lastHealthCheck)}
@@ -241,7 +241,7 @@ export function ProvidersConsole() {
                     <button
                       onClick={() => control(p, { enabled: !p.enabled }, `/api/admin/vendors/${p.id}/control`)}
                       disabled={busyId === p.id}
-                      className={`rounded-lg px-3 py-1.5 text-xs font-semibold disabled:opacity-50 ${p.enabled ? "bg-red-50 text-red-600" : "bg-konek-green/10 text-konek-green"}`}
+                      className={`rounded-lg px-3 py-1.5 text-xs font-semibold disabled:opacity-50 ${p.enabled ? "bg-red-50 text-red-600" : "bg-raviion-green/10 text-raviion-green"}`}
                     >
                       {p.enabled ? "Disable (kill switch)" : "Enable"}
                     </button>
@@ -273,7 +273,7 @@ export function ProvidersConsole() {
                       <div className="flex flex-col gap-1">
                         {history.map((h, i) => (
                           <p key={i} className="text-xs text-text-secondary">
-                            <span className={h.healthy ? "text-konek-green" : "text-red-600"}>{h.healthy ? "healthy" : "unhealthy"}</span>{" "}
+                            <span className={h.healthy ? "text-raviion-green" : "text-red-600"}>{h.healthy ? "healthy" : "unhealthy"}</span>{" "}
                             · {h.latencyMs !== null ? `${h.latencyMs}ms` : "—"} · {new Date(h.createdAt).toLocaleString()}
                           </p>
                         ))}

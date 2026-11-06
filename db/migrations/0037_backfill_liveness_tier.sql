@@ -1,5 +1,5 @@
 -- ============================================================
--- KONEK — Migration 0037: backfill finance tier for liveness-verified users
+-- Raviion — Migration 0037: backfill finance tier for liveness-verified users
 --
 -- An earlier bug: submitLiveness set liveness_verified=true but never bumped
 -- kyc_tier (fixed in code). Users who passed liveness BEFORE that fix are stuck
